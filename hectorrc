@@ -1,0 +1,7 @@
+# .hectorrc is an `hector' 0.0.0 configuration file,
+# this file ought to be in /etc/ and/or your home dirctory.
+
+log_path x_hector.log
+
+# End of configuration file.
+

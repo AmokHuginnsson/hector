@@ -1,0 +1,30 @@
+*** `hector' documentation ***
+
+First of all, if you did not read READ.ME.FIRST.OR.DIE go there now.
+
+* System requirements:
+
+	libraries:
+	- ncurses
+	- MySQL
+	- PostGreSQL
+
+	tools:
+	- autoconf
+	- GNU make
+	- gcc/g++
+
+	other:
+	- lots of guts
+
+* Installation process:
+
+	- $ cd /path/to/hector
+	- $ autoconf
+	- pray
+	- $ ./configure
+	- pray
+	- $ make
+	# $ gmake # in case of FreeBSD.
+	- pray with passion
+

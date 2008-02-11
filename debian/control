@@ -1,0 +1,11 @@
+Source: hector
+Section: non-free:net
+Priority: optional
+Maintainer: Amok Berserker <amok@utgardian.utgard.org>
+Standards-Version: 3.1.1
+
+Package: hector
+Architecture: i386
+Depends: ${shlibs:Depends}
+Description: hector - absolutelly nesslesscary tool.
+ hector - does very much of very many different usefull things ... really.

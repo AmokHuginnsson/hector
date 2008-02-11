@@ -1,0 +1,71 @@
+---             `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski              ---
+
+0. Introduction
+1. Installation
+2. Usage
+3. Known-Bugs
+8. Contact-Bugs-Questions-Suggestions
+9. Author
+
+--
+
+0. Introduction
+      
+      EULA:
+        WARNING! this is experimental software, you have no guarantee
+        of any kind blah blah blah ... see COPYRIGHT for more info
+        
+
+1. Installation
+
+      Requirements:
+        You need XXXXXXX library, additionally XXXXXXX must be 
+        properly configured to run `hector'.
+        You need also XXXXXXX developer package (header files),
+        to compile program.
+      Compilation & Installation:
+        If you are developer or just wonder profiling states type:
+				
+        % make
+				
+        in other case type:
+				
+        % make b
+				
+				Now if compilation succided you can become root and install
+				`hector':
+				
+				% su
+				# make install
+				
+				then you may at your opinion suid program:
+				
+				# chmod 4755 /usr/local/bin/`hector'
+				
+      Running:
+
+
+2. Usage
+
+
+3. Known-Bugs
+
+        (002) English language errors in README file :(
+
+8. Contact-Bugs-Questions-Suggestions
+        
+        You can contact me with this email: amok@stud.ics.p.lodz.pl
+        Please report all bug to address given above with subject:
+          `hector'-bug
+        questions:
+          `hector'-question
+        suggestion:
+          `hector'-suggestion
+        
+9. Author
+
+        Marcin 'Amok' Konarski citizen of Poland, city of Lodz
+        exstudent of Technical University of Lodz, faculty:
+        Technical Physics, Computer Science and Applied Mathematics
+
+    Thank you for using `hector'.

@@ -1,0 +1,2 @@
+?package(hector):needs=text|vc section=Apps/Net\
+  title="hector" command="/usr/bin/hector"

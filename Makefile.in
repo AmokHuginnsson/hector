@@ -1,0 +1,63 @@
+# $Id$
+# 
+#---       `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski      ---
+#
+#	Makefile - this file is integral part of `hector' project.
+#
+#	i.  You may not $(MAKE) any changes in Copyright information.
+#	ii. You must attach Copyright information to any part of every copy
+#	    of this software.
+#
+#Copyright:
+#
+# You are free to use this program as is, you can redistribute binary
+# package freely but:
+#  1. You can not use any part of sources of this software.
+#  2. You can not redistribute any part of sources of this software.
+#  3. No reverse engineering is allowed.
+#  4. If you want redistribute binary package you can not demand any fees
+#     for this software.
+#     You can not even demand cost of the carrier (CD for example).
+#  5. You can not include it to any commercial enterprise (for example 
+#     as a free add-on to payed software or payed newspaper).
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
+
+export DIR_ROOT	?= $(CURDIR)
+HECTORNAME				= hector
+VERSION				= 0
+SUBVERSION		= 0
+EXTRAVERSION	= 0
+include $(DIR_ROOT)/aux/common-paths.mk
+LIBS					= pthread hcore hconsole hdata dbwrapper tools
+TARGET				= 1exec
+ifdef NODEBUG
+	TARGET = $(HECTORNAME)
+endif
+CTAGS	= @CTAGS@
+include $(DIR_ROOT)/aux/common-basic.mk
+include $(DIR_ROOT)/aux/common-term.mk
+include $(DIR_ROOT)/aux/common-suffix.mk
+include $(DIR_ROOT)/aux/common-wrapper.mk
+include $(DIR_ROOT)/aux/common-flags.mk
+include $(DIR_ROOT)/aux/common-item-paths.mk
+ifndef NODEBUG
+	COMPILER_DEBUG_FLAGS+=@PCH@
+endif
+CWARNING_FLAGS								+= @PEDANTIC_ERRORS@ @EXTRA_WARNINGS@ @WARN_SHADOW@
+COMPILER_PRIME_FLAGS					+= @DEFS@
+LINKER_PRIME_FLAGS +=	@SPECIAL_LINKER_FLAGS@
+
+include $(DIR_ROOT)/aux/common-flags-post.mk
+include $(DIR_ROOT)/aux/common-int-libs.mk
+include $(DIR_ROOT)/aux/common-filenames.mk
+include $(DIR_ROOT)/aux/common-implicit-compile.mk
+include $(DIR_ROOT)/aux/common-target-default.mk
+include $(DIR_ROOT)/aux/common-common-targets.mk
+include $(DIR_ROOT)/aux/common-target-tags.mk
+
+ifeq ($(CURDIR),$(DIR_BUILD))
+-include $(OBJS:.$(OS)=.$(DS))
+endif
+
