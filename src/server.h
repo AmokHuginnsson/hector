@@ -1,7 +1,7 @@
 /*
----            `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski             ---
+---           `gameground' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	setup.h - this file is integral part of `hector' project.
+	server.h - this file is integral part of `gameground' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -24,34 +24,34 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __SETUP_H
-#define __SETUP_H
+#ifndef __SERVER_H
+#define __SERVER_H
 
-#include <libintl.h>
 #include <yaal/yaal.h>
 
-#define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
-
-struct OSetup
+class HServer : public yaal::tools::HProcess
 	{
-	bool f_bQuiet;			/* --quiet, --silent */
-	bool f_bVerbose;		/* --verbose */
-	bool f_bHelp;
-	char * f_pcProgramName;
-	yaal::hcore::HString f_oLogPath;
-	yaal::hcore::HString f_oApplication;
-	yaal::hcore::HString f_oDataDir;
-	/* self-sufficient */
-	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.h" );
-	OSetup( void ) : f_bQuiet( false ), f_bVerbose( false ),
-										f_bHelp( false ), f_pcProgramName( NULL ),
-										f_oLogPath(), f_oApplication(), f_oDataDir() {}
-	void test_setup( void );
-private:
-	OSetup ( OSetup const & );
-	OSetup & operator = ( OSetup const & );
+protected:
+	/*{*/
+	int f_iMaxConnections;
+	yaal::hcore::HSocket f_oSocket;
+	/*}*/
+public:
+	/*{*/
+	HServer( int );
+	~HServer( void );
+	int init_server( char const* const );
+	using yaal::tools::HProcess::run;
+	/*}*/
+protected:
+	/*{*/
+	int handler_connection( int );
+	int handler_message( int );
+	void disconnect_client( yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
+	/*}*/
 	};
 
-extern OSetup setup;
+int main_server( void );
 
-#endif /* __SETUP_H */
+#endif /* not __SERVER_H */
+

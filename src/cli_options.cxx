@@ -67,6 +67,8 @@ int decode_switches( int a_iArgc, char** a_ppcArgv )
 	simple_callback_t version_call( version, NULL );
 	OOption l_psOptions[] =
 		{
+			{ "application", D_HSTRING, &setup.f_oApplication, "A", OOption::D_REQUIRED, "app", "name for served application", NULL },
+			{ "data-dir", D_HSTRING, &setup.f_oDataDir, "D", OOption::D_REQUIRED, "path", "find application data here", NULL },
 			{ "quiet", D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
 			{ "silent", D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
 			{ "verbose", D_BOOL, &setup.f_bVerbose, "v", OOption::D_NONE, NULL, "print more information", NULL },

@@ -1,7 +1,9 @@
 # .hectorrc is an `hector' 0.0.0 configuration file,
 # this file ought to be in /etc/ and/or your home dirctory.
 
-log_path x_hector.log
+log_path "x_hector.log"
+application "app"
+data-dir "./app/"
 
 # End of configuration file.
-
+# vim: ft=conf

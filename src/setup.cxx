@@ -1,7 +1,7 @@
 /*
----            `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski             ---
+---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	setup.h - this file is integral part of `hector' project.
+	setup.cxx - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -24,34 +24,25 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __SETUP_H
-#define __SETUP_H
-
-#include <libintl.h>
 #include <yaal/yaal.h>
+M_VCSID ( "$Id$" )
+#include "setup.h"
 
-#define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
+using namespace yaal::hcore;
 
-struct OSetup
+void OSetup::test_setup( void )
 	{
-	bool f_bQuiet;			/* --quiet, --silent */
-	bool f_bVerbose;		/* --verbose */
-	bool f_bHelp;
-	char * f_pcProgramName;
-	yaal::hcore::HString f_oLogPath;
-	yaal::hcore::HString f_oApplication;
-	yaal::hcore::HString f_oDataDir;
-	/* self-sufficient */
-	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.h" );
-	OSetup( void ) : f_bQuiet( false ), f_bVerbose( false ),
-										f_bHelp( false ), f_pcProgramName( NULL ),
-										f_oLogPath(), f_oApplication(), f_oDataDir() {}
-	void test_setup( void );
-private:
-	OSetup ( OSetup const & );
-	OSetup & operator = ( OSetup const & );
-	};
+	M_PROLOG
+	if ( f_bQuiet && f_bVerbose )
+		yaal::tools::util::failure( 1,
+				_( "quiet and verbose options are exclusive\n" ) );
+	if ( f_oApplication.is_empty() )
+		yaal::tools::util::failure( 2,
+				_( "you must specify application name\n" ) );
+	if ( f_oDataDir.is_empty() )
+		yaal::tools::util::failure( 3,
+				_( "you must specify directory with application data\n" ) );
+	return;
+	M_EPILOG
+	}
 
-extern OSetup setup;
-
-#endif /* __SETUP_H */

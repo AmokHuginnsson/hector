@@ -31,6 +31,7 @@ M_VCSID ( "$Id$" )
 #include "setup.h"
 #include "cli_options.h"
 #include "rc_options.h"
+#include "application.h"
 
 using namespace std;
 using namespace yaal;
@@ -41,7 +42,7 @@ using namespace yaal::tools::util;
 
 OSetup setup;
 
-int main ( int a_iArgc, char * a_ppcArgv [ ] )
+int main( int a_iArgc, char* a_ppcArgv[] )
 	{
 	M_PROLOG
 /* variables declarations for main loop: */
@@ -55,22 +56,24 @@ int main ( int a_iArgc, char * a_ppcArgv [ ] )
 		setup.f_pcProgramName = a_ppcArgv[ 0 ];
 		process_hectorrc_file();
 		l_iOpt = decode_switches( a_iArgc, a_ppcArgv );
-		hcore::log.rehash ( setup.f_oLogPath, setup.f_pcProgramName );
+		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
 		setup.test_setup();
-/*		if ( ! cons.is_enabled ( ) )
-			enter_curses (); */ /* enabling ncurses ablilities */
+		HApplication app;
+		app.load( setup.f_oApplication, setup.f_oDataDir );
+/*		if ( ! cons.is_enabled() )
+			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */
-		if ( cons.is_enabled ( ) )
-			cons.leave_curses (); /* ending ncurses sesion */
+		if ( cons.is_enabled() )
+			cons.leave_curses(); /* ending ncurses sesion */
 /* ... there is the place main loop ends. :OD-OT */
 		}
 	catch ( ... )
 		{
-		if ( cons.is_enabled ( ) )
-			cons.leave_curses (); /* ending ncurses sesion */
+		if ( cons.is_enabled() )
+			cons.leave_curses(); /* ending ncurses sesion */
 		throw;
 		}
-	fprintf ( stderr, "Done.\n" );
+	::fprintf( stderr, "Done.\n" );
 	return ( 0 );
 	M_FINAL
 	}

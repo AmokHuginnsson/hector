@@ -1,7 +1,7 @@
 /*
----            `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski             ---
+---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	setup.h - this file is integral part of `hector' project.
+	application.cxx - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -24,34 +24,36 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __SETUP_H
-#define __SETUP_H
-
-#include <libintl.h>
 #include <yaal/yaal.h>
+M_VCSID ( "$Id$" )
+#include "application.h"
 
-#define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
+using namespace yaal;
+using namespace yaal::hcore;
+using namespace yaal::hconsole;
+using namespace yaal::tools;
+using namespace yaal::tools::util;
 
-struct OSetup
+HApplication::HApplication( void ) : f_oDOM()
 	{
-	bool f_bQuiet;			/* --quiet, --silent */
-	bool f_bVerbose;		/* --verbose */
-	bool f_bHelp;
-	char * f_pcProgramName;
-	yaal::hcore::HString f_oLogPath;
-	yaal::hcore::HString f_oApplication;
-	yaal::hcore::HString f_oDataDir;
-	/* self-sufficient */
-	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.h" );
-	OSetup( void ) : f_bQuiet( false ), f_bVerbose( false ),
-										f_bHelp( false ), f_pcProgramName( NULL ),
-										f_oLogPath(), f_oApplication(), f_oDataDir() {}
-	void test_setup( void );
-private:
-	OSetup ( OSetup const & );
-	OSetup & operator = ( OSetup const & );
-	};
+	}
 
-extern OSetup setup;
+void HApplication::load( char const* const name, char const* const path )
+	{
+	M_PROLOG
+	static char const* const D_SOCK_ROOT = "/tmp/hector/";
+	static char const* const D_INTERFACE_FILE = "interface.xml";
+	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
+	HString sockPath = D_SOCK_ROOT;
+	( sockPath += name ) += ".sock";
+	HString interface = path;
+	HString toolkit = path;
+	interface += D_INTERFACE_FILE;
+	toolkit += D_TOOLKIT_FILE;
+	f_oDOM.init( interface );
+	f_oDOM.apply_style( toolkit );
+	f_oDOM.parse();
+	return;	
+	M_EPILOG
+	}
 
-#endif /* __SETUP_H */
