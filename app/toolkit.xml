@@ -3,7 +3,12 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:hector="http://utgard.biz/hector"
 	exclude-result-prefixes="hector">
-	<xsl:output method="xhtml" encoding="ISO-8859-2" indent="yes" omit-xml-declaration="yes" />
+	<xsl:output method="xml"
+		encoding="ISO-8859-2"
+		indent="yes"
+		omit-xml-declaration="yes"
+		doctype-public="-//W3C//DTD XHTML 1.1 Strict//EN"
+		doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
 	<xsl:template match="@* | node()">
 		<xsl:copy>
 			<xsl:apply-templates select="@* | node()" />
