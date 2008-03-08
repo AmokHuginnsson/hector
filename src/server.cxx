@@ -69,13 +69,11 @@ int HServer::handler_connection( int )
 	M_PROLOG
 	HSocket::ptr_t l_oClient = f_oSocket.accept();
 	M_ASSERT( !! l_oClient );
-	register_file_descriptor_handler( l_oClient->get_file_descriptor(), &HServer::handler_message );
 	if ( f_oSocket.get_client_count() >= f_iMaxConnections )
-		{
-		unregister_file_descriptor_handler( f_oSocket.get_file_descriptor() );
-		f_oSocket.close();
-		}
-	out << static_cast<char const* const>( l_oClient->get_host_name() ) << endl;
+		l_oClient->close();
+	else
+		register_file_descriptor_handler( l_oClient->get_file_descriptor(), &HServer::handler_message );
+	out << green << "new connection" << lightgray << endl;
 	return ( 0 );
 	M_EPILOG
 	}
@@ -110,7 +108,7 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 	f_oSocket.shutdown_client( l_iFileDescriptor );
 	unregister_file_descriptor_handler( l_iFileDescriptor );
 	out << "client closed connection";
-	if ( ! a_pcReason )
+	if ( a_pcReason )
 		cout << " " << a_pcReason;
 	cout << endl;
 	return;

@@ -4,6 +4,7 @@
 log_path "x_hector.log"
 application "app"
 data-dir "./app/"
+max_connections 128
 
 # End of configuration file.
 # vim: ft=conf

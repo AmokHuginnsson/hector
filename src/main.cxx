@@ -24,6 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <iostream>
+
 #include <yaal/yaal.h> /* all hAPI headers */
 M_VCSID ( "$Id$" )
 
@@ -60,6 +62,7 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 		setup.test_setup();
 		HApplication app;
 		app.load( setup.f_oApplication, setup.f_oDataDir );
+		app.run();
 /*		if ( ! cons.is_enabled() )
 			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */

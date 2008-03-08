@@ -50,6 +50,7 @@ int process_hectorrc_file( void )
 		{
 			{ "application", D_HSTRING, &setup.f_oApplication, "A", OOption::D_REQUIRED, "app", "name for served application", NULL },
 			{ "data-dir", D_HSTRING, &setup.f_oDataDir, "D", OOption::D_REQUIRED, "path", "find application data here", NULL },
+			{ "max_connections", D_INT, & setup.f_iMaxConnections, "M", OOption::D_REQUIRED, "count", "maximum number of concurent connections", NULL },
 			{ "log_path", D_HSTRING, & setup.f_oLogPath, NULL, OOption::D_REQUIRED, "path", "path pointing to file for application logs", NULL },
 			{ NULL, D_VOID, NULL, NULL, OOption::D_NONE, NULL, NULL, NULL }
 		};

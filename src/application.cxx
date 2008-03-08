@@ -27,6 +27,7 @@ Copyright:
 #include <yaal/yaal.h>
 M_VCSID ( "$Id$" )
 #include "application.h"
+#include "setup.h"
 
 using namespace yaal;
 using namespace yaal::hcore;
@@ -34,7 +35,7 @@ using namespace yaal::hconsole;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
 
-HApplication::HApplication( void ) : f_oDOM()
+HApplication::HApplication( void ) : HServer( setup.f_iMaxConnections ), f_oDOM()
 	{
 	}
 
@@ -44,16 +45,25 @@ void HApplication::load( char const* const name, char const* const path )
 	static char const* const D_SOCK_ROOT = "/tmp/hector/";
 	static char const* const D_INTERFACE_FILE = "interface.xml";
 	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
-	HString sockPath = D_SOCK_ROOT;
+	HString sockPath( D_SOCK_ROOT );
 	( sockPath += name ) += ".sock";
-	HString interface = path;
-	HString toolkit = path;
+	HString interface( path );
+	HString toolkit( path );
 	interface += D_INTERFACE_FILE;
 	toolkit += D_TOOLKIT_FILE;
 	f_oDOM.init( interface );
 	f_oDOM.apply_style( toolkit );
 	f_oDOM.parse();
+	init_server( sockPath );
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << sockPath << "' as IPC inteface." << endl;
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface << "' as application template." << endl;
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit << "' as a toolkit library." << endl;
 	return;	
 	M_EPILOG
+	}
+
+void HApplication::run( void )
+	{
+	HProcess::run();
 	}
 

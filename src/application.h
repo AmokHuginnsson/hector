@@ -28,13 +28,15 @@ Copyright:
 #define __APPLICATION_H
 
 #include <yaal/tools/hxml.h>
+#include "server.h"
 
-class HApplication
+class HApplication : public HServer
 	{
 	yaal::tools::HXml f_oDOM;
 public:
 	HApplication( void );
 	void load( char const* const, char const* const );
+	void run( void );
 	};
 
 #endif /* not __APPLICATION_H */

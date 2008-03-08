@@ -34,10 +34,12 @@ Copyright:
 
 struct OSetup
 	{
+	static int const D_DEFAULT_MAX_CONNECTIONS = 2;
 	bool f_bQuiet;			/* --quiet, --silent */
 	bool f_bVerbose;		/* --verbose */
 	bool f_bHelp;
 	char * f_pcProgramName;
+	int f_iMaxConnections;
 	yaal::hcore::HString f_oLogPath;
 	yaal::hcore::HString f_oApplication;
 	yaal::hcore::HString f_oDataDir;
@@ -45,6 +47,7 @@ struct OSetup
 	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.h" );
 	OSetup( void ) : f_bQuiet( false ), f_bVerbose( false ),
 										f_bHelp( false ), f_pcProgramName( NULL ),
+										f_iMaxConnections( D_DEFAULT_MAX_CONNECTIONS ),
 										f_oLogPath(), f_oApplication(), f_oDataDir() {}
 	void test_setup( void );
 private:
