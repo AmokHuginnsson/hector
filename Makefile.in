@@ -25,7 +25,6 @@
 # FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 
 export DIR_ROOT	?= $(CURDIR)
-HECTORNAME		= hector
 VERSION				= 0
 SUBVERSION		= 0
 EXTRAVERSION	= 0
