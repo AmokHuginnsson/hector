@@ -51,7 +51,7 @@ AC_MSG_CHECKING([compiler version])
 GCC_MAJOR=`echo | cpp -dM | grep __GNUC__ | awk '{print $3}'`
 GCC_MINOR=`echo | cpp -dM | grep __GNUC_MINOR__ | awk '{print $3}'`
 AC_MSG_RESULT([major $GCC_MAJOR, minor $GCC_MINOR. ])
-AS_IF([test $GCC_MAJOR -ge 4 -a $GCC_MINOR -ge 2],AC_SUBST(PCH,["-include header"]))
+AS_IF([test $GCC_MAJOR -ge 4 -a $GCC_MINOR -ge 2],AC_SUBST(PCH,["USE"]))
 
 dnl Looking for main libc headers
 AC_MSG_RESULT([--- Looking for main libc headers ... ---               [[41%]]])

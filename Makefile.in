@@ -25,37 +25,30 @@
 # FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 
 export DIR_ROOT	?= $(CURDIR)
-HECTORNAME				= hector
+HECTORNAME		= hector
 VERSION				= 0
 SUBVERSION		= 0
 EXTRAVERSION	= 0
 include $(DIR_ROOT)/aux/common-paths.mk
-LIBS					= pthread hcore hconsole hdata dbwrapper tools
-TARGET				= 1exec
-ifdef NODEBUG
-	TARGET = $(HECTORNAME)
-endif
+LIBS						= pthread hcore hconsole hdata dbwrapper tools
+TARGET					= hectord
+TARGET_CGI			= hector.cgi
+SRC_TARGET			= src
+SRC_TARGET_CGI	= cgi
+EXEC_NAME				= 1exec
+TARGETS					= TARGET TARGET_CGI
 CTAGS	= @CTAGS@
-include $(DIR_ROOT)/aux/common-basic.mk
-include $(DIR_ROOT)/aux/common-term.mk
-include $(DIR_ROOT)/aux/common-suffix.mk
-include $(DIR_ROOT)/aux/common-wrapper.mk
-include $(DIR_ROOT)/aux/common-flags.mk
-include $(DIR_ROOT)/aux/common-item-paths.mk
+
+include $(DIR_ROOT)/aux/inc-helper-pre.mk
+
 ifndef NODEBUG
-	COMPILER_DEBUG_FLAGS+=@PCH@
+	COMPILER_PCH_FLAGS=@PCH@
 endif
 CWARNING_FLAGS								+= @PEDANTIC_ERRORS@ @EXTRA_WARNINGS@ @WARN_SHADOW@
 COMPILER_PRIME_FLAGS					+= @DEFS@
 LINKER_PRIME_FLAGS +=	@SPECIAL_LINKER_FLAGS@
 
-include $(DIR_ROOT)/aux/common-flags-post.mk
-include $(DIR_ROOT)/aux/common-int-libs.mk
-include $(DIR_ROOT)/aux/common-filenames.mk
-include $(DIR_ROOT)/aux/common-implicit-compile.mk
-include $(DIR_ROOT)/aux/common-target-default.mk
-include $(DIR_ROOT)/aux/common-common-targets.mk
-include $(DIR_ROOT)/aux/common-target-tags.mk
+include $(DIR_ROOT)/aux/inc-helper-post.mk
 
 ifeq ($(CURDIR),$(DIR_BUILD))
 -include $(OBJS:.$(OS)=.$(DS))
