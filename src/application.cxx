@@ -42,10 +42,9 @@ HApplication::HApplication( void ) : HServer( setup.f_iMaxConnections ), f_oDOM(
 void HApplication::load( char const* const name, char const* const path )
 	{
 	M_PROLOG
-	static char const* const D_SOCK_ROOT = "/tmp/hector/";
 	static char const* const D_INTERFACE_FILE = "interface.xml";
 	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
-	HString sockPath( D_SOCK_ROOT );
+	HString sockPath( OSetup::D_SOCK_ROOT );
 	( sockPath += name ) += ".sock";
 	HString interface( path );
 	HString toolkit( path );

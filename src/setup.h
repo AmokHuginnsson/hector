@@ -35,6 +35,7 @@ Copyright:
 struct OSetup
 	{
 	static int const D_DEFAULT_MAX_CONNECTIONS = 2;
+	static char const* const D_SOCK_ROOT;
 	bool f_bQuiet;			/* --quiet, --silent */
 	bool f_bVerbose;		/* --verbose */
 	bool f_bHelp;

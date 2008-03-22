@@ -43,6 +43,8 @@ using namespace yaal::tools::util;
 
 OSetup setup;
 
+void query( int, char** );
+
 int main( int a_iArgc, char* a_ppcArgv[] )
 	{
 	M_PROLOG
@@ -62,6 +64,7 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 /*		if ( ! cons.is_enabled() )
 			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */
+		query( a_iArgc, a_ppcArgv );
 		if ( cons.is_enabled() )
 			cons.leave_curses(); /* ending ncurses sesion */
 /* ... there is the place main loop ends. :OD-OT */
@@ -72,8 +75,18 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 			cons.leave_curses(); /* ending ncurses sesion */
 		throw;
 		}
-	::fprintf( stderr, "Done.\n" );
 	return ( 0 );
 	M_FINAL
+	}
+
+void query( int argc, char** argv )
+	{
+	HString sockPath( OSetup::D_SOCK_ROOT );
+	( sockPath += setup.f_oApplication ) += ".sock";
+	HSocket sock( HSocket::TYPE::D_FILE );
+	sock.connect( sockPath );
+	for ( int i = 0; i < argc; ++ i )
+		sock << argv[ i ] << endl;
+	return;
 	}
 

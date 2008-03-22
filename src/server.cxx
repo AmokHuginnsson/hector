@@ -57,7 +57,7 @@ int HServer::init_server( char const* const a_pcPath )
 	{
 	M_PROLOG
 	f_oSocket.listen ( a_pcPath );
-	register_file_descriptor_handler ( f_oSocket.get_file_descriptor(), &HServer::handler_connection );
+	register_file_descriptor_handler( f_oSocket.get_file_descriptor(), &HServer::handler_connection );
 	HProcess::init ( 3600 );
 	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );

@@ -30,6 +30,8 @@ M_VCSID ( "$Id$" )
 
 using namespace yaal::hcore;
 
+char const* const OSetup::D_SOCK_ROOT = "/tmp/hector/";
+
 void OSetup::test_setup( void )
 	{
 	M_PROLOG
