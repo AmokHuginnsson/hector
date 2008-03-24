@@ -38,12 +38,18 @@ using namespace yaal::tools::util;
 namespace hector
 {
 
+HApplicationServer::HApplicationServer( void )
+	: HServer( setup.f_iMaxConnections ), f_oApplications(), f_oConfiguration()
+	{
+	}
+
 void HApplicationServer::start( void )
 	{
-	static char const* const D_SOCK_NAME = "hector";
+	static char const* const D_SOCK_NAME = "/hector.sock";
 	HString sockPath( setup.f_oSocketRoot );
-	( sockPath += D_SOCK_NAME ) += ".sock";
+	sockPath += D_SOCK_NAME;
 	init_server( sockPath );
+	f_oSocket.set_timeout( setup.f_iSocketWriteTimeout );
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << sockPath << "' as IPC inteface." << endl;
 	}
 

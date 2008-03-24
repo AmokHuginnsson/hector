@@ -40,6 +40,9 @@ class HApplicationServer : public HServer
 	{
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HApplication::ptr_t> applications_t;
 	applications_t f_oApplications;
+	yaal::tools::HXml f_oConfiguration;
+public:
+	HApplicationServer( void );
 	void start( void );
 	void stop( void );
 	void run( void );

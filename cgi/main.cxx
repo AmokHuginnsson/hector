@@ -40,8 +40,14 @@ using namespace yaal::hcore;
 using namespace yaal::hconsole;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
+using namespace hector;
+
+namespace hector
+{
 
 OSetup setup;
+
+}
 
 void query( int, char** );
 
@@ -82,7 +88,7 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 void query( int argc, char** argv )
 	{
 	HString sockPath( setup.f_oSocketRoot );
-	( sockPath += setup.f_oApplication ) += ".sock";
+	sockPath += "/hector.sock";
 	HSocket sock( HSocket::TYPE::D_FILE );
 	sock.connect( sockPath );
 	for ( int i = 0; i < argc; ++ i )
