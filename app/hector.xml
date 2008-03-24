@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-2"?>
 <hector>
 	<applications>
-		<application>
-			<symbol>codestation</symbol>
-			<name>Code Station</name>
-			<path>codestation</path>
-			<load>true</load>
-			<start>true</start>
-		</application>
+		<application symbol="hector" name="The Hector Application Server" load="false" start="false" />
+		<application symbol="codestation" name="Code Station" load="true" start="true" />
 	</applications>
 </hector>

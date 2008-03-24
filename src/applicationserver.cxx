@@ -24,11 +24,14 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <iostream>
+
 #include <yaal/yaal.h>
 M_VCSID ( "$Id$" )
 #include "applicationserver.h"
 #include "setup.h"
 
+using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::hconsole;
@@ -46,8 +49,33 @@ HApplicationServer::HApplicationServer( void )
 void HApplicationServer::start( void )
 	{
 	static char const* const D_SOCK_NAME = "/hector.sock";
+	static char const* const D_CONFIGURATION_FILE = "/hector.xml";
+	static char const* const D_APP_NODE_NAME = "application";
+	static char const* const D_APP_PROP_NAME_SYMBOL = "symbol";
+	static char const* const D_APP_PROP_NAME_LOAD = "load";
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += D_SOCK_NAME;
+	HStringStream confPath( setup.f_oDataDir );
+	confPath << D_CONFIGURATION_FILE;
+	f_oConfiguration.init( confPath.raw() );
+	f_oConfiguration.parse( "/hector/applications/application" );
+	HXml::HConstNodeProxy applications = f_oConfiguration.get_root();
+	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it )
+		{
+		HXml::HConstNodeProxy application = *it;
+		M_ENSURE( application.get_name() == D_APP_NODE_NAME );
+		HXml::HNode::properties_t const& props = application.properties();
+		HXml::HNode::properties_t::const_iterator load = props.find( D_APP_PROP_NAME_LOAD );
+		if ( ( load != props.end() ) && ( to_bool( load->second ) ) )
+			{
+			HXml::HNode::properties_t::const_iterator symbol = props.find( D_APP_PROP_NAME_SYMBOL );
+			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
+			HApplication::ptr_t app( new HApplication() );
+			app->load( symbol->second, setup.f_oDataDir );
+			f_oApplications.insert( symbol->second, app );
+			}
+		}
+	hcore::log( LOG_TYPE::D_INFO ) << "Statring application server." << endl;
 	init_server( sockPath );
 	f_oSocket.set_timeout( setup.f_iSocketWriteTimeout );
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << sockPath << "' as IPC inteface." << endl;

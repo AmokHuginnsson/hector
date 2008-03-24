@@ -49,8 +49,9 @@ void HApplication::load( char const* const name, char const* const path )
 	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
 	HStringStream interface( path );
 	HStringStream toolkit( path );
-	interface << "/" << name << D_INTERFACE_FILE;
-	toolkit << "/" << name << D_TOOLKIT_FILE;
+	hcore::log( LOG_TYPE::D_INFO ) << "Loading application `" << name << "'." << endl;
+	interface << "/" << name << "/" << D_INTERFACE_FILE;
+	toolkit << "/" << name << "/" << D_TOOLKIT_FILE;
 	f_oDOM.init( interface.raw() );
 	f_oDOM.apply_style( toolkit.raw() );
 	f_oDOM.parse();
