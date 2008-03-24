@@ -40,6 +40,9 @@ using namespace yaal::hconsole;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
 
+namespace hector
+{
+
 HServer::HServer( int a_iConnections )
 	: HProcess( a_iConnections ), f_iMaxConnections( a_iConnections ),
 	f_oSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections )
@@ -116,3 +119,4 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 	M_EPILOG
 	}
 
+}

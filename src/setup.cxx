@@ -31,6 +31,9 @@ M_VCSID ( "$Id$" )
 using namespace yaal::hcore;
 using namespace yaal::tools;
 
+namespace hector
+{
+
 char const* const OSetup::D_DEFAULT_SOCKET_ROOT = "/tmp/hector/";
 
 void OSetup::test_setup( void )
@@ -62,4 +65,6 @@ void OSetup::test_setup( void )
 	return;
 	M_EPILOG
 	}
+
+}
 

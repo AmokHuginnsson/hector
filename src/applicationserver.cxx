@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	application.cxx - this file is integral part of `hector' project.
+	applicationserver.cxx - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -26,7 +26,7 @@ Copyright:
 
 #include <yaal/yaal.h>
 M_VCSID ( "$Id$" )
-#include "application.h"
+#include "applicationserver.h"
 #include "setup.h"
 
 using namespace yaal;
@@ -38,26 +38,18 @@ using namespace yaal::tools::util;
 namespace hector
 {
 
-HApplication::HApplication( void ) : f_oDOM()
+void HApplicationServer::start( void )
 	{
+	static char const* const D_SOCK_NAME = "hector";
+	HString sockPath( setup.f_oSocketRoot );
+	( sockPath += D_SOCK_NAME ) += ".sock";
+	init_server( sockPath );
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << sockPath << "' as IPC inteface." << endl;
 	}
 
-void HApplication::load( char const* const name, char const* const path )
+void HApplicationServer::run( void )
 	{
-	M_PROLOG
-	static char const* const D_INTERFACE_FILE = "interface.xml";
-	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
-	HStringStream interface( path );
-	HStringStream toolkit( path );
-	interface << "/" << name << D_INTERFACE_FILE;
-	toolkit << "/" << name << D_TOOLKIT_FILE;
-	f_oDOM.init( interface.raw() );
-	f_oDOM.apply_style( toolkit.raw() );
-	f_oDOM.parse();
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
-	return;	
-	M_EPILOG
+	HProcess::run();
 	}
 
 }

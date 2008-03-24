@@ -30,14 +30,20 @@ Copyright:
 #include <yaal/tools/hxml.h>
 #include "server.h"
 
-class HApplication : public HServer
+namespace hector
+{
+
+class HApplication
 	{
 	yaal::tools::HXml f_oDOM;
 public:
+	typedef yaal::hcore::HPointer<HApplication, yaal::hcore::HPointerScalar, yaal::hcore::HPointerRelaxed> ptr_t;
 	HApplication( void );
 	void load( char const* const, char const* const );
 	void run( void );
 	};
+
+}
 
 #endif /* not __APPLICATION_H */
 

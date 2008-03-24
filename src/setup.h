@@ -32,6 +32,9 @@ Copyright:
 
 #define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
 
+namespace hector
+{
+
 struct OSetup
 	{
 	static int const D_DEFAULT_MAX_CONNECTIONS = 2;
@@ -61,5 +64,7 @@ private:
 	};
 
 extern OSetup setup;
+
+}
 
 #endif /* __SETUP_H */

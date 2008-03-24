@@ -27,6 +27,11 @@ Copyright:
 #ifndef __RC_OPTIONS_H
 #define __RC_OPTIONS_H
 
+namespace hector
+{
+
 int process_hectorrc_file ( void );
+
+}
 
 #endif /* __RC_OPTIONS_H */

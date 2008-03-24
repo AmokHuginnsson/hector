@@ -38,6 +38,9 @@ M_VCSID ( "$Id$" )
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
+
+namespace hector
+{
   
 /* Set all the option flags according to the switches specified.
    Return the index of the first non-option argument.                    */
@@ -87,4 +90,6 @@ int decode_switches( int a_iArgc, char** a_ppcArgv )
 	return ( l_iNonOption );
 	M_EPILOG
 	}
+
+}
 

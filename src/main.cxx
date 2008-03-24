@@ -33,7 +33,7 @@ M_VCSID ( "$Id$" )
 #include "setup.h"
 #include "cli_options.h"
 #include "rc_options.h"
-#include "application.h"
+#include "applicationserver.h"
 
 using namespace std;
 using namespace yaal;
@@ -41,8 +41,14 @@ using namespace yaal::hcore;
 using namespace yaal::hconsole;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
+using namespace hector;
+
+namespace hector
+{
 
 OSetup setup;
+
+}
 
 int main( int a_iArgc, char* a_ppcArgv[] )
 	{
@@ -60,9 +66,9 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 		l_iOpt = decode_switches( a_iArgc, a_ppcArgv );
 		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
 		setup.test_setup();
-		HApplication app;
-		app.load( setup.f_oApplication, setup.f_oDataDir );
-		app.run();
+		HApplicationServer appServ;
+		appServ.start();
+		appServ.run();
 /*		if ( ! cons.is_enabled() )
 			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */

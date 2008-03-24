@@ -29,6 +29,9 @@ Copyright:
 
 #include <yaal/yaal.h>
 
+namespace hector
+{
+
 class HServer : public yaal::tools::HProcess
 	{
 protected:
@@ -52,6 +55,8 @@ protected:
 	};
 
 int main_server( void );
+
+}
 
 #endif /* not __SERVER_H */
 
