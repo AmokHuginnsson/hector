@@ -3,8 +3,10 @@
 
 log_path "x_hector.log"
 application "app"
-data-dir "./app/"
+data_dir "./app/"
 max_connections 128
+timeout_write 5
+socket_root "/tmp/hector"
 
 # End of configuration file.
 # vim: ft=conf

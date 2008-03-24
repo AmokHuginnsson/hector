@@ -29,8 +29,9 @@ M_VCSID ( "$Id$" )
 #include "setup.h"
 
 using namespace yaal::hcore;
+using namespace yaal::tools;
 
-char const* const OSetup::D_SOCK_ROOT = "/tmp/hector/";
+char const* const OSetup::D_DEFAULT_SOCKET_ROOT = "/tmp/hector/";
 
 void OSetup::test_setup( void )
 	{
@@ -44,6 +45,20 @@ void OSetup::test_setup( void )
 	if ( f_oDataDir.is_empty() )
 		yaal::tools::util::failure( 3,
 				_( "you must specify directory with application data\n" ) );
+	if ( f_iMaxConnections < 0 )
+		yaal::tools::util::failure( 4,
+				_( "bad max-connection value set\n" ) );
+	if ( f_iSocketWriteTimeout < 0 )
+		yaal::tools::util::failure( 5,
+				_( "negative write timeout set\n" ) );
+	HFSItem root( f_oSocketRoot );
+	if ( ! root.is_directory() )
+		yaal::tools::util::failure( 6,
+				_( "socket root is invalid\n" ) );
+	HFSItem data( f_oDataDir );
+	if ( ! data.is_directory() )
+		yaal::tools::util::failure( 7,
+				_( "applications database path is invalid\n" ) );
 	return;
 	M_EPILOG
 	}

@@ -24,6 +24,7 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <sys/wait.h>
 #include <iostream>
 
 #include <yaal/yaal.h>
@@ -41,7 +42,7 @@ using namespace yaal::tools::util;
 
 HServer::HServer( int a_iConnections )
 	: HProcess( a_iConnections ), f_iMaxConnections( a_iConnections ),
-	f_oSocket( HSocket::TYPE::D_FILE, a_iConnections )
+	f_oSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections )
 	{
 	M_PROLOG
 	return;
@@ -82,17 +83,17 @@ int HServer::handler_message( int a_iFileDescriptor )
 	{
 	M_PROLOG
 	int l_iMsgLength = 0;
+	out << a_iFileDescriptor << endl;
 	HString l_oMessage;
 	HSocket::ptr_t l_oClient = f_oSocket.get_client( a_iFileDescriptor );
 	if ( !! l_oClient )
 		{
-		if ( ( l_iMsgLength = l_oClient->read_until( l_oMessage ) ) < 0 )
-			disconnect_client( l_oClient, _( "Read failure." ) );
-		else if ( l_iMsgLength > 0 )
+		if ( ( l_iMsgLength = l_oClient->read_until( l_oMessage ) ) > 0 )
 			{
 			out << "<-" << static_cast<char const* const>( l_oMessage ) << endl;
+			(*l_oClient) << "ok" << endl;
 			}
-		else
+		else if ( l_iMsgLength == 0 )
 			disconnect_client( l_oClient );
 		}
 	return ( 0 );

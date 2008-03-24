@@ -81,12 +81,18 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 
 void query( int argc, char** argv )
 	{
-	HString sockPath( OSetup::D_SOCK_ROOT );
+	HString sockPath( setup.f_oSocketRoot );
 	( sockPath += setup.f_oApplication ) += ".sock";
 	HSocket sock( HSocket::TYPE::D_FILE );
 	sock.connect( sockPath );
 	for ( int i = 0; i < argc; ++ i )
 		sock << argv[ i ] << endl;
+	sock.write( "kill", 4 );
+	::sleep( 10 );
+	sock.write( "me\n", 3 );
+	HString msg;
+	sock.read_until( msg );
+	out << msg << endl;
 	return;
 	}
 

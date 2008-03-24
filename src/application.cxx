@@ -44,7 +44,7 @@ void HApplication::load( char const* const name, char const* const path )
 	M_PROLOG
 	static char const* const D_INTERFACE_FILE = "interface.xml";
 	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
-	HString sockPath( OSetup::D_SOCK_ROOT );
+	HString sockPath( setup.f_oSocketRoot );
 	( sockPath += name ) += ".sock";
 	HString interface( path );
 	HString toolkit( path );
