@@ -45,7 +45,8 @@ namespace hector
 
 HServer::HServer( int a_iConnections )
 	: HProcess( a_iConnections ), f_iMaxConnections( a_iConnections ),
-	f_oSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections )
+	f_oSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ),
+	f_oRequests()
 	{
 	M_PROLOG
 	return;
@@ -76,7 +77,11 @@ int HServer::handler_connection( int )
 	if ( f_oSocket.get_client_count() >= f_iMaxConnections )
 		l_oClient->close();
 	else
-		register_file_descriptor_handler( l_oClient->get_file_descriptor(), &HServer::handler_message );
+		{
+		int fd = l_oClient->get_file_descriptor();
+		f_oRequests.insert( fd, ORequest() );
+		register_file_descriptor_handler( fd, &HServer::handler_message );
+		}
 	out << green << "new connection" << lightgray << endl;
 	return ( 0 );
 	M_EPILOG

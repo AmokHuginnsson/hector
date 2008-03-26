@@ -1,7 +1,7 @@
 /*
----           `gameground' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
+---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	server.h - this file is integral part of `gameground' project.
+	orequest.h - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -24,44 +24,25 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __SERVER_H
-#define __SERVER_H
-
-#include <yaal/tools/hprocess.h>
-
-#include "orequest.h"
+#ifndef __OREQUEST_H
+#define __OREQUEST_H
 
 namespace hector
 {
 
-class HServer : public yaal::tools::HProcess
+struct ORequest
 	{
-public:
-	typedef yaal::hcore::HMap<int, ORequest> requests_t;
-protected:
-	/*{*/
-	int f_iMaxConnections;
-	yaal::hcore::HSocket f_oSocket;
-	requests_t f_oRequests;
-	/*}*/
-public:
-	/*{*/
-	HServer( int );
-	~HServer( void );
-	int init_server( char const* const );
-	using yaal::tools::HProcess::run;
-	/*}*/
-protected:
-	/*{*/
-	int handler_connection( int );
-	int handler_message( int );
-	void disconnect_client( yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
-	/*}*/
+	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
+	typedef yaal::hcore::HPointer<dictionary_t, yaal::hcore::HPointerScalar, yaal::hcore::HPointerRelaxed> dictionary_ptr_t;
+	dictionary_ptr_t f_oEnvironment;
+	dictionary_ptr_t f_oCookies;
+	dictionary_ptr_t f_oGET;
+	dictionary_ptr_t f_oPOST;
+	ORequest( void );
+	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString& ) const;
 	};
-
-int main_server( void );
 
 }
 
-#endif /* not __SERVER_H */
+#endif /* not __OREQUEST_H */
 
