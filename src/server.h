@@ -37,12 +37,23 @@ namespace hector
 class HServer : public yaal::tools::HProcess
 	{
 public:
+	typedef void ( HServer::* handler_t )( ORequest&, yaal::hcore::HString const& );
+	typedef yaal::hcore::HMap<yaal::hcore::HString, handler_t> handlers_t;
 	typedef yaal::hcore::HMap<int, ORequest> requests_t;
+	struct REQUEST_PROTO
+		{
+		static char const* const ENV;
+		static char const* const COOKIE;
+		static char const* const GET;
+		static char const* const POST;
+		static char const* const DONE;
+		};
 protected:
 	/*{*/
 	int f_iMaxConnections;
 	yaal::hcore::HSocket f_oSocket;
 	requests_t f_oRequests;
+	handlers_t f_oHandlers;
 	/*}*/
 public:
 	/*{*/
@@ -53,9 +64,15 @@ public:
 	/*}*/
 protected:
 	/*{*/
+	void disconnect_client( yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
 	int handler_connection( int );
 	int handler_message( int );
-	void disconnect_client( yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
+	void handler_env( ORequest&, yaal::hcore::HString const& );
+	void handler_cookie( ORequest&, yaal::hcore::HString const& );
+	void handler_get( ORequest&, yaal::hcore::HString const& );
+	void handler_post( ORequest&, yaal::hcore::HString const& );
+	void handler_done( ORequest&, yaal::hcore::HString const& );
+	void read_request( ORequest::dictionary_t&, yaal::hcore::HString const& );
 	/*}*/
 	};
 

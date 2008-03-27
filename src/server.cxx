@@ -43,10 +43,16 @@ using namespace yaal::tools::util;
 namespace hector
 {
 
+char const* const HServer::REQUEST_PROTO::ENV = "env";
+char const* const HServer::REQUEST_PROTO::COOKIE = "cookie";
+char const* const HServer::REQUEST_PROTO::GET = "get";
+char const* const HServer::REQUEST_PROTO::POST = "post";
+char const* const HServer::REQUEST_PROTO::DONE = "done";
+
 HServer::HServer( int a_iConnections )
 	: HProcess( a_iConnections ), f_iMaxConnections( a_iConnections ),
 	f_oSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ),
-	f_oRequests()
+	f_oRequests(), f_oHandlers()
 	{
 	M_PROLOG
 	return;
@@ -62,6 +68,11 @@ int HServer::init_server( char const* const a_pcPath )
 	{
 	M_PROLOG
 	f_oSocket.listen ( a_pcPath );
+	f_oHandlers[ REQUEST_PROTO::ENV ] = &HServer::handler_env;
+	f_oHandlers[ REQUEST_PROTO::COOKIE ] = &HServer::handler_cookie;
+	f_oHandlers[ REQUEST_PROTO::GET ] = &HServer::handler_get;
+	f_oHandlers[ REQUEST_PROTO::POST ] = &HServer::handler_post;
+	f_oHandlers[ REQUEST_PROTO::DONE ] = &HServer::handler_done;
 	register_file_descriptor_handler( f_oSocket.get_file_descriptor(), &HServer::handler_connection );
 	HProcess::init ( 3600 );
 	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
@@ -75,7 +86,10 @@ int HServer::handler_connection( int )
 	HSocket::ptr_t l_oClient = f_oSocket.accept();
 	M_ASSERT( !! l_oClient );
 	if ( f_oSocket.get_client_count() >= f_iMaxConnections )
-		l_oClient->close();
+		{
+		cout << "WHOA !!!" << endl;
+		f_oSocket.shutdown_client( l_oClient->get_file_descriptor() );
+		}
 	else
 		{
 		int fd = l_oClient->get_file_descriptor();
@@ -94,12 +108,29 @@ int HServer::handler_message( int a_iFileDescriptor )
 	out << a_iFileDescriptor << endl;
 	HString l_oMessage;
 	HSocket::ptr_t l_oClient = f_oSocket.get_client( a_iFileDescriptor );
+	requests_t::iterator reqIt;
 	if ( !! l_oClient )
 		{
-		if ( ( l_iMsgLength = l_oClient->read_until( l_oMessage ) ) > 0 )
+		if ( ( reqIt = f_oRequests.find( a_iFileDescriptor ) ) == f_oRequests.end() )
+			disconnect_client( l_oClient );
+		else if ( ( l_iMsgLength = l_oClient->read_until( l_oMessage ) ) > 0 )
 			{
 			out << "<-" << static_cast<char const* const>( l_oMessage ) << endl;
-			(*l_oClient) << "ok" << endl;
+			static HString l_oCommand;
+			static HString l_oArgument;
+			l_oCommand = l_oMessage.split( ":", 0 );
+			l_oArgument = l_oMessage.mid( l_oCommand.get_length() + 1 );
+			l_iMsgLength = l_oCommand.get_length();
+			if ( l_iMsgLength < 1 )
+				disconnect_client( l_oClient, _( "Malformed data." ) );
+			else
+				{
+				handlers_t::iterator it = f_oHandlers.find( l_oCommand );
+				if ( it != f_oHandlers.end() )
+					( this->*it->second )( reqIt->second, l_oArgument );
+				else
+					disconnect_client( l_oClient, _( "Unknown command." ) );
+				}
 			}
 		else if ( l_iMsgLength == 0 )
 			disconnect_client( l_oClient );
@@ -114,8 +145,9 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 	M_PROLOG
 	M_ASSERT( !! a_oClient );
 	int l_iFileDescriptor = a_oClient->get_file_descriptor();
-	f_oSocket.shutdown_client( l_iFileDescriptor );
 	unregister_file_descriptor_handler( l_iFileDescriptor );
+	f_oSocket.shutdown_client( l_iFileDescriptor );
+	f_oRequests.remove( l_iFileDescriptor );
 	out << "client closed connection";
 	if ( a_pcReason )
 		cout << " " << a_pcReason;
@@ -124,4 +156,40 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 	M_EPILOG
 	}
 
+void HServer::read_request( ORequest::dictionary_t& dict, yaal::hcore::HString const& a_oString )
+	{
+	static HString key;
+	key = a_oString.split( "=", 0 );
+	key.trim_left().trim_right();
+	static HString value;
+	value = a_oString.split( "=", 1 );
+	value.trim_left().trim_right();
+	dict[ key ] = value;
+	}
+
+void HServer::handler_env( ORequest& a_roRequest, yaal::hcore::HString const& a_oEnv )
+	{
+	read_request( *a_roRequest.f_oEnvironment, a_oEnv );
+	}
+
+void HServer::handler_cookie( ORequest& a_roRequest, yaal::hcore::HString const& a_oCookie )
+	{
+	read_request( *a_roRequest.f_oCookies, a_oCookie );
+	}
+
+void HServer::handler_get( ORequest& a_roRequest, yaal::hcore::HString const& a_oGET )
+	{
+	read_request( *a_roRequest.f_oGET, a_oGET );
+	}
+
+void HServer::handler_post( ORequest& a_roRequest, yaal::hcore::HString const& a_oPOST )
+	{
+	read_request( *a_roRequest.f_oPOST, a_oPOST );
+	}
+
+void HServer::handler_done( ORequest&, yaal::hcore::HString const& )
+	{
+	}
+
 }
+

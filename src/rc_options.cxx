@@ -61,7 +61,7 @@ int process_hectorrc_file( void )
 		};
 	rc_file::process_rc_file ( "hector", NULL, l_psVars, NULL );
 	if ( ! setup.f_oLogPath )
-		setup.f_oLogPath = "hector.log";
+		setup.f_oLogPath = "hectord.log";
 	return ( 0 );
 	}
 

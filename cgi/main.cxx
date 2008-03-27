@@ -25,6 +25,7 @@ Copyright:
 */
 
 #include <iostream>
+#include <unistd.h> /* the `char** environ;' variable */
 
 #include <yaal/yaal.h> /* all hAPI headers */
 M_VCSID ( "$Id$" )
@@ -65,6 +66,7 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 		setup.f_pcProgramName = a_ppcArgv[ 0 ];
 		process_hectorrc_file();
 		l_iOpt = decode_switches( a_iArgc, a_ppcArgv );
+		setup.f_oLogPath = "x_hector.cgi.log";
 		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
 		setup.test_setup();
 /*		if ( ! cons.is_enabled() )
@@ -85,20 +87,33 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 	M_FINAL
 	}
 
+HString escape( HString const& source )
+	{
+	static HString result;
+	result = source;
+	result.replace( "\\", "\\\\" ).replace( "\n", "\\n" );
+	return ( result );
+	}
+
 void query( int argc, char** argv )
 	{
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += "/hector.sock";
 	HSocket sock( HSocket::TYPE::D_FILE );
 	sock.connect( sockPath );
-	for ( int i = 0; i < argc; ++ i )
-		sock << argv[ i ] << endl;
-	sock.write( "kill", 4 );
-	::sleep( 10 );
-	sock.write( "me\n", 3 );
+	HStringStream buffer;
+	for ( int i = 1; i < argc; ++ i )
+		sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
+	for ( int i = 0; environ[ i ]; ++ i )
+		{
+		buffer << "env:" << escape( environ[ i ] ) << endl;
+		sock << buffer.consume();
+		}
+/*
 	HString msg;
 	sock.read_until( msg );
 	out << msg << endl;
+*/
 	return;
 	}
 
