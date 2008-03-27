@@ -40,7 +40,7 @@ public:
 	typedef yaal::hcore::HPointer<HApplication, yaal::hcore::HPointerScalar, yaal::hcore::HPointerRelaxed> ptr_t;
 	HApplication( void );
 	void load( char const* const, char const* const );
-	void run( void );
+	void run( ORequest& );
 	};
 
 }

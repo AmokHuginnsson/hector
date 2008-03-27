@@ -101,7 +101,6 @@ int HServer::handler_message( int a_iFileDescriptor )
 	{
 	M_PROLOG
 	int l_iMsgLength = 0;
-	out << a_iFileDescriptor << endl;
 	HString l_oMessage;
 	HSocket::ptr_t l_oClient = f_oSocket.get_client( a_iFileDescriptor );
 	requests_t::iterator reqIt;

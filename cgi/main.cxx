@@ -95,6 +95,15 @@ HString escape( HString const& source )
 	return ( result );
 	}
 
+void push_query( HSocket& sock, HString const& query )
+	{
+	HString param;
+	HStringStream buffer;
+	int i = 0;
+	while ( ! ( param = query.split( "&", i ++ ) ).is_empty() )
+		sock << ( buffer << "get:" << escape( param ) << endl << buffer );
+	}
+
 void query( int argc, char** argv )
 	{
 	HString sockPath( setup.f_oSocketRoot );
@@ -102,17 +111,24 @@ void query( int argc, char** argv )
 	HSocket sock( HSocket::TYPE::D_FILE );
 	sock.connect( sockPath );
 	HStringStream buffer;
+	cout << endl << endl;
 	for ( int i = 1; i < argc; ++ i )
 		sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
+	char QS[] = "QUERY_STRING=";
 	for ( int i = 0; environ[ i ]; ++ i )
 		{
+		if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) ) - 1 )
+			{
+			push_query( sock, environ[ i ] + sizeof ( QS ) - 1 );
+			continue;
+			}
 		buffer << "env:" << escape( environ[ i ] ) << endl;
 		sock << buffer.consume();
 		}
 	sock << ( buffer << "done" << endl << buffer );
 	HString msg;
-	sock.read_until( msg );
-	out << msg << endl;
+	while ( sock.read_until( msg ) > 0 )
+		cout << msg << endl;
 	return;
 	}
 

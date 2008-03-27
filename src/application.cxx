@@ -61,5 +61,10 @@ void HApplication::load( char const* const name, char const* const path )
 	M_EPILOG
 	}
 
+void HApplication::run( ORequest& req )
+	{
+	f_oDOM.save( req.socket()->get_file_descriptor() );
+	}
+
 }
 
