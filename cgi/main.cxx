@@ -109,11 +109,10 @@ void query( int argc, char** argv )
 		buffer << "env:" << escape( environ[ i ] ) << endl;
 		sock << buffer.consume();
 		}
-/*
+	sock << ( buffer << "done" << endl << buffer );
 	HString msg;
 	sock.read_until( msg );
 	out << msg << endl;
-*/
 	return;
 	}
 

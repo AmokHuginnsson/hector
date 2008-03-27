@@ -30,16 +30,36 @@ Copyright:
 namespace hector
 {
 
-struct ORequest
+class ORequest
 	{
+public:
 	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
 	typedef yaal::hcore::HPointer<dictionary_t, yaal::hcore::HPointerScalar, yaal::hcore::HPointerRelaxed> dictionary_ptr_t;
+	struct ORIGIN
+		{
+		typedef enum
+			{
+			D_NONE = 0,
+			D_ENV = 1,
+			D_COOKIE = 2,
+			D_GET = 4,
+			D_POST = 8,
+			D_ANY = 15
+			} origin_t;
+		};
+private:
+	yaal::hcore::HSocket::ptr_t f_oSocket;
 	dictionary_ptr_t f_oEnvironment;
 	dictionary_ptr_t f_oCookies;
 	dictionary_ptr_t f_oGET;
 	dictionary_ptr_t f_oPOST;
-	ORequest( void );
-	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString& ) const;
+public:
+	ORequest( yaal::hcore::HSocket::ptr_t );
+	ORequest( ORequest const& );
+	ORequest& operator = ( ORequest const& );
+	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, ORIGIN::origin_t const& );
+	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString&, ORIGIN::origin_t const& = ORIGIN::D_ANY ) const;
+	yaal::hcore::HSocket::ptr_t socket( void );
 	};
 
 }

@@ -24,6 +24,7 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <sys/wait.h>
 #include <iostream>
 
 #include <yaal/yaal.h>
@@ -43,6 +44,10 @@ namespace hector
 
 HApplicationServer::HApplicationServer( void )
 	: HServer( setup.f_iMaxConnections ), f_oApplications(), f_oConfiguration()
+	{
+	}
+
+HApplicationServer::~HApplicationServer( void )
 	{
 	}
 
@@ -84,6 +89,28 @@ void HApplicationServer::start( void )
 void HApplicationServer::run( void )
 	{
 	HProcess::run();
+	}
+
+void HApplicationServer::do_service_request( ORequest& a_roRequest )
+	{
+	int pid = fork();
+	HSocket::ptr_t sock = a_roRequest.socket();
+	if ( ! pid )
+		{
+		HStringStream msg;
+		HString application;
+		if ( a_roRequest.lookup( "application", application ) )
+			msg = "no application set!\n";
+		else
+			msg << "application set to: " << application << endl;
+		*sock << msg.consume();
+		_exit( 0 );
+		}
+	else
+		{
+		waitpid( pid, NULL, 0 );
+		disconnect_client( sock, _( "request serviced" ) );
+		}
 	}
 
 }

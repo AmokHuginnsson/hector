@@ -43,9 +43,12 @@ class HApplicationServer : public HServer
 	yaal::tools::HXml f_oConfiguration;
 public:
 	HApplicationServer( void );
+	virtual ~HApplicationServer( void );
 	void start( void );
 	void stop( void );
 	void run( void );
+protected:
+	virtual void do_service_request( ORequest& );
 	};
 
 }

@@ -58,7 +58,7 @@ protected:
 public:
 	/*{*/
 	HServer( int );
-	~HServer( void );
+	virtual ~HServer( void );
 	int init_server( char const* const );
 	using yaal::tools::HProcess::run;
 	/*}*/
@@ -72,7 +72,9 @@ protected:
 	void handler_get( ORequest&, yaal::hcore::HString const& );
 	void handler_post( ORequest&, yaal::hcore::HString const& );
 	void handler_done( ORequest&, yaal::hcore::HString const& );
-	void read_request( ORequest::dictionary_t&, yaal::hcore::HString const& );
+	void read_request( ORequest&, ORequest::ORIGIN::origin_t const&, yaal::hcore::HString const& );
+	void service_request( ORequest& );
+	virtual void do_service_request( ORequest& ) = 0;
 	/*}*/
 	};
 

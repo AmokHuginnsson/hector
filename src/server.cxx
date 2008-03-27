@@ -24,7 +24,6 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <sys/wait.h>
 #include <iostream>
 
 #include <yaal/yaal.h>
@@ -86,14 +85,11 @@ int HServer::handler_connection( int )
 	HSocket::ptr_t l_oClient = f_oSocket.accept();
 	M_ASSERT( !! l_oClient );
 	if ( f_oSocket.get_client_count() >= f_iMaxConnections )
-		{
-		cout << "WHOA !!!" << endl;
 		f_oSocket.shutdown_client( l_oClient->get_file_descriptor() );
-		}
 	else
 		{
 		int fd = l_oClient->get_file_descriptor();
-		f_oRequests.insert( fd, ORequest() );
+		f_oRequests.insert( fd, ORequest( l_oClient ) );
 		register_file_descriptor_handler( fd, &HServer::handler_message );
 		}
 	out << green << "new connection" << lightgray << endl;
@@ -156,7 +152,7 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 	M_EPILOG
 	}
 
-void HServer::read_request( ORequest::dictionary_t& dict, yaal::hcore::HString const& a_oString )
+void HServer::read_request( ORequest& req, ORequest::ORIGIN::origin_t const& origin, yaal::hcore::HString const& a_oString )
 	{
 	static HString key;
 	key = a_oString.split( "=", 0 );
@@ -164,31 +160,37 @@ void HServer::read_request( ORequest::dictionary_t& dict, yaal::hcore::HString c
 	static HString value;
 	value = a_oString.split( "=", 1 );
 	value.trim_left().trim_right();
-	dict[ key ] = value;
+	req.update( key, value, origin );
 	}
 
 void HServer::handler_env( ORequest& a_roRequest, yaal::hcore::HString const& a_oEnv )
 	{
-	read_request( *a_roRequest.f_oEnvironment, a_oEnv );
+	read_request( a_roRequest, ORequest::ORIGIN::D_ENV, a_oEnv );
 	}
 
 void HServer::handler_cookie( ORequest& a_roRequest, yaal::hcore::HString const& a_oCookie )
 	{
-	read_request( *a_roRequest.f_oCookies, a_oCookie );
+	read_request( a_roRequest, ORequest::ORIGIN::D_COOKIE, a_oCookie );
 	}
 
 void HServer::handler_get( ORequest& a_roRequest, yaal::hcore::HString const& a_oGET )
 	{
-	read_request( *a_roRequest.f_oGET, a_oGET );
+	read_request( a_roRequest, ORequest::ORIGIN::D_GET, a_oGET );
 	}
 
 void HServer::handler_post( ORequest& a_roRequest, yaal::hcore::HString const& a_oPOST )
 	{
-	read_request( *a_roRequest.f_oPOST, a_oPOST );
+	read_request( a_roRequest, ORequest::ORIGIN::D_POST, a_oPOST );
 	}
 
-void HServer::handler_done( ORequest&, yaal::hcore::HString const& )
+void HServer::handler_done( ORequest& a_roRequest, yaal::hcore::HString const& )
 	{
+	service_request( a_roRequest );
+	}
+
+void HServer::service_request( ORequest& a_roRequest )
+	{
+	do_service_request( a_roRequest );
 	}
 
 }
