@@ -102,7 +102,13 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 		if ( a_roRequest.lookup( "application", application ) )
 			msg = "no application set!\n";
 		else
-			msg << "application set to: " << application << endl;
+			{
+			applications_t::iterator it = f_oApplications.find( application );
+			if ( it != f_oApplications.end() )
+				msg << "using application: " << application << endl;
+			else
+				msg << "no such application: " << application << endl;
+			}
 		*sock << msg.consume();
 		_exit( 0 );
 		}
