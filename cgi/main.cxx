@@ -117,7 +117,7 @@ void query( int argc, char** argv )
 	char QS[] = "QUERY_STRING=";
 	for ( int i = 0; environ[ i ]; ++ i )
 		{
-		if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) ) - 1 )
+		if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) )
 			{
 			push_query( sock, environ[ i ] + sizeof ( QS ) - 1 );
 			continue;
