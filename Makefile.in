@@ -28,7 +28,7 @@ export DIR_ROOT	?= $(CURDIR)
 VERSION				= 0
 SUBVERSION		= 0
 EXTRAVERSION	= 0
-include $(DIR_ROOT)/aux/common-paths.mk
+include $(DIR_ROOT)/_aux/common-paths.mk
 LIBS						= pthread hcore hconsole hdata dbwrapper tools
 TARGET					= hectord
 TARGET_CGI			= hector.cgi
@@ -38,7 +38,7 @@ EXEC_NAME				= 1exec
 TARGETS					= TARGET TARGET_CGI
 CTAGS	= @CTAGS@
 
-include $(DIR_ROOT)/aux/inc-helper-pre.mk
+include $(DIR_ROOT)/_aux/inc-helper-pre.mk
 
 ifndef NODEBUG
 	COMPILER_PCH_FLAGS=@PCH@
@@ -47,7 +47,7 @@ CWARNING_FLAGS								+= @PEDANTIC_ERRORS@ @EXTRA_WARNINGS@ @WARN_SHADOW@
 COMPILER_PRIME_FLAGS					+= @DEFS@
 LINKER_PRIME_FLAGS +=	@SPECIAL_LINKER_FLAGS@
 
-include $(DIR_ROOT)/aux/inc-helper-post.mk
+include $(DIR_ROOT)/_aux/inc-helper-post.mk
 
 ifeq ($(CURDIR),$(DIR_BUILD))
 -include $(OBJS:.$(OS)=.$(DS))

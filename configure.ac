@@ -9,7 +9,7 @@ AC_MSG_RESULT([--- Initialization ... ---                               [[6%]]])
 dnl Unique file in project: hectorrc is sample configuration file.
 AC_MSG_RESULT([--- Finding base directory ... ---                      [[12%]]])
 AC_CONFIG_SRCDIR([[hectorrc]])
-AC_CONFIG_AUX_DIR([../yaal/aux])
+AC_CONFIG_AUX_DIR([../yaal/_aux])
 
 dnl hector is not Free Software.
 AC_COPYRIGHT([[hector (c) 2003 All rights reserved.]])
