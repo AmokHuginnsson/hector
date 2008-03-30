@@ -15,11 +15,17 @@
 		</xsl:copy>
 	</xsl:template>
 	<xsl:template match="hector:menu_item">
-		<form action="./index.php" method="POST">
+		<form action="./hector.cgi" method="POST">
+			<input type="hidden" name="application" value="codestation" />
 			<input type="hidden" name="action" value="menu" />
 			<input type="hidden" name="page" value="{@page}" />
 			<input class="button" type="submit" name="submit" value="{.}" />
 		</form>
+	</xsl:template>
+	<xsl:template match="hector:menu">
+		<div id="menu" class="menu">
+			<xsl:apply-templates select="node()" />
+		</div>
 	</xsl:template>
 	<xsl:template match="hector:interface">
 		<html>

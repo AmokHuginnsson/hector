@@ -106,7 +106,7 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 			applications_t::iterator it = f_oApplications.find( application );
 			if ( it != f_oApplications.end() )
 				{
-				msg << "using application: " << application << endl;
+				out << "using application: " << application << endl;
 				it->second->run( a_roRequest );
 				}
 			else
