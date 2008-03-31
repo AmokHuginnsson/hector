@@ -112,10 +112,10 @@ void query( int argc, char** argv )
 	sock.connect( sockPath );
 	HStringStream buffer;
 	cout << endl << endl;
-	HString POST, a;
+	HString POST( "" );
 	HFile in( HFile::D_READING, stdin );
-	in.read_line( POST );
-	push_query( sock, POST, "post" );
+	while ( in.read_line( POST, HFile::D_UNBUFFERED_READS ) >= 0 )
+		push_query( sock, POST, "post" );
 	for ( int i = 1; i < argc; ++ i )
 		sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
 	char QS[] = "QUERY_STRING=";
