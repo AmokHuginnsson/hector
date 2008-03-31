@@ -95,13 +95,13 @@ HString escape( HString const& source )
 	return ( result );
 	}
 
-void push_query( HSocket& sock, HString const& query )
+void push_query( HSocket& sock, HString const& query, char const* const mode )
 	{
 	HString param;
 	HStringStream buffer;
 	int i = 0;
 	while ( ! ( param = query.split( "&", i ++ ) ).is_empty() )
-		sock << ( buffer << "get:" << escape( param ) << endl << buffer );
+		sock << ( buffer << mode << ":" << escape( param ) << endl << buffer );
 	}
 
 void query( int argc, char** argv )
@@ -112,6 +112,10 @@ void query( int argc, char** argv )
 	sock.connect( sockPath );
 	HStringStream buffer;
 	cout << endl << endl;
+	HString POST, a;
+	HFile in( HFile::D_READING, stdin );
+	in.read_line( POST );
+	push_query( sock, POST, "post" );
 	for ( int i = 1; i < argc; ++ i )
 		sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
 	char QS[] = "QUERY_STRING=";
@@ -119,7 +123,7 @@ void query( int argc, char** argv )
 		{
 		if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) )
 			{
-			push_query( sock, environ[ i ] + sizeof ( QS ) - 1 );
+			push_query( sock, environ[ i ] + sizeof ( QS ) - 1, "get" );
 			continue;
 			}
 		buffer << "env:" << escape( environ[ i ] ) << endl;

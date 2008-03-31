@@ -32,10 +32,14 @@ include $(DIR_ROOT)/_aux/common-paths.mk
 LIBS						= pthread hcore hconsole hdata dbwrapper tools
 TARGET					= hectord
 TARGET_CGI			= hector.cgi
+TARGET_CODESTATION = codestation
 SRC_TARGET			= src
 SRC_TARGET_CGI	= cgi
+SRC_TARGET_CODESTATION = app/codestation
+LINKER_FLAGS_TARGET = -rdynamic
+LINKER_FLAGS_TARGET_CODESTATION = -shared --allow-shlib-undefined
 EXEC_NAME				= 1exec
-TARGETS					= TARGET TARGET_CGI
+TARGETS					= TARGET TARGET_CGI TARGET_CODESTATION
 CTAGS	= @CTAGS@
 
 include $(DIR_ROOT)/_aux/inc-helper-pre.mk

@@ -24,11 +24,15 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <dlfcn.h>
+#include <iostream>
+
 #include <yaal/yaal.h>
 M_VCSID ( "$Id$" )
 #include "application.h"
 #include "setup.h"
 
+using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::hconsole;
@@ -38,8 +42,29 @@ using namespace yaal::tools::util;
 namespace hector
 {
 
-HApplication::HApplication( void ) : f_oDOM()
+HApplication::HApplication( void ) : f_pvProcessor( NULL ), f_oDOM(), PROCESSOR( NULL )
 	{
+	}
+
+HApplication::~HApplication( void )
+	{
+	if ( f_pvProcessor )
+		dlclose( f_pvProcessor );
+	}
+
+template<typename tType>
+union caster_t
+	{
+	void * f_pvObjectPointer;
+	tType FUNCTION_POINTER;
+	};
+
+template<typename tType>
+tType dlsym_wrapper( void* a_pvSpace, char const* const a_pcName )
+	{
+	caster_t<tType> l_xCaster;
+	l_xCaster.f_pvObjectPointer = dlsym( a_pvSpace, a_pcName );
+	return ( l_xCaster.FUNCTION_POINTER );
 	}
 
 void HApplication::load( char const* const name, char const* const path )
@@ -47,22 +72,37 @@ void HApplication::load( char const* const name, char const* const path )
 	M_PROLOG
 	static char const* const D_INTERFACE_FILE = "interface.xml";
 	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
+	static char const* const D_PROCESSOR = "processor";
 	HStringStream interface( path );
 	HStringStream toolkit( path );
+	HStringStream processor( path );
 	hcore::log( LOG_TYPE::D_INFO ) << "Loading application `" << name << "'." << endl;
 	interface << "/" << name << "/" << D_INTERFACE_FILE;
 	toolkit << "/" << name << "/" << D_TOOLKIT_FILE;
+	processor << "/" << name << "/" << D_PROCESSOR;
 	f_oDOM.init( interface.raw() );
 	f_oDOM.apply_style( toolkit.raw() );
 	f_oDOM.parse();
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
+	f_pvProcessor = dlopen( processor.raw(), RTLD_LAZY | RTLD_LOCAL );
+	if ( f_pvProcessor )
+		out << "processor loaded" << endl;
+	else
+		out << "cannot load processor: " << dlerror() << endl;
+	PROCESSOR = dlsym_wrapper<HApplication::PROCESSOR_t>( f_pvProcessor, "application_processor" );
+	if ( PROCESSOR )
+		out << "processor connected" << endl;
+	else
+		out << "cannot connect processor" << endl;
 	return;	
 	M_EPILOG
 	}
 
 void HApplication::run( ORequest& req )
 	{
+	if ( PROCESSOR )
+		PROCESSOR( *this, req );
 	f_oDOM.save( req.socket()->get_file_descriptor() );
 	}
 

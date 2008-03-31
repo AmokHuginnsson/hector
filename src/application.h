@@ -35,12 +35,22 @@ namespace hector
 
 class HApplication
 	{
+public:
+	typedef void ( * PROCESSOR_t )( HApplication&, ORequest& );
+private:
+	void* f_pvProcessor;
 	yaal::tools::HXml f_oDOM;
+	PROCESSOR_t PROCESSOR;
 public:
 	typedef yaal::hcore::HPointer<HApplication, yaal::hcore::HPointerScalar, yaal::hcore::HPointerRelaxed> ptr_t;
 	HApplication( void );
+	virtual ~HApplication( void );
 	void load( char const* const, char const* const );
 	void run( ORequest& );
+	friend void hector::application_processor( HApplication&, ORequest& );
+private:
+	HApplication( HApplication const& );
+	HApplication& operator = ( HApplication const& );
 	};
 
 }
