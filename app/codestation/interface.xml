@@ -48,7 +48,7 @@
 		<link rel="alternate stylesheet" type="text/css" href="./styles/color-gray.css" title="Gray" />
 		<link rel="alternate stylesheet" type="text/css" href="./styles/color-mediumlightgray.css" title="Medium Light Gray" />
 		<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightgrey.css" title="Light Grey" />
-		<script src="./ajax.js" type="text/javascript"></script>
+		<script src="./app/codestation/ajax.js" type="text/javascript"></script>
 	</head>
 	<body>
 		<div id="page" class="page">
@@ -103,8 +103,8 @@ Po pogrzebie Hektora (kremacja) w Troi zarz±dzono dwunastodniow± ¿a³obê.
 			<div class="content" id="search">
 				<h6>Wyszukiwanie rekordów.</h6>
 				<div class="fancy">
-					<form name="query" action="./index.php" method="POST">
-						<input type="text" name="query" value="" size="80" onKeyUp="JavaScript:xmlHttpPost('./index.php','filter','0')" />
+					<form name="query" action="./hector.cgi" method="POST">
+						<input type="text" name="query" value="" size="80" onKeyUp="JavaScript:xmlHttpPost('./hector.cgi','filter','0')" />
 						<input type="hidden" name="page" value="search" />
 						<input class="button" type="submit" name="submit" value="Szukaj" />
 					</form>
@@ -117,7 +117,7 @@ Po pogrzebie Hektora (kremacja) w Troi zarz±dzono dwunastodniow± ¿a³obê.
 			<div class="content" id="edit">
 				<h6>Edycja rekordów.</h6>
 				<div class="fancy">
-					<form action="./index.php" method="POST">
+					<form action="./hector.cgi" method="POST">
 						<input type="hidden" name="page" value="list" />
 						<input type="hidden" name="action" value="add_movie" />
 						<table><tr><td>
