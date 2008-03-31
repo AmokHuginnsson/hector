@@ -111,7 +111,7 @@ void query( int argc, char** argv )
 	HSocket sock( HSocket::TYPE::D_FILE );
 	sock.connect( sockPath );
 	HStringStream buffer;
-	cout << endl << endl;
+	cout << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
 	HString POST( "" );
 	HFile in( HFile::D_READING, stdin );
 	while ( in.read_line( POST, HFile::D_UNBUFFERED_READS ) >= 0 )
