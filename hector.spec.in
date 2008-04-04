@@ -9,7 +9,7 @@ Release:		%{release}
 Vendor:			Amok Berserker 
 Packager:		Amok Berserker amok@utgard
 Epoch:			0
-URL:				frihet.ath.cx	
+URL:				codestation.org	
 Source:			%{name}-%{version}.tar.gz
 #Patch:		
 Group:			Application/Generic

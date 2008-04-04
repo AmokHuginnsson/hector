@@ -1,7 +1,7 @@
 dnl configure.ac is integral part of hector project.
 
 dnl Initialization data.
-AC_INIT([[hector]],[[0.0.0]],[[amok@frihet.ath.cx]])
+AC_INIT([[hector]],[[0.0.0]],[[amok@codestation.org]])
 
 AC_MSG_RESULT([--- Welcome to hector configurator ---                   [[0%]]])
 AC_MSG_RESULT([--- Initialization ... ---                               [[6%]]])

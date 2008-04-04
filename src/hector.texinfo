@@ -185,13 +185,13 @@ and then exit.
 @cindex problems
 
 If you find a bug in @code{hector}, please send electronic mail to
-@w{@samp{amok@@frihet.ath.cx}}.  Include the version number, which you can
+@w{@samp{amok@@codestation.org}}.  Include the version number, which you can
 find by running @w{@samp{hector --version}}.  Also include in your message the
 output that the program produced and the output you expected.@refill
 
 If you have other questions, comments or suggestions about
 @code{hector}, contact the author via electronic mail to
-@w{@samp{amok@@frihet.ath.cx}}.  The author will try to help you out, although
+@w{@samp{amok@@codestation.org}}.  The author will try to help you out, although
 he may not have time to fix your problems.
 
 @node Concept Index,  , Problems, Top
