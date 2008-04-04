@@ -2,7 +2,7 @@
 <!DOCTYPE interface [
 <!ENTITY v_data "my_data">
 ]>
-<interface xmlns="http://utgard.biz/hector" xml:lang="en" lang="en">
+<interface xmlns="http://codestation.org/hector" xml:lang="en" lang="en">
 	<head>
 		<meta http-equiv="Content-Type" content="text/interface;charset=iso-8859-2" />
 		<meta http-equiv="Content-Language" content="pl" />
