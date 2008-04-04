@@ -7,7 +7,7 @@ Name:				%{name}
 Version:		%{version}
 Release:		%{release}
 Vendor:			Amok Berserker 
-Packager:		Amok Berserker amok@utgard
+Packager:		Amok Berserker amok@codestation.org
 Epoch:			0
 URL:				codestation.org	
 Source:			%{name}-%{version}.tar.gz

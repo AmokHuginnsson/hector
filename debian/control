@@ -1,7 +1,7 @@
 Source: hector
 Section: non-free:net
 Priority: optional
-Maintainer: Amok Berserker <amok@utgardian.utgard.org>
+Maintainer: Amok Berserker <amok@codestation.org>
 Standards-Version: 3.1.1
 
 Package: hector
