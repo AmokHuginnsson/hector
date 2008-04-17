@@ -62,7 +62,7 @@
 				<div id="note">
 				</div>
 			</div>
-			<div class="content" id="main">
+			<div class="content wasteable" id="main">
 				<h6>Witaj na stronie Hector.</h6>
 				<div class="fancy">
 					<p>
@@ -73,14 +73,14 @@ Stworzona zosta³a przy wokorzystaniu XML, XSLT, CSS, DOM, C++.
 					</p>
 				</div>
 			</div>
-			<div class="content" id="list">
+			<div class="content wasteable" id="list">
 				<h6>Lista rekordów.</h6>
 				<div class="fancy">
 					<ul class="records">
 					</ul>
 				</div>
 			</div>
-			<div class="content" id="info">
+			<div class="content wasteable" id="info">
 				<h6>Informacje o Hektorze.</h6>
 				<div class="fancy">
 					<p>
@@ -100,7 +100,7 @@ Po pogrzebie Hektora (kremacja) w Troi zarz±dzono dwunastodniow± ¿a³obê.
 					</p>
 				</div>
 			</div>
-			<div class="content" id="search">
+			<div class="content wasteable" id="search">
 				<h6>Wyszukiwanie rekordów.</h6>
 				<div class="fancy">
 					<form name="query" action="./hector.cgi" method="POST">
@@ -114,7 +114,7 @@ Po pogrzebie Hektora (kremacja) w Troi zarz±dzono dwunastodniow± ¿a³obê.
 					</div>
 				</div>
 			</div>
-			<div class="content" id="edit">
+			<div class="content wasteable" id="edit">
 				<h6>Edycja rekordów.</h6>
 				<div class="fancy">
 					<form action="./hector.cgi" method="POST">
