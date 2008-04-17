@@ -100,22 +100,22 @@ int HServer::handler_connection( int )
 int HServer::handler_message( int a_iFileDescriptor )
 	{
 	M_PROLOG
-	int l_iMsgLength = 0;
 	HString l_oMessage;
 	HSocket::ptr_t l_oClient = f_oSocket.get_client( a_iFileDescriptor );
 	requests_t::iterator reqIt;
 	if ( !! l_oClient )
 		{
+		HSocket::HStreamInterface::STATUS const* status = NULL;
 		if ( ( reqIt = f_oRequests.find( a_iFileDescriptor ) ) == f_oRequests.end() )
 			disconnect_client( l_oClient );
-		else if ( ( l_iMsgLength = l_oClient->read_until( l_oMessage ) ) > 0 )
+		else if ( ( status = &l_oClient->read_until( l_oMessage ) )->code == HSocket::HStreamInterface::STATUS::D_OK )
 			{
 			out << "<-" << static_cast<char const* const>( l_oMessage ) << endl;
 			static HString l_oCommand;
 			static HString l_oArgument;
 			l_oCommand = l_oMessage.split( ":", 0 );
 			l_oArgument = l_oMessage.mid( l_oCommand.get_length() + 1 );
-			l_iMsgLength = l_oCommand.get_length();
+			int l_iMsgLength = l_oCommand.get_length();
 			if ( l_iMsgLength < 1 )
 				disconnect_client( l_oClient, _( "Malformed data." ) );
 			else
@@ -127,8 +127,9 @@ int HServer::handler_message( int a_iFileDescriptor )
 					disconnect_client( l_oClient, _( "Unknown command." ) );
 				}
 			}
-		else if ( l_iMsgLength == 0 )
+		else if ( status->code == HSocket::HStreamInterface::STATUS::D_ERROR )
 			disconnect_client( l_oClient );
+		/* else status->code == HSocket::HStreamInterface::STATUS::D_REPEAT */
 		}
 	return ( 0 );
 	M_EPILOG
