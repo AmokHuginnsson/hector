@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="iso8859-2"?>
+<node_list_wrapper>
+	<link rel="stylesheet" type="text/css" href="./styles/layout.css" />
+	<link rel="stylesheet" type="text/css" href="./local.css" />
+	<link rel="stylesheet" type="text/css" href="./styles/color-sky.css" title="Sky" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-navyblue.css" title="Navy Blue" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-mediumslateblue.css" title="Medium Slate Blue" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-blue.css" title="Blue" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-almostblue.css" title="Almost Blue" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightblueviolet.css" title="Light Blue Violet" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightorchid.css" title="Light Orchid" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-orchid.css" title="Orchid" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-brightmagenta.css" title="Bright Magenta" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-pink.css" title="Pink" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-darkpink.css" title="Dark Pink" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightcoral.css" title="Light Coral" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-brick.css" title="Brick" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-darksalmon.css" title="Dark Salmon" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-orange.css" title="Orange" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-lemonripe.css" title="Lemon Ripe" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-lemon.css" title="Lemon" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-seagreen.css" title="Sea Green" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-subduedolive.css" title="Subdued Olive" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-darkcyan.css" title="Dark Cyan" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-cyan.css" title="Cyan" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-darksteelblue.css" title="Dark Steel Blue" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-plum.css" title="Plum" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-hungaryplum.css" title="Hungary Plum" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-darkgrey.css" title="Dark Grey" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-gray.css" title="Gray" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-mediumlightgray.css" title="Medium Light Gray" />
+	<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightgrey.css" title="Light Grey" />
+</node_list_wrapper>

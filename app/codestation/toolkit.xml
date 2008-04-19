@@ -27,6 +27,9 @@
 			<xsl:apply-templates select="node()" />
 		</div>
 	</xsl:template>
+	<xsl:template match="node_list_wrapper">
+		<xsl:apply-templates select="node()" />
+	</xsl:template>
 	<xsl:template match="hector:interface">
 		<html>
 			<xsl:apply-templates select="node()" />

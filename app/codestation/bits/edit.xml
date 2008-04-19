@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="iso8859-2"?>
+<div class="content wasteable" id="edit">
+	<h6>Edycja rekordów.</h6>
+	<div class="fancy">
+		<form action="./hector.cgi" method="POST">
+			<input type="hidden" name="page" value="list" />
+			<input type="hidden" name="action" value="add_movie" />
+			<table><tr><td>
+					Tytuł</td><td><input type="text" name="title" value="" size="100" maxlength="248" /></td></tr><tr><td>
+					Tytuł oryginalny</td><td><input type="text" name="original_title" value="" size="100" maxlength="248" /></td></tr><tr><td>
+					Reżyser</td><td><input type="text" name="director" value="" size="80" maxlength="248" /></td></tr><tr><td>
+					Czas trwania</td><td><input type="text" name="duration" value="" size="10" maxlength="10" /></td></tr><tr><td>
+					Data premiery</td><td><input type="text" name="release" value="" size="20" maxlength="20" /></td></tr><tr><td>
+					Opis</td><td><textarea name="description" cols="80"></textarea></td></tr><tr><td>
+					Ocena</td><td><input type="text" name="rating" value="" size="3" maxlength="3" /></td></tr>
+			</table>
+			<input class="button" type="submit" name="submit" value="Dodaj" />
+		</form>
+	</div>
+</div>

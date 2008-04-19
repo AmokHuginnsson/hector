@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="iso8859-2"?>
+<div class="content wasteable" id="main">
+	<h6>Witaj na stronie Hector.</h6>
+	<div class="fancy">
+		<p>
+Strona ta została stworzona jako dowód poprawności koncepcji
+tworzenia dynamicznej zawartości w całości jako operacje na DOM.
+Stworzona została przy wokorzystaniu XML, XSLT, CSS, DOM, C++.
+			<br />
+		</p>
+	</div>
+</div>

@@ -2,52 +2,11 @@
 <!DOCTYPE interface [
 <!ENTITY v_data "my_data">
 ]>
-<interface xmlns="http://codestation.org/hector" xml:lang="en" lang="en">
+<interface xmlns="http://codestation.org/hector" xmlns:xi="http://www.w3.org/2003/XInclude" xml:lang="en" lang="en">
 	<head>
-		<meta http-equiv="Content-Type" content="text/interface;charset=iso-8859-2" />
-		<meta http-equiv="Content-Language" content="pl" />
-		<meta http-equiv="Pragma" content="no-cache" />
-		<meta http-equiv="Expires" content="Wed, 1 Jan 7777 00:00:00 CEST" />
-		<meta http-equiv="Content-Script-Type" content="text/javascript" />
-		<meta name="robots" content="noimageindex, noimageclick" />
-		<meta name="Author" content="Marcin Konarski" />
-		<meta name="Reply-to" content="amok13@o2.pl" />
-		<meta name="Generator" content="vim" />
-		<meta name="Description" lang="en" content="Web page dedicated to the memory of the great Troyan hero - Hector." />
-		<meta name="Keywords" content="Hector, Hektor, Troy, Ajaks, Odys, Achilles, Parys, Priam, Helen" />
-		<meta name="Copyright" content="Hector (R) Marcin Konarski (C) 2004" />
-		<meta name="Creation-Date" content="Wed, 20 Mar 2002 15:14:00 GMT" />
+		<xi:include href="./bits/meta.xml" />
 		<title>Hector - fast content provider.</title>
-		<link rel="stylesheet" type="text/css" href="./styles/layout.css" />
-		<link rel="stylesheet" type="text/css" href="./local.css" />
-		<link rel="stylesheet" type="text/css" href="./styles/color-sky.css" title="Sky" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-navyblue.css" title="Navy Blue" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-mediumslateblue.css" title="Medium Slate Blue" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-blue.css" title="Blue" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-almostblue.css" title="Almost Blue" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightblueviolet.css" title="Light Blue Violet" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightorchid.css" title="Light Orchid" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-orchid.css" title="Orchid" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-brightmagenta.css" title="Bright Magenta" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-pink.css" title="Pink" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-darkpink.css" title="Dark Pink" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightcoral.css" title="Light Coral" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-brick.css" title="Brick" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-darksalmon.css" title="Dark Salmon" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-orange.css" title="Orange" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-lemonripe.css" title="Lemon Ripe" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-lemon.css" title="Lemon" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-seagreen.css" title="Sea Green" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-subduedolive.css" title="Subdued Olive" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-darkcyan.css" title="Dark Cyan" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-cyan.css" title="Cyan" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-darksteelblue.css" title="Dark Steel Blue" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-plum.css" title="Plum" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-hungaryplum.css" title="Hungary Plum" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-darkgrey.css" title="Dark Grey" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-gray.css" title="Gray" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-mediumlightgray.css" title="Medium Light Gray" />
-		<link rel="alternate stylesheet" type="text/css" href="./styles/color-lightgrey.css" title="Light Grey" />
+		<xi:include href="./bits/style.xml" />
 		<script src="./app/codestation/ajax.js" type="text/javascript"></script>
 	</head>
 	<body>
@@ -58,81 +17,16 @@
 					<menu_item page="info">Info</menu_item>
 					<menu_item page="search">Search</menu_item>
 					<menu_item page="list">List</menu_item>
+					<!-- menu_item page="edit">Edit</menu_item -->
 				</menu>
 				<div id="note">
 				</div>
 			</div>
-			<div class="content wasteable" id="main">
-				<h6>Witaj na stronie Hector.</h6>
-				<div class="fancy">
-					<p>
-Strona ta została stworzona jako dowód poprawności koncepcji
-tworzenia dynamicznej zawartości w całości jako operacje na DOM.
-Stworzona została przy wokorzystaniu XML, XSLT, CSS, DOM, C++.
-						<br />
-					</p>
-				</div>
-			</div>
-			<div class="content wasteable" id="list">
-				<h6>Lista rekordów.</h6>
-				<div class="fancy">
-					<ul class="records">
-					</ul>
-				</div>
-			</div>
-			<div class="content wasteable" id="info">
-				<h6>Informacje o Hektorze.</h6>
-				<div class="fancy">
-					<p>
-Hektor w mitologii greckiej to najdzielniejszy bohater trojański,
-ulubieniec Apollina, najstarszy syn Priama i Hekaby, brat Parysa,
-mąż Andromachy. W czasie wojny trojańskiej zabił Patroklosa,
-któremu zabrał zbroję Achillesa, po czym w odwecie zginął z jego
-ręki pod murami Troi. Nawoływania rodziny Hektora do jego powrotu
-do twierdzy opisuje "Lament Andromachy" autorstwa Homera.
-Chcąc pomścić śmierć przyjaciela (Patroklosa), Achilles zawlókł
-ciało Hektora do obozu greckiego i postanowił, że wystawi je
-niepochowane na żer zwierząt (co było największą karą dla
-starożytnych). Ponadto przyczepił je do swego rydwanu
-i codziennie rano przejeżdżał pod murami Troi.
-Dopiero Priam wybłagał u niego oddanie zwłok.
-Po pogrzebie Hektora (kremacja) w Troi zarządzono dwunastodniową żałobę.
-					</p>
-				</div>
-			</div>
-			<div class="content wasteable" id="search">
-				<h6>Wyszukiwanie rekordów.</h6>
-				<div class="fancy">
-					<form name="query" action="./hector.cgi" method="POST">
-						<input type="text" name="query" value="" size="80" onKeyUp="JavaScript:xmlHttpPost('./hector.cgi','filter','0')" />
-						<input type="hidden" name="page" value="search" />
-						<input class="button" type="submit" name="submit" value="Szukaj" />
-					</form>
-					<div id="result" class="fancy">
-						<ul class="records">
-						</ul>
-					</div>
-				</div>
-			</div>
-			<div class="content wasteable" id="edit">
-				<h6>Edycja rekordów.</h6>
-				<div class="fancy">
-					<form action="./hector.cgi" method="POST">
-						<input type="hidden" name="page" value="list" />
-						<input type="hidden" name="action" value="add_movie" />
-						<table><tr><td>
-								Tytuł</td><td><input type="text" name="title" value="" size="100" maxlength="248" /></td></tr><tr><td>
-								Tytuł oryginalny</td><td><input type="text" name="original_title" value="" size="100" maxlength="248" /></td></tr><tr><td>
-								Reżyser</td><td><input type="text" name="director" value="" size="80" maxlength="248" /></td></tr><tr><td>
-								Czas trwania</td><td><input type="text" name="duration" value="" size="10" maxlength="10" /></td></tr><tr><td>
-								Data premiery</td><td><input type="text" name="release" value="" size="20" maxlength="20" /></td></tr><tr><td>
-								Opis</td><td><textarea name="description" cols="80"></textarea></td></tr><tr><td>
-								Ocena</td><td><input type="text" name="rating" value="" size="3" maxlength="3" /></td></tr>
-						</table>
-						<input class="button" type="submit" name="submit" value="Dodaj" />
-					</form>
-				</div>
-			</div>
+			<xi:include href="./bits/main.xml" />
+			<xi:include href="./bits/list.xml" />
+			<xi:include href="./bits/info.xml" />
+			<xi:include href="./bits/search.xml" />
+			<xi:include href="./bits/edit.xml" />
 		</div>
 	</body>
 </interface>

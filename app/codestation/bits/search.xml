@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso8859-2"?>
+<div class="content wasteable" id="search">
+	<h6>Wyszukiwanie rekordów.</h6>
+	<div class="fancy">
+		<form name="query" action="./hector.cgi" method="POST">
+			<input type="text" name="query" value="" size="80" onKeyUp="JavaScript:xmlHttpPost('./hector.cgi','filter','0')" />
+			<input type="hidden" name="page" value="search" />
+			<input class="button" type="submit" name="submit" value="Szukaj" />
+		</form>
+		<div id="result" class="fancy">
+			<ul class="records">
+			</ul>
+		</div>
+	</div>
+</div>
