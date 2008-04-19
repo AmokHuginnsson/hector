@@ -87,14 +87,14 @@ void HApplication::load( char const* const name, char const* const path )
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
 	f_pvProcessor = dlopen( processor.raw(), RTLD_LAZY | RTLD_LOCAL );
 	if ( f_pvProcessor )
-		out << "processor loaded" << endl;
+		out << "processor for `" << name << "' loaded" << endl;
 	else
-		out << "cannot load processor: " << dlerror() << endl;
+		out << "cannot load processor for `" << name << "': " << dlerror() << endl;
 	PROCESSOR = dlsym_wrapper<HApplication::PROCESSOR_t>( f_pvProcessor, "application_processor" );
 	if ( PROCESSOR )
-		out << "processor connected" << endl;
+		out << "processor for `" << name << "' connected" << endl;
 	else
-		out << "cannot connect processor" << endl;
+		out << "cannot connect processor for `" << name << "'" << endl;
 	return;	
 	M_EPILOG
 	}

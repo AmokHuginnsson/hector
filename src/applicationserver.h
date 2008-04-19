@@ -41,6 +41,7 @@ class HApplicationServer : public HServer
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HApplication::ptr_t> applications_t;
 	applications_t f_oApplications;
 	yaal::tools::HXml f_oConfiguration;
+	yaal::hcore::HString f_oDefaultApplication;
 public:
 	HApplicationServer( void );
 	virtual ~HApplicationServer( void );
@@ -49,6 +50,9 @@ public:
 	void run( void );
 protected:
 	virtual void do_service_request( ORequest& );
+private:
+	void read_configuration( yaal::tools::HXml::HConstNodeProxy const& );
+	void read_applications( yaal::tools::HXml::HConstNodeProxy const& );
 	};
 
 }

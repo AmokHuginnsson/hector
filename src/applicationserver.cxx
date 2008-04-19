@@ -43,7 +43,8 @@ namespace hector
 {
 
 HApplicationServer::HApplicationServer( void )
-	: HServer( setup.f_iMaxConnections ), f_oApplications(), f_oConfiguration()
+	: HServer( setup.f_iMaxConnections ),
+	f_oApplications(), f_oConfiguration(), f_oDefaultApplication()
 	{
 	}
 
@@ -53,18 +54,57 @@ HApplicationServer::~HApplicationServer( void )
 
 void HApplicationServer::start( void )
 	{
+	M_PROLOG
 	static char const* const D_SOCK_NAME = "/hector.sock";
 	static char const* const D_CONFIGURATION_FILE = "/hector.xml";
-	static char const* const D_APP_NODE_NAME = "application";
-	static char const* const D_APP_PROP_NAME_SYMBOL = "symbol";
-	static char const* const D_APP_PROP_NAME_LOAD = "load";
+	static char const* const D_NODE_CONFIGURATION = "configuration";
+	static char const* const D_NODE_APPLICATIONS = "applications";
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += D_SOCK_NAME;
 	HStringStream confPath( setup.f_oDataDir );
 	confPath << D_CONFIGURATION_FILE;
-	f_oConfiguration.init( confPath.raw() );
-	f_oConfiguration.parse( "/hector/applications/application" );
-	HXml::HConstNodeProxy applications = f_oConfiguration.get_root();
+	f_oConfiguration.load( confPath.raw() );
+	HXml::HConstNodeProxy hector = f_oConfiguration.get_root();
+	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it )
+		{
+		HString const& name = (*it).get_name();
+		if ( name == D_NODE_CONFIGURATION )
+			read_configuration( *it );
+		else if ( name == D_NODE_APPLICATIONS )
+			read_applications( *it );
+		}
+	hcore::log( LOG_TYPE::D_INFO ) << "Statring application server." << endl;
+	init_server( sockPath );
+	f_oSocket.set_timeout( setup.f_iSocketWriteTimeout );
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << sockPath << "' as IPC inteface." << endl;
+	M_EPILOG
+	}
+
+void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& configuration )
+	{
+	M_PROLOG
+	static char const* const D_NODE_DEFAULT_APPLICATION = "default_application";
+	static char const* const D_PROP_NAME = "name";
+	for ( HXml::HConstIterator it = configuration.begin(); it != configuration.end(); ++ it )
+		{
+		HString const& name = (*it).get_name();
+		if ( name == D_NODE_DEFAULT_APPLICATION )
+			{
+			HXml::HNode::properties_t const& props = (*it).properties();
+			HXml::HNode::properties_t::const_iterator nameAttr = props.find( D_PROP_NAME );
+			if ( nameAttr != props.end() )
+				f_oDefaultApplication = nameAttr->second;
+			}
+		}
+	M_EPILOG
+	}
+
+void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applications )
+	{
+	M_PROLOG
+	static char const* const D_APP_NODE_NAME = "application";
+	static char const* const D_APP_PROP_NAME_SYMBOL = "symbol";
+	static char const* const D_APP_PROP_NAME_LOAD = "load";
 	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it )
 		{
 		HXml::HConstNodeProxy application = *it;
@@ -80,10 +120,7 @@ void HApplicationServer::start( void )
 			f_oApplications.insert( symbol->second, app );
 			}
 		}
-	hcore::log( LOG_TYPE::D_INFO ) << "Statring application server." << endl;
-	init_server( sockPath );
-	f_oSocket.set_timeout( setup.f_iSocketWriteTimeout );
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << sockPath << "' as IPC inteface." << endl;
+	M_EPILOG
 	}
 
 void HApplicationServer::run( void )
@@ -98,9 +135,9 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 	if ( ! pid )
 		{
 		HStringStream msg;
-		HString application;
-		if ( a_roRequest.lookup( "application", application ) )
-			msg = "no application set!\n";
+		HString application( f_oDefaultApplication );
+		if ( a_roRequest.lookup( "application", application ) && f_oDefaultApplication.is_empty() )
+			msg = "no default application set nor application selected!\n";
 		else
 			{
 			applications_t::iterator it = f_oApplications.find( application );
