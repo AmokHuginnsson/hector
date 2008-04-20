@@ -59,9 +59,9 @@ void OSetup::test_setup( void )
 		yaal::tools::util::failure( 6,
 				_( "socket root is invalid\n" ) );
 	HFSItem data( f_oDataDir );
-	if ( ! data.is_directory() )
+	if ( ! ( !! data && data.is_directory() ) )
 		yaal::tools::util::failure( 7,
-				_( "applications database path is invalid\n" ) );
+				HString ( ! f_oDataDir.is_empty() ? f_oDataDir : "(nil)" ) + _( ": applications database path is invalid\n" ) );
 	return;
 	M_EPILOG
 	}
