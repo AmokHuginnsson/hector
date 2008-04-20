@@ -51,7 +51,7 @@ for ITEM in nest/app/* ; do
 done
 adv mkdir -p ${JAIL}/tmp/hector ${JAIL}/bin
 
-adv cp -a nest ${JAIL}/
+adv mv nest ${JAIL}/
 adv cp /bin/bash-minimal ${JAIL}/bin/sh
 adv chmod 1757 ${JAIL}/tmp
 adv chown -R root:root ${JAIL}/nest/

@@ -57,7 +57,6 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 	M_PROLOG
 /* variables declarations for main loop: */
 	int l_iOpt = 0;
-	HConsole& cons = HCons::get_instance();
 /* end. */
 	try
 		{
@@ -73,14 +72,10 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */
 		query( a_iArgc, a_ppcArgv );
-		if ( cons.is_enabled() )
-			cons.leave_curses(); /* ending ncurses sesion */
 /* ... there is the place main loop ends. :OD-OT */
 		}
 	catch ( ... )
 		{
-		if ( cons.is_enabled() )
-			cons.leave_curses(); /* ending ncurses sesion */
 		throw;
 		}
 	return ( 0 );
