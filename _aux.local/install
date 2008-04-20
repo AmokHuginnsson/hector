@@ -19,6 +19,11 @@ must_exist ${PARSER}
 
 . ${PARSER}
 
+if [ ! -d build ] ; then
+	echo "you must start this script from \`hector' root directory"
+	exit 1
+fi
+
 JAIL="/home/hector/"
 
 adv chattr -i ${JAIL}/nest/*
@@ -33,6 +38,16 @@ adv cp -a ~/src/hector/hectorrc nest/etc/conf/
 adv cp -a ~/var/db/keys/yaal.* nest/var/db/keys/
 adv cp -a ~/src/cellar/web nest/app
 
+for ITEM in nest/app/* ; do
+	if [ -f ${ITEM}/interface.xml ] ; then
+		APP=`basename ${ITEM}`
+		if [ -f ./build/${APP}/1exec ] ; then
+			adv cp -f ./build/${APP}/1exec nest/app/${APP}/processor
+			adv chmod 644 nest/app/${APP}/processor
+		fi
+	fi
+done
+
 adv /bin/rm -r ${JAIL}/*
 adv cp -a nest ${JAIL}/
 adv mkdir -p ${JAIL}/tmp/hector ${JAIL}/bin
@@ -41,10 +56,11 @@ adv chown hector:service ${JAIL}/tmp/hector
 adv chown -R root:root ${JAIL}/nest/
 adv chown hector:service ${JAIL}/nest/ ${JAIL}/tmp/hector
 adv chmod -R a+rX ${JAIL}/nest/*
-adv cp /bin/dash ${JAIL}/bin/sh
+adv cp /bin/bash-minimal ${JAIL}/bin/sh
 adv chmod -R a+rX ${JAIL}/bin
+adv makejail ./_aux.local/makejail.py
 adv "grep service /etc/group > ${JAIL}/etc/group"
-
-adv makejail makejail.py
 adv chattr +i ${JAIL}/nest/*
+adv chattr -i ${JAIL}/nest/x_*
+adv /bin/rm ${JAIL}/nest/x_*
 
