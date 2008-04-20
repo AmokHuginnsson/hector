@@ -1,5 +1,7 @@
 #! /bin/sh
 
+SERVICE="hector"
+DAEMON="${SERVICE}d"
 SHELLLIB="${HOME}/src/server/shell-lib"
 PARSER="${HOME}/src/server/parse-sh"
 declare -i STEP=0
@@ -24,20 +26,20 @@ if [ ! -d build ] ; then
 	exit 1
 fi
 
-JAIL="/home/hector/"
+JAIL="/home/${SERVICE}/"
 
-adv chattr -i ${JAIL}/nest/*
 adv /bin/rm -fr nest
-
 adv mkdir -p nest/etc/conf nest/var/db/keys
-
-adv cp build/hectord/1exec nest/
+adv cp build/${DAEMON}/1exec nest/
 adv cp -a ~/usr/lib nest
 adv cp -a ~/src/yaal/yaalrc nest/etc/conf/
-adv cp -a ~/src/hector/hectorrc nest/etc/conf/
+adv cp -a ~/src/${SERVICE}/hectorrc nest/etc/conf/
 adv cp -a ~/var/db/keys/yaal.* nest/var/db/keys/
-adv cp -a ~/src/cellar/web nest/app
+adv chattr -i ${JAIL}/nest/*
+umount /home/${SERVICE}/proc
+adv /bin/rm -r ${JAIL}/*
 
+adv cp -a ~/src/cellar/web nest/app
 for ITEM in nest/app/* ; do
 	if [ -f ${ITEM}/interface.xml ] ; then
 		APP=`basename ${ITEM}`
@@ -47,20 +49,16 @@ for ITEM in nest/app/* ; do
 		fi
 	fi
 done
-
-adv /bin/rm -r ${JAIL}/*
-adv cp -a nest ${JAIL}/
 adv mkdir -p ${JAIL}/tmp/hector ${JAIL}/bin
-adv chmod 1757 ${JAIL}/tmp
-adv chown hector:service ${JAIL}/tmp/hector
-adv chown -R root:root ${JAIL}/nest/
-adv chown hector:service ${JAIL}/nest/ ${JAIL}/tmp/hector
-adv chmod -R a+rX ${JAIL}/nest/*
+
+adv cp -a nest ${JAIL}/
 adv cp /bin/bash-minimal ${JAIL}/bin/sh
-adv chmod -R a+rX ${JAIL}/bin
-adv makejail ./_deploy/jail-hectord.py
+adv chmod 1757 ${JAIL}/tmp
+adv chown -R root:root ${JAIL}/nest/
+adv chown ${SERVICE}:service ${JAIL}/nest/ ${JAIL}/tmp/hector
+adv chmod -R a+rX ${JAIL}/bin ${JAIL}/nest/*
+adv makejail ./_deploy/jail-${DAEMON}.py
+adv /bin/rm ${JAIL}/nest/x_*
 adv "grep service /etc/group > ${JAIL}/etc/group"
 adv chattr +i ${JAIL}/nest/*
-adv chattr -i ${JAIL}/nest/x_*
-adv /bin/rm ${JAIL}/nest/x_*
 
