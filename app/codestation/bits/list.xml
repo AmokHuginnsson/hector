@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="iso8859-2"?>
-<div class="content wasteable" id="list">
-	<h6>Lista rekordów.</h6>
-	<div class="fancy">
-		<ul class="records">
-		</ul>
-	</div>
-</div>
