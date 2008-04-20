@@ -1,0 +1,50 @@
+#! /bin/sh
+
+SHELLLIB="${HOME}/src/server/shell-lib"
+PARSER="${HOME}/src/server/parse-sh"
+declare -i STEP=0
+declare -i STEP_FIRST=0
+declare -i STEP_LAST=9999
+EXECUTE_COMMANDS=""
+DIR_ROOT=`pwd`
+
+if [ ! -f ${SHELLLIB} ] ; then
+	echo "no shell programming library found"
+	exit 1
+fi
+
+. ${SHELLLIB}
+
+must_exist ${PARSER}
+
+. ${PARSER}
+
+JAIL="/home/hector/"
+
+adv chattr -i ${JAIL}/nest/*
+adv /bin/rm -fr nest
+
+adv mkdir -p nest/etc/conf nest/var/db/keys
+
+adv cp build/hectord/1exec nest/
+adv cp -a ~/usr/lib nest
+adv cp -a ~/src/yaal/yaalrc nest/etc/conf/
+adv cp -a ~/src/hector/hectorrc nest/etc/conf/
+adv cp -a ~/var/db/keys/yaal.* nest/var/db/keys/
+adv cp -a ~/src/cellar/web nest/app
+
+adv /bin/rm -r ${JAIL}/*
+adv cp -a nest ${JAIL}/
+adv mkdir -p ${JAIL}/tmp/hector ${JAIL}/bin
+adv chmod 1757 ${JAIL}/tmp
+adv chown hector:service ${JAIL}/tmp/hector
+adv chown -R root:root ${JAIL}/nest/
+adv chown hector:service ${JAIL}/nest/ ${JAIL}/tmp/hector
+adv chmod -R a+rX ${JAIL}/nest/*
+adv cp /bin/dash ${JAIL}/bin/sh
+adv chmod -R a+rX ${JAIL}/bin
+adv "grep service /etc/group > ${JAIL}/etc/group"
+
+adv makejail makejail.py
+adv chattr +i ${JAIL}/nest/*
+

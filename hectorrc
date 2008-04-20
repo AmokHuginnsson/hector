@@ -3,7 +3,7 @@
 
 log_path "x_hector.log"
 application "app"
-data_dir "./app/"
+data_dir "./${NEST}/app/"
 max_connections 128
 timeout_write 5
 socket_root "/tmp/hector"
