@@ -58,7 +58,7 @@ adv chown hector:service ${JAIL}/nest/ ${JAIL}/tmp/hector
 adv chmod -R a+rX ${JAIL}/nest/*
 adv cp /bin/bash-minimal ${JAIL}/bin/sh
 adv chmod -R a+rX ${JAIL}/bin
-adv makejail ./_aux.local/makejail.py
+adv makejail ./_deploy/jail-hectord.py
 adv "grep service /etc/group > ${JAIL}/etc/group"
 adv chattr +i ${JAIL}/nest/*
 adv chattr -i ${JAIL}/nest/x_*
