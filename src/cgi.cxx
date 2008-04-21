@@ -31,6 +31,7 @@ M_VCSID( "$Id$")
 #include "cgi.h"
 
 using namespace std;
+using namespace yaal::hcore;
 using namespace yaal::tools;
 
 namespace hector
@@ -41,6 +42,7 @@ namespace cgi
 
 bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, char const* const kind )
 	{
+	M_PROLOG
 	static char const* const D_CLASS_SEPARATOR = " \t";
 	static char const* const D_ATTRIBUTE_CLASS = "class";
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::D_NODE );
@@ -59,40 +61,73 @@ bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, char const* const ki
 			}
 		}
 	return ( is );
+	M_EPILOG
 	}
 
-void waste_children( yaal::tools::HXml::HNodeProxy node, keep_t const& keep )
+void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db )
 	{
+	M_PROLOG
+	static char const* const D_NODE_KEEP_RULE = "rule";
+	static char const* const D_ATTRIBUTE_KIND = "kind";
+	static char const* const D_ATTRIBUTE_DEFAULT = "default";
+	for ( HXml::HIterator it = keep.begin(); it != keep.end(); ++ it )
+		{
+		M_ENSURE( (*it).get_type() == HXml::HNode::TYPE::D_NODE );
+		M_ENSURE( (*it).get_name() == D_NODE_KEEP_RULE );
+		HXml::HNode::properties_t& props = (*it).properties();
+		HXml::HNode::properties_t::iterator kind = props.find( D_ATTRIBUTE_KIND );
+		M_ENSURE( kind != props.end() );
+		HString keepItem( "" );
+		if ( req.lookup( kind->second, keepItem ) )
+			{
+			HXml::HNode::properties_t::iterator defaultIt = props.find( D_ATTRIBUTE_DEFAULT );
+			if ( defaultIt != props.end() )
+				keepItem = defaultIt->second;
+			}
+		if ( ! keepItem.is_empty() )
+			db.insert( keepItem );
+		}
+	return;
+	M_EPILOG
+	}
+
+void waste_children( yaal::tools::HXml::HNodeProxy node,
+		ORequest const& req, HXml::HNodeProxy* selfwaste )
+	{
+	M_PROLOG
 	static char const* const D_ATTRIBUTE_ID = "id";
-	char const* const D_CLASS_WASTEABLE = "wasteable";
-	HXml waste;
-	waste.create_root( "x" );
-	HXml::HNodeProxy dummy = waste.get_root();
+	static char const* const D_CLASS_WASTEABLE = "wasteable";
+	static char const* const D_NODE_KEEP = "keep";
+	static HXml waste;
+	if ( ! selfwaste )
+		{
+		waste.create_root( "x" );
+		HXml::HNodeProxy root = waste.get_root();
+		selfwaste = &root;
+		}
+	keep_t keep;
 	for ( HXml::HIterator it = node.begin(); it != node.end(); )
 		{
-		if ( (*it).get_type() == HXml::HNode::TYPE::D_NODE )
+		HXml::HIterator del = it;
+		++ it;
+		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
 			{
-			if ( is_kind_of( *it, D_CLASS_WASTEABLE ) )
+			if ( (*del).get_name() == D_NODE_KEEP )
 				{
-				HXml::HNode::properties_t::iterator idIt = (*it).properties().find( D_ATTRIBUTE_ID );
-				if ( ( idIt != (*it).properties().end() ) && ( keep.find( idIt->second ) == keep.end() ) )
-					{
-					HXml::HIterator del = it;
-					++ it;
-					dummy.move_node( *del );
-					}
-				else
-					++ it;
+				build_keep_db( *del, req, keep );
+				selfwaste->move_node( *del );
+				}
+			else if ( is_kind_of( *del, D_CLASS_WASTEABLE ) )
+				{
+				HXml::HNode::properties_t::iterator idIt = (*del).properties().find( D_ATTRIBUTE_ID );
+				if ( ( idIt != (*del).properties().end() ) && ( keep.find( idIt->second ) == keep.end() ) )
+					selfwaste->move_node( *del );
 				}
 			else
-				{
-				waste_children( *it, keep );
-				++ it;
-				}
+				waste_children( *del, req, selfwaste );
 			}
-		else
-			++ it;
 		}
+	M_EPILOG
 	}
 
 }

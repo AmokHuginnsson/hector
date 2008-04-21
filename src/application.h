@@ -47,7 +47,7 @@ public:
 	virtual ~HApplication( void );
 	void load( char const* const, char const* const );
 	void run( ORequest& );
-	friend void hector::application_processor( HApplication&, ORequest& );
+	friend void hector::application_processor( HApplication&, ORequest const& );
 private:
 	HApplication( HApplication const& );
 	HApplication& operator = ( HApplication const& );

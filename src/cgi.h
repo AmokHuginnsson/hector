@@ -29,6 +29,8 @@ Copyright:
 
 #include <yaal/tools/hxml.h>
 
+#include "orequest.h"
+
 namespace	hector
 {
 
@@ -37,7 +39,7 @@ namespace cgi
 
 typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
 bool is_kind_of( yaal::tools::HXml::HNodeProxy const&, char const* const );
-void waste_children( yaal::tools::HXml::HNodeProxy, keep_t const& );
+void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&, yaal::tools::HXml::HNodeProxy* = NULL );
 
 }
 
