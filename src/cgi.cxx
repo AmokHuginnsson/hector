@@ -122,6 +122,8 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 				HXml::HNode::properties_t::iterator idIt = (*del).properties().find( D_ATTRIBUTE_ID );
 				if ( ( idIt != (*del).properties().end() ) && ( keep.find( idIt->second ) == keep.end() ) )
 					selfwaste->move_node( *del );
+				else
+					waste_children( *del, req, selfwaste );
 				}
 			else
 				waste_children( *del, req, selfwaste );
