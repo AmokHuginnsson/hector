@@ -65,7 +65,7 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 		setup.f_pcProgramName = a_ppcArgv[ 0 ];
 		process_hectorrc_file();
 		l_iOpt = decode_switches( a_iArgc, a_ppcArgv );
-		setup.f_oLogPath = "x_hector.cgi.log";
+		setup.f_oLogPath.replace( "hectord", "hector.cgi" );
 		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
 		setup.test_setup();
 /*		if ( ! cons.is_enabled() )
