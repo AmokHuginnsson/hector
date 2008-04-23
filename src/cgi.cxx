@@ -40,11 +40,13 @@ namespace hector
 namespace cgi
 {
 
+static char const* const D_ATTRIBUTE_ID = "id";
+static char const* const D_ATTRIBUTE_CLASS = "class";
+
 bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, char const* const kind )
 	{
 	M_PROLOG
 	static char const* const D_CLASS_SEPARATOR = " \t";
-	static char const* const D_ATTRIBUTE_CLASS = "class";
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::D_NODE );
 	HXml::HNode::properties_t const& props = node.properties();
 	HXml::HNode::properties_t::const_iterator classIt = props.find( D_ATTRIBUTE_CLASS );
@@ -95,7 +97,6 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 		ORequest const& req, HXml::HNodeProxy* selfwaste )
 	{
 	M_PROLOG
-	static char const* const D_ATTRIBUTE_ID = "id";
 	static char const* const D_CLASS_WASTEABLE = "wasteable";
 	static char const* const D_NODE_KEEP = "keep";
 	static HXml waste;
@@ -129,6 +130,44 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 				waste_children( *del, req, selfwaste );
 			}
 		}
+	return;
+	M_EPILOG
+	}
+
+void mark_children( yaal::tools::HXml::HNodeProxy node,
+		ORequest const& req, HXml& doc )
+	{
+	M_PROLOG
+	static char const* const D_CLASS_MARKABLE = "markable";
+	static char const* const D_CLASS_CURRENT = " current";
+	for ( HXml::HIterator it = node.begin(); it != node.end(); ++it )
+		{
+		if ( (*it).get_type() == HXml::HNode::TYPE::D_NODE )
+			{
+			if ( is_kind_of( *it, D_CLASS_MARKABLE ) )
+				{
+				HXml::HNode::properties_t& props = (*it).properties();
+				HXml::HNode::properties_t::iterator id = props.find( D_ATTRIBUTE_ID );
+				if ( id != props.end() )
+					{
+					HString subject = id->second.split( "-", 1 );
+					if ( ! subject.is_empty() )
+						{
+						HString object;
+						if ( ! req.lookup( subject, object ) )
+							{
+							HXml::HNodeProxy mark = doc.get_element_by_id( subject + "-" + object );
+							if ( !! mark )
+								mark.properties()[ D_ATTRIBUTE_CLASS ] += D_CLASS_CURRENT;
+							}
+						}
+					}
+				}
+			else
+				mark_children( *it, req, doc );
+			}
+		}
+	return;
 	M_EPILOG
 	}
 

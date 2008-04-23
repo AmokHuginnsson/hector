@@ -40,6 +40,7 @@ namespace cgi
 typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
 bool is_kind_of( yaal::tools::HXml::HNodeProxy const&, char const* const );
 void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&, yaal::tools::HXml::HNodeProxy* = NULL );
+void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&, yaal::tools::HXml& );
 
 }
 
