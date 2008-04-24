@@ -66,7 +66,7 @@ bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, char const* const ki
 	M_EPILOG
 	}
 
-void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db )
+void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, default_t& defaults )
 	{
 	M_PROLOG
 	static char const* const D_NODE_KEEP_RULE = "rule";
@@ -84,7 +84,10 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db )
 			{
 			HXml::HNode::properties_t::iterator defaultIt = props.find( D_ATTRIBUTE_DEFAULT );
 			if ( defaultIt != props.end() )
+				{
 				keepItem = defaultIt->second;
+				defaults.insert( kind->second, keepItem );
+				}
 			}
 		if ( ! keepItem.is_empty() )
 			db.insert( keepItem );
@@ -94,7 +97,8 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db )
 	}
 
 void waste_children( yaal::tools::HXml::HNodeProxy node,
-		ORequest const& req, HXml::HNodeProxy* selfwaste )
+		ORequest const& req, default_t& defaults,
+		HXml::HNodeProxy* selfwaste )
 	{
 	M_PROLOG
 	static char const* const D_CLASS_WASTEABLE = "wasteable";
@@ -115,7 +119,7 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 			{
 			if ( (*del).get_name() == D_NODE_KEEP )
 				{
-				build_keep_db( *del, req, keep );
+				build_keep_db( *del, req, keep, defaults );
 				selfwaste->move_node( *del );
 				}
 			else if ( is_kind_of( *del, D_CLASS_WASTEABLE ) )
@@ -124,10 +128,10 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 				if ( ( idIt != (*del).properties().end() ) && ( keep.find( idIt->second ) == keep.end() ) )
 					selfwaste->move_node( *del );
 				else
-					waste_children( *del, req, selfwaste );
+					waste_children( *del, req, defaults, selfwaste );
 				}
 			else
-				waste_children( *del, req, selfwaste );
+				waste_children( *del, req, defaults, selfwaste );
 			}
 		}
 	return;
@@ -135,7 +139,7 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 	}
 
 void mark_children( yaal::tools::HXml::HNodeProxy node,
-		ORequest const& req, HXml& doc )
+		ORequest const& req, default_t const& defaults, HXml& doc )
 	{
 	M_PROLOG
 	static char const* const D_CLASS_MARKABLE = "markable";
@@ -154,7 +158,13 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 					if ( ! subject.is_empty() )
 						{
 						HString object;
-						if ( ! req.lookup( subject, object ) )
+						if ( req.lookup( subject, object ) )
+							{
+							default_t::const_iterator defaultIt = defaults.find( subject );
+							if ( defaultIt != defaults.end() )
+								object = defaultIt->second;
+							}
+						if ( ! object.is_empty() )
 							{
 							HXml::HNodeProxy mark = doc.get_element_by_id( subject + "-" + object );
 							if ( !! mark )
@@ -164,7 +174,7 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 					}
 				}
 			else
-				mark_children( *it, req, doc );
+				mark_children( *it, req, defaults, doc );
 			}
 		}
 	return;

@@ -38,9 +38,10 @@ namespace cgi
 {
 
 typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
+typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> default_t;
 bool is_kind_of( yaal::tools::HXml::HNodeProxy const&, char const* const );
-void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&, yaal::tools::HXml::HNodeProxy* = NULL );
-void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&, yaal::tools::HXml& );
+void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&, default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
+void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&, default_t const&, yaal::tools::HXml& );
 
 }
 
