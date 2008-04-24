@@ -144,7 +144,7 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 	M_PROLOG
 	static char const* const D_CLASS_MARKABLE = "markable";
 	static char const* const D_CLASS_CURRENT = " current";
-	for ( HXml::HIterator it = node.begin(); it != node.end(); ++it )
+	for ( HXml::HIterator it = node.begin(); it != node.end(); ++ it )
 		{
 		if ( (*it).get_type() == HXml::HNode::TYPE::D_NODE )
 			{
@@ -175,6 +175,52 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 				}
 			else
 				mark_children( *it, req, defaults, doc );
+			}
+		}
+	return;
+	M_EPILOG
+	}
+
+void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
+		yaal::tools::HXml& doc, HXml::HNodeProxy* selfwaste )
+	{
+	M_PROLOG
+	static char const* const D_NODE_MOVE = "move";
+	static char const* const D_ATTRIBUTE_TO = "to";
+	static HXml waste;
+	if ( ! selfwaste )
+		{
+		waste.create_root( "x" );
+		HXml::HNodeProxy root = waste.get_root();
+		selfwaste = &root;
+		}
+	for ( HXml::HIterator it = node.begin(); it != node.end(); )
+		{
+		HXml::HIterator del = it;
+		++ it;
+		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
+			{
+			if ( (*del).get_name() == D_NODE_MOVE )
+				{
+				HXml::HNode::properties_t& props = (*del).properties();
+				HXml::HNode::properties_t::iterator toIt = props.find( D_ATTRIBUTE_TO );
+				if ( toIt != props.end() )
+					{
+					HXml::HNodeProxy to = doc.get_element_by_path( toIt->second );
+					if ( !! to )
+						{
+						for ( HXml::HIterator moveIt = (*del).begin(); moveIt != (*del).end(); )
+							{
+							HXml::HIterator move = moveIt;
+							++ moveIt;
+							to.move_node( *move );
+							}
+						}
+					}
+				selfwaste->move_node( *del );
+				}
+			else
+				move_children( *del, req, doc );
 			}
 		}
 	return;
