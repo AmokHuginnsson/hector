@@ -31,6 +31,7 @@ M_VCSID( "$Id$")
 #include "cgi.h"
 
 using namespace std;
+using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
 
