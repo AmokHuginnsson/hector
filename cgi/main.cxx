@@ -84,50 +84,65 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 
 HString escape( HString const& source )
 	{
+	M_PROLOG
 	static HString result;
 	result = source;
 	result.replace( "\\", "\\\\" ).replace( "\n", "\\n" );
 	return ( result );
+	M_EPILOG
 	}
 
 void push_query( HSocket& sock, HString const& query, char const* const mode )
 	{
+	M_PROLOG
 	HString param;
 	HStringStream buffer;
 	int i = 0;
 	while ( ! ( param = query.split( "&", i ++ ) ).is_empty() )
 		sock << ( buffer << mode << ":" << escape( param ) << endl << buffer );
+	return;
+	M_EPILOG
 	}
 
 void query( int argc, char** argv )
 	{
+	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += "/hector.sock";
-	HSocket sock( HSocket::TYPE::D_FILE );
-	sock.connect( sockPath );
-	HStringStream buffer;
 	cout << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
-	HString POST( "" );
-	HFile in( HFile::D_READING, stdin );
-	while ( in.read_line( POST, HFile::D_UNBUFFERED_READS ) >= 0 )
-		push_query( sock, POST, "post" );
-	for ( int i = 1; i < argc; ++ i )
-		sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
-	char QS[] = "QUERY_STRING=";
-	for ( int i = 0; environ[ i ]; ++ i )
+	try
 		{
-		if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) )
+		HSocket sock( HSocket::TYPE::D_FILE );
+		sock.connect( sockPath );
+		HStringStream buffer;
+		HString POST( "" );
+		HFile in( HFile::D_READING, stdin );
+		while ( in.read_line( POST, HFile::D_UNBUFFERED_READS ) >= 0 )
+			push_query( sock, POST, "post" );
+		for ( int i = 1; i < argc; ++ i )
+			sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
+		char QS[] = "QUERY_STRING=";
+		for ( int i = 0; environ[ i ]; ++ i )
 			{
-			push_query( sock, environ[ i ] + sizeof ( QS ) - 1, "get" );
-			continue;
+			if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) )
+				{
+				push_query( sock, environ[ i ] + sizeof ( QS ) - 1, "get" );
+				continue;
+				}
+			buffer << "env:" << escape( environ[ i ] ) << endl;
+			sock << buffer.consume();
 			}
-		buffer << "env:" << escape( environ[ i ] ) << endl;
-		sock << buffer.consume();
+		sock << ( buffer << "done" << endl << buffer );
+		HString msg;
+		while ( sock.read_until( msg ) > 0 )
+			cout << msg << endl;
 		}
-	sock << ( buffer << "done" << endl << buffer );
-	HString msg;
-	while ( sock.read_until( msg ) > 0 )
-		cout << msg << endl;
+	catch ( HSocketException& e )
+		{
+		cout << "Cannot connect to `hector' daemon.<br />" << endl;
+		cout << e.what() << endl;
+		}
 	return;
+	M_EPILOG
 	}
 
