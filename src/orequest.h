@@ -34,7 +34,7 @@ class ORequest
 	{
 public:
 	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
-	typedef yaal::hcore::HPointer<dictionary_t, yaal::hcore::HPointerScalar, yaal::hcore::HPointerRelaxed> dictionary_ptr_t;
+	typedef yaal::hcore::HPointer<dictionary_t> dictionary_ptr_t;
 	struct ORIGIN
 		{
 		typedef enum

@@ -42,7 +42,7 @@ private:
 	yaal::tools::HXml f_oDOM;
 	PROCESSOR_t PROCESSOR;
 public:
-	typedef yaal::hcore::HPointer<HApplication, yaal::hcore::HPointerScalar, yaal::hcore::HPointerRelaxed> ptr_t;
+	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication( void );
 	virtual ~HApplication( void );
 	void load( char const* const, char const* const );
