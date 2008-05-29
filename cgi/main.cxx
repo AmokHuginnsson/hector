@@ -134,7 +134,7 @@ void query( int argc, char** argv )
 			}
 		sock << ( buffer << "done" << endl << buffer );
 		HString msg;
-		while ( sock.read_until( msg ) >= 0 )
+		while ( sock.read_until( msg ).octets >= 0 )
 			cout << msg << endl;
 		}
 	catch ( HSocketException& e )
