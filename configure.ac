@@ -120,15 +120,15 @@ dnl WARNING!!! Names in c++ objects are _mangled_ so we need to use
 dnl WARNING!!! this cryptic names here (I hope it is portable).
 dnl UPDATE!: Now I know it is not portable across different versions of
 dnl UPDATE!: compiller, so I used tricky hack with 'main'.
-AC_CHECK_LIB([hcore],[hcore_init],
+AC_CHECK_LIB([hcore],[yaal_hcore_main],
 							[],[AC_MSG_ERROR([Can not continue without hcore.])])
-AC_CHECK_LIB([hconsole],[hconsole_init],
+AC_CHECK_LIB([hconsole],[yaal_hconsole_main],
 							[],[AC_MSG_ERROR([Can not continue without hconsole.])])
-AC_CHECK_LIB([tools],[tools_init],
+AC_CHECK_LIB([tools],[yaal_tools_main],
 							[],[AC_MSG_ERROR([Can not continue without tools.])])
-AC_CHECK_LIB([dbwrapper],[dbwrapper_init],
+AC_CHECK_LIB([dbwrapper],[yaal_dbwrapper_main],
 							[],[AC_MSG_ERROR([Can not continue without dbwrapper.])])
-AC_CHECK_LIB([hdata],[main],
+AC_CHECK_LIB([hdata],[yaal_hdata_main],
 							[],[AC_MSG_ERROR([Can not continue without hdata.])])
 AC_MSG_RESULT([--- All needed libraries found. ---                     [[83%]]])
 
