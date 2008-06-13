@@ -30,6 +30,7 @@ Copyright:
 #include <yaal/hcore/hstring.h>
 #include <yaal/hcore/hmap.h>
 #include <yaal/tools/hxml.h>
+#include <yaal/tools/signals.h>
 #include "server.h"
 #include "application.h"
 
@@ -39,17 +40,23 @@ namespace hector
 class HApplicationServer : public HServer
 	{
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HApplication::ptr_t> applications_t;
+	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
 	applications_t f_oApplications;
+	pending_t f_oPending;
 	yaal::tools::HXml f_oConfiguration;
 	yaal::hcore::HString f_oDefaultApplication;
+	yaal::hcore::HPipe f_oSigChildEvent;
 public:
 	HApplicationServer( void );
 	virtual ~HApplicationServer( void );
 	void start( void );
 	void stop( void );
 	void run( void );
+	int on_sigchild( int );
+	int process_sigchild( int );
 protected:
 	virtual void do_service_request( ORequest& );
+	void clean_request( int );
 private:
 	void read_configuration( yaal::tools::HXml::HConstNodeProxy const& );
 	void read_applications( yaal::tools::HXml::HConstNodeProxy const& );

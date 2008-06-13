@@ -44,17 +44,24 @@ namespace hector
 
 HApplicationServer::HApplicationServer( void )
 	: HServer( setup.f_iMaxConnections ),
-	f_oApplications(), f_oConfiguration(), f_oDefaultApplication()
+	f_oApplications(), f_oPending(), f_oConfiguration(),
+	f_oDefaultApplication(), f_oSigChildEvent()
 	{
 	}
 
 HApplicationServer::~HApplicationServer( void )
 	{
+	clean_request( 0 );
 	}
 
 void HApplicationServer::start( void )
 	{
 	M_PROLOG
+	HSignalService& ss = HSignalServiceFactory::get_instance();
+	HSignalService::HHandlerGeneric::ptr_t handler( new HSignalService::HHandlerExternal( this, &HApplicationServer::on_sigchild ) );
+	ss.register_handler( SIGCHLD, handler );
+	register_file_descriptor_handler( f_oSigChildEvent.get_reader_fd(), &HApplicationServer::process_sigchild );
+
 	static char const* const D_SOCK_NAME = "/hector.sock";
 	static char const* const D_CONFIGURATION_FILE = "/hector.xml";
 	static char const* const D_NODE_CONFIGURATION = "configuration";
@@ -125,11 +132,14 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 
 void HApplicationServer::run( void )
 	{
+	M_PROLOG
 	HProcess::run();
+	M_EPILOG
 	}
 
 void HApplicationServer::do_service_request( ORequest& a_roRequest )
 	{
+	M_PROLOG
 	int pid = fork();
 	HSocket::ptr_t sock = a_roRequest.socket();
 	if ( ! pid )
@@ -153,10 +163,42 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 		_exit( 0 );
 		}
 	else
+		f_oPending.insert( pid, sock );
+	M_EPILOG
+	}
+
+int HApplicationServer::on_sigchild( int a_iSigNo )
+	{
+	M_PROLOG
+	f_oSigChildEvent.write( &a_iSigNo, sizeof( a_iSigNo ) );
+	return ( 1 );
+	M_EPILOG
+	}
+
+int HApplicationServer::process_sigchild( int )
+	{
+	M_PROLOG
+	int dummy = 0;
+	f_oSigChildEvent.read( &dummy, sizeof( dummy ) );
+	M_ASSERT( dummy == SIGCHLD );
+	clean_request( WNOHANG );
+	return ( 0 );
+	M_EPILOG
+	}
+
+void HApplicationServer::clean_request( int opts )
+	{
+	M_PROLOG
+	int pid = 0;
+	while ( ! f_oPending.is_empty() && ( ( pid = waitpid( WAIT_ANY, NULL, opts | WUNTRACED ) ) > 0 ) )
 		{
-		waitpid( pid, NULL, 0 );
-		disconnect_client( sock, _( "request serviced" ) );
+		pending_t::iterator it = f_oPending.find( pid );
+		M_ENSURE( it != f_oPending.end() );
+		disconnect_client( it->second, _( "request serviced" ) );
+		f_oPending.erase( it );
 		}
+	return;
+	M_EPILOG
 	}
 
 }
