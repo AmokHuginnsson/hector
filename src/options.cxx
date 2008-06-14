@@ -54,8 +54,6 @@ bool set_variables ( HString & a_roOption, HString & a_roValue )
 /* Set all the option flags according to the switches specified.
    Return the index of the first non-option argument.                    */
 
-typedef HPair<OOption*,int> option_info_t;
-
 void usage( void* ) __attribute__(( __noreturn__ ));
 void usage( void* arg )
 	{
