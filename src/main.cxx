@@ -31,8 +31,7 @@ M_VCSID ( "$Id$" )
 
 #include "version.h"
 #include "setup.h"
-#include "cli_options.h"
-#include "rc_options.h"
+#include "options.h"
 #include "applicationserver.h"
 
 using namespace std;
