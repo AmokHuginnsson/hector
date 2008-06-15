@@ -82,9 +82,9 @@ OOption n_psOptions[] =
 		{ "data_dir", D_HSTRING, &setup.f_oDataDir, "D", OOption::D_REQUIRED, "path", "find application data here", NULL },
 		{ "max_connections", D_INT, &setup.f_iMaxConnections, "M", OOption::D_REQUIRED, "count", "maximum number of concurent connections", NULL },
 #elif defined ( TARGET_HECTOR_ADMIN )
-		{ "shutdown", D_BOOL, &setup.f_bShutdown, "S", OOption::D_NONE, NULL, "shutdown server nicely" },
-		{ "reload", D_HSTRING, &server.f_oReload, "r", OOption::D_REQUIRED, "app", "reload given application" },
-		{ "status", D_BOOL, &server.f_bStatus, "i", OOption::D_NONE, NULL, "print server information" },
+		{ "shutdown", D_BOOL, &setup.f_bShutdown, "S", OOption::D_NONE, NULL, "shutdown server nicely", NULL },
+		{ "reload", D_HSTRING, &setup.f_oReload, "r", OOption::D_REQUIRED, "app", "reload given application", NULL },
+		{ "status", D_BOOL, &setup.f_bStatus, "i", OOption::D_NONE, NULL, "print server information", NULL },
 #endif
 		{ "timeout_write", D_INT, &setup.f_iSocketWriteTimeout, "T", OOption::D_REQUIRED, "seconds", "timeout for socket write operation", NULL },
 		{ "socket_root", D_HSTRING, &setup.f_oSocketRoot, "R", OOption::D_REQUIRED, "path", "root path for communication socket", NULL },

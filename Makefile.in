@@ -32,6 +32,7 @@ include $(DIR_ROOT)/_aux/common-paths.mk
 LIBS						= pthread hcore hconsole hdata dbwrapper tools
 $(eval $(call NEW_TARGET,hectord,src,-DTARGET_HECTOR_DAEMON,-rdynamic))
 $(eval $(call NEW_TARGET,hector.cgi,cgi,-DTARGET_HECTOR_CGI))
+$(eval $(call NEW_TARGET,hectoradmin,admin,-DTARGET_HECTOR_ADMIN))
 $(eval $(call NEW_TARGET,codestation,app/codestation,-fPIC,-shared --allow-shlib-undefined))
 EXEC_NAME				= 1exec
 CTAGS	= @CTAGS@
