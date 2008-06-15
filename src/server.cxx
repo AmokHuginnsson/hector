@@ -24,6 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <sys/stat.h>
+
 #include <iostream>
 
 #include <yaal/yaal.h>
@@ -50,7 +52,8 @@ char const* const HServer::REQUEST_PROTO::DONE = "done";
 
 HServer::HServer( int a_iConnections )
 	: HProcess( a_iConnections ), f_iMaxConnections( a_iConnections ),
-	f_oSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ),
+	f_oRequestSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ),
+	f_oControlSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ),
 	f_oRequests(), f_oHandlers()
 	{
 	M_PROLOG
@@ -63,29 +66,51 @@ HServer::~HServer( void )
 	out << brightred << "<<<hector>>>" << lightgray << " server finished." << endl;
 	}
 
-int HServer::init_server( char const* const a_pcPath )
+int HServer::init_server( void )
 	{
 	M_PROLOG
-	f_oSocket.listen ( a_pcPath );
+	init_sockets();
 	f_oHandlers[ REQUEST_PROTO::ENV ] = &HServer::handler_env;
 	f_oHandlers[ REQUEST_PROTO::COOKIE ] = &HServer::handler_cookie;
 	f_oHandlers[ REQUEST_PROTO::GET ] = &HServer::handler_get;
 	f_oHandlers[ REQUEST_PROTO::POST ] = &HServer::handler_post;
 	f_oHandlers[ REQUEST_PROTO::DONE ] = &HServer::handler_done;
-	register_file_descriptor_handler( f_oSocket.get_file_descriptor(), &HServer::handler_connection );
+	register_file_descriptor_handler( f_oRequestSocket.get_file_descriptor(), &HServer::handler_connection );
 	HProcess::init ( 3600 );
 	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );
 	M_EPILOG
 	}
 
+void HServer::init_sockets( void )
+	{
+	M_PROLOG
+	static char const* const D_REQ_SOCK_NAME = "/request.sock";
+	static char const* const D_CTRL_SOCK_NAME = "/control.sock";
+	HString reqSockPath( setup.f_oSocketRoot );
+	HString ctrlSockPath( setup.f_oSocketRoot );
+	reqSockPath += D_REQ_SOCK_NAME;
+	ctrlSockPath += D_CTRL_SOCK_NAME;
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << reqSockPath << "' as IPC request inteface." << endl;
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << ctrlSockPath << "' as IPC control inteface." << endl;
+	int err = 0;
+	M_ENSURE( ( ! ( err = ::unlink( reqSockPath ) ) ) || ( errno == ENOENT ) );
+	M_ENSURE( ( ! ( err = ::unlink( ctrlSockPath ) ) ) || ( errno == ENOENT ) );
+	f_oRequestSocket.listen( reqSockPath );
+	f_oControlSocket.listen( ctrlSockPath );
+	M_ENSURE( ! ::chmod( reqSockPath, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
+	M_ENSURE( ! ::chmod( ctrlSockPath, S_IRUSR | S_IWUSR ) );
+	return;
+	M_EPILOG
+	}
+
 int HServer::handler_connection( int )
 	{
 	M_PROLOG
-	HSocket::ptr_t l_oClient = f_oSocket.accept();
+	HSocket::ptr_t l_oClient = f_oRequestSocket.accept();
 	M_ASSERT( !! l_oClient );
-	if ( f_oSocket.get_client_count() >= f_iMaxConnections )
-		f_oSocket.shutdown_client( l_oClient->get_file_descriptor() );
+	if ( f_oRequestSocket.get_client_count() >= f_iMaxConnections )
+		f_oRequestSocket.shutdown_client( l_oClient->get_file_descriptor() );
 	else
 		{
 		int fd = l_oClient->get_file_descriptor();
@@ -101,7 +126,7 @@ int HServer::handler_message( int a_iFileDescriptor )
 	{
 	M_PROLOG
 	HString l_oMessage;
-	HSocket::ptr_t l_oClient = f_oSocket.get_client( a_iFileDescriptor );
+	HSocket::ptr_t l_oClient = f_oRequestSocket.get_client( a_iFileDescriptor );
 	requests_t::iterator reqIt;
 	if ( !! l_oClient )
 		{
@@ -142,7 +167,7 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 	M_ASSERT( !! a_oClient );
 	int l_iFileDescriptor = a_oClient->get_file_descriptor();
 	unregister_file_descriptor_handler( l_iFileDescriptor );
-	f_oSocket.shutdown_client( l_iFileDescriptor );
+	f_oRequestSocket.shutdown_client( l_iFileDescriptor );
 	f_oRequests.remove( l_iFileDescriptor );
 	out << "client closed connection";
 	if ( a_pcReason )

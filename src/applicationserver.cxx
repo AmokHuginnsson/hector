@@ -62,12 +62,9 @@ void HApplicationServer::start( void )
 	ss.register_handler( SIGCHLD, handler );
 	register_file_descriptor_handler( f_oSigChildEvent.get_reader_fd(), &HApplicationServer::process_sigchild );
 
-	static char const* const D_SOCK_NAME = "/hector.sock";
 	static char const* const D_CONFIGURATION_FILE = "/hector.xml";
 	static char const* const D_NODE_CONFIGURATION = "configuration";
 	static char const* const D_NODE_APPLICATIONS = "applications";
-	HString sockPath( setup.f_oSocketRoot );
-	sockPath += D_SOCK_NAME;
 	HStringStream confPath( setup.f_oDataDir );
 	confPath << D_CONFIGURATION_FILE;
 	f_oConfiguration.load( confPath.raw() );
@@ -81,9 +78,9 @@ void HApplicationServer::start( void )
 			read_applications( *it );
 		}
 	hcore::log( LOG_TYPE::D_INFO ) << "Statring application server." << endl;
-	init_server( sockPath );
-	f_oSocket.set_timeout( setup.f_iSocketWriteTimeout );
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << sockPath << "' as IPC inteface." << endl;
+	init_server();
+	f_oRequestSocket.set_timeout( setup.f_iSocketWriteTimeout );
+	f_oControlSocket.set_timeout( setup.f_iSocketWriteTimeout );
 	M_EPILOG
 	}
 

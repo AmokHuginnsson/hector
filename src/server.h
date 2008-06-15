@@ -51,7 +51,8 @@ public:
 protected:
 	/*{*/
 	int f_iMaxConnections;
-	yaal::hcore::HSocket f_oSocket;
+	yaal::hcore::HSocket f_oRequestSocket;
+	yaal::hcore::HSocket f_oControlSocket;
 	requests_t f_oRequests;
 	handlers_t f_oHandlers;
 	/*}*/
@@ -59,11 +60,12 @@ public:
 	/*{*/
 	HServer( int );
 	virtual ~HServer( void );
-	int init_server( char const* const );
+	int init_server( void );
 	using yaal::tools::HProcess::run;
 	/*}*/
 protected:
 	/*{*/
+	void init_sockets( void );
 	void disconnect_client( yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
 	int handler_connection( int );
 	int handler_message( int );
