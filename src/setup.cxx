@@ -42,25 +42,22 @@ void OSetup::test_setup( void )
 	if ( f_bQuiet && f_bVerbose )
 		yaal::tools::util::failure( 1,
 				_( "quiet and verbose options are exclusive\n" ) );
-	if ( f_oApplication.is_empty() )
-		yaal::tools::util::failure( 2,
-				_( "you must specify application name\n" ) );
 	if ( f_oDataDir.is_empty() )
-		yaal::tools::util::failure( 3,
+		yaal::tools::util::failure( 2,
 				_( "you must specify directory with application data\n" ) );
 	if ( f_iMaxConnections < 0 )
-		yaal::tools::util::failure( 4,
+		yaal::tools::util::failure( 3,
 				_( "bad max-connection value set\n" ) );
 	if ( f_iSocketWriteTimeout < 0 )
-		yaal::tools::util::failure( 5,
+		yaal::tools::util::failure( 4,
 				_( "negative write timeout set\n" ) );
 	HFSItem root( f_oSocketRoot );
 	if ( ! root.is_directory() )
-		yaal::tools::util::failure( 6,
+		yaal::tools::util::failure( 5,
 				_( "socket root is invalid\n" ) );
 	HFSItem data( f_oDataDir );
 	if ( ! ( !! data && data.is_directory() ) )
-		yaal::tools::util::failure( 7,
+		yaal::tools::util::failure( 6,
 				HString ( ! f_oDataDir.is_empty() ? f_oDataDir : "(nil)" ) + _( ": applications database path is invalid\n" ) );
 	return;
 	M_EPILOG

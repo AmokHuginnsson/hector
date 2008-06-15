@@ -78,11 +78,16 @@ simple_callback_t version_call( version, NULL );
 OOption n_psOptions[] =
 	{
 		{ "log_path", D_HSTRING, & setup.f_oLogPath, NULL, OOption::D_REQUIRED, "path", "path pointing to file for application logs", NULL },
-		{ "application", D_HSTRING, &setup.f_oApplication, "A", OOption::D_REQUIRED, "app", "name for served application", NULL },
+#if defined ( TARGET_HECTOR_DAEMON )
 		{ "data_dir", D_HSTRING, &setup.f_oDataDir, "D", OOption::D_REQUIRED, "path", "find application data here", NULL },
-		{ "max_connections", D_INT, & setup.f_iMaxConnections, "M", OOption::D_REQUIRED, "count", "maximum number of concurent connections", NULL },
+		{ "max_connections", D_INT, &setup.f_iMaxConnections, "M", OOption::D_REQUIRED, "count", "maximum number of concurent connections", NULL },
+#elif defined ( TARGET_HECTOR_ADMIN )
+		{ "shutdown", D_BOOL, &setup.f_bShutdown, "S", OOption::D_NONE, NULL, "shutdown server nicely" },
+		{ "reload", D_HSTRING, &server.f_oReload, "r", OOption::D_REQUIRED, "app", "reload given application" },
+		{ "status", D_BOOL, &server.f_bStatus, "i", OOption::D_NONE, NULL, "print server information" },
+#endif
+		{ "timeout_write", D_INT, &setup.f_iSocketWriteTimeout, "T", OOption::D_REQUIRED, "seconds", "timeout for socket write operation", NULL },
 		{ "socket_root", D_HSTRING, &setup.f_oSocketRoot, "R", OOption::D_REQUIRED, "path", "root path for communication socket", NULL },
-		{ "timeout_write", D_INT, & setup.f_iSocketWriteTimeout, "T", OOption::D_REQUIRED, "seconds", "timeout for socket write operation", NULL },
 		{ "quiet", D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
 		{ "silent", D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
 		{ "verbose", D_BOOL, &setup.f_bVerbose, "v", OOption::D_NONE, NULL, "print more information", NULL },

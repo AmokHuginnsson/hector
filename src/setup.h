@@ -43,20 +43,25 @@ struct OSetup
 	bool f_bQuiet;			/* --quiet, --silent */
 	bool f_bVerbose;		/* --verbose */
 	bool f_bHelp;
-	char * f_pcProgramName;
+	bool f_bShutdown;
+	bool f_bStatus;
+	char* f_pcProgramName;
 	int f_iMaxConnections;
 	int f_iSocketWriteTimeout;
 	yaal::hcore::HString f_oLogPath;
-	yaal::hcore::HString f_oApplication;
 	yaal::hcore::HString f_oDataDir;
 	yaal::hcore::HString f_oSocketRoot;
+	yaal::hcore::HString f_oReload;
 	/* self-sufficient */
 	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.h" );
-	OSetup( void ) : f_bQuiet( false ), f_bVerbose( false ),
-										f_bHelp( false ), f_pcProgramName( NULL ),
-										f_iMaxConnections( D_DEFAULT_MAX_CONNECTIONS ),
-										f_iSocketWriteTimeout( D_DEFAULT_SOCKET_WRITE_TIMEOUT ),
-										f_oLogPath(), f_oApplication(), f_oDataDir(), f_oSocketRoot( D_DEFAULT_SOCKET_ROOT ) {}
+	OSetup( void )
+		: f_bQuiet( false ), f_bVerbose( false ),
+		f_bHelp( false ), f_bShutdown( false ),
+		f_bStatus( false ), f_pcProgramName( NULL ),
+		f_iMaxConnections( D_DEFAULT_MAX_CONNECTIONS ),
+		f_iSocketWriteTimeout( D_DEFAULT_SOCKET_WRITE_TIMEOUT ),
+		f_oLogPath(), f_oDataDir(), f_oSocketRoot( D_DEFAULT_SOCKET_ROOT ),
+		f_oReload() {}
 	void test_setup( void );
 private:
 	OSetup ( OSetup const & );
