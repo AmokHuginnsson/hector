@@ -44,6 +44,9 @@ using namespace yaal::tools::util;
 namespace hector
 {
 
+char const* const HServer::CONTROL_PROTO::SHUTDOWN = "shutdown";
+char const* const HServer::CONTROL_PROTO::RELOAD = "reload";
+char const* const HServer::CONTROL_PROTO::STATUS = "status";
 char const* const HServer::REQUEST_PROTO::ENV = "env";
 char const* const HServer::REQUEST_PROTO::COOKIE = "cookie";
 char const* const HServer::REQUEST_PROTO::GET = "get";
@@ -52,11 +55,11 @@ char const* const HServer::REQUEST_PROTO::DONE = "done";
 
 HServer::HServer( int a_iConnections )
 	: HProcess( a_iConnections ), f_iMaxConnections( a_iConnections ),
-	f_oRequestSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ),
-	f_oControlSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ),
-	f_oRequests(), f_oHandlers()
+	f_oSocket(), f_oRequests(), f_oHandlers()
 	{
 	M_PROLOG
+	f_oSocket[ IPC_CHANNEL::D_CONTROL ] = HSocket::ptr_t( new HSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ) );
+	f_oSocket[ IPC_CHANNEL::D_REQUEST ] = HSocket::ptr_t( new HSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ) );
 	return;
 	M_EPILOG
 	}
@@ -70,12 +73,14 @@ int HServer::init_server( void )
 	{
 	M_PROLOG
 	init_sockets();
-	f_oHandlers[ REQUEST_PROTO::ENV ] = &HServer::handler_env;
-	f_oHandlers[ REQUEST_PROTO::COOKIE ] = &HServer::handler_cookie;
-	f_oHandlers[ REQUEST_PROTO::GET ] = &HServer::handler_get;
-	f_oHandlers[ REQUEST_PROTO::POST ] = &HServer::handler_post;
-	f_oHandlers[ REQUEST_PROTO::DONE ] = &HServer::handler_done;
-	register_file_descriptor_handler( f_oRequestSocket.get_file_descriptor(), &HServer::handler_connection );
+	f_oHandlers[ IPC_CHANNEL::D_CONTROL ][ CONTROL_PROTO::SHUTDOWN ] = &HServer::handler_shutdown;
+	f_oHandlers[ IPC_CHANNEL::D_REQUEST ][ REQUEST_PROTO::ENV ] = &HServer::handler_env;
+	f_oHandlers[ IPC_CHANNEL::D_REQUEST ][ REQUEST_PROTO::COOKIE ] = &HServer::handler_cookie;
+	f_oHandlers[ IPC_CHANNEL::D_REQUEST ][ REQUEST_PROTO::GET ] = &HServer::handler_get;
+	f_oHandlers[ IPC_CHANNEL::D_REQUEST ][ REQUEST_PROTO::POST ] = &HServer::handler_post;
+	f_oHandlers[ IPC_CHANNEL::D_REQUEST ][ REQUEST_PROTO::DONE ] = &HServer::handler_done;
+	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::D_CONTROL ]->get_file_descriptor(), &HServer::handler_connection );
+	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::D_REQUEST ]->get_file_descriptor(), &HServer::handler_connection );
 	HProcess::init ( 3600 );
 	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );
@@ -96,8 +101,8 @@ void HServer::init_sockets( void )
 	int err = 0;
 	M_ENSURE( ( ! ( err = ::unlink( reqSockPath ) ) ) || ( errno == ENOENT ) );
 	M_ENSURE( ( ! ( err = ::unlink( ctrlSockPath ) ) ) || ( errno == ENOENT ) );
-	f_oRequestSocket.listen( reqSockPath );
-	f_oControlSocket.listen( ctrlSockPath );
+	f_oSocket[ IPC_CHANNEL::D_CONTROL ]->listen( ctrlSockPath );
+	f_oSocket[ IPC_CHANNEL::D_REQUEST ]->listen( reqSockPath );
 	M_ENSURE( ! ::chmod( reqSockPath, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
 	M_ENSURE( ! ::chmod( ctrlSockPath, S_IRUSR | S_IWUSR ) );
 	return;
@@ -107,10 +112,10 @@ void HServer::init_sockets( void )
 int HServer::handler_connection( int )
 	{
 	M_PROLOG
-	HSocket::ptr_t l_oClient = f_oRequestSocket.accept();
+	HSocket::ptr_t l_oClient = f_oSocket[ IPC_CHANNEL::D_REQUEST ]->accept();
 	M_ASSERT( !! l_oClient );
-	if ( f_oRequestSocket.get_client_count() >= f_iMaxConnections )
-		f_oRequestSocket.shutdown_client( l_oClient->get_file_descriptor() );
+	if ( f_oSocket[ IPC_CHANNEL::D_REQUEST ]->get_client_count() >= f_iMaxConnections )
+		f_oSocket[ IPC_CHANNEL::D_REQUEST ]->shutdown_client( l_oClient->get_file_descriptor() );
 	else
 		{
 		int fd = l_oClient->get_file_descriptor();
@@ -126,7 +131,7 @@ int HServer::handler_message( int a_iFileDescriptor )
 	{
 	M_PROLOG
 	HString l_oMessage;
-	HSocket::ptr_t l_oClient = f_oRequestSocket.get_client( a_iFileDescriptor );
+	HSocket::ptr_t l_oClient = f_oSocket[ IPC_CHANNEL::D_REQUEST ]->get_client( a_iFileDescriptor );
 	requests_t::iterator reqIt;
 	if ( !! l_oClient )
 		{
@@ -145,8 +150,8 @@ int HServer::handler_message( int a_iFileDescriptor )
 				disconnect_client( l_oClient, _( "Malformed data." ) );
 			else
 				{
-				handlers_t::iterator it = f_oHandlers.find( l_oCommand );
-				if ( it != f_oHandlers.end() )
+				handlers_t::iterator it = f_oHandlers[ IPC_CHANNEL::D_REQUEST ].find( l_oCommand );
+				if ( it != f_oHandlers[ IPC_CHANNEL::D_REQUEST ].end() )
 					( this->*it->second )( reqIt->second, l_oArgument );
 				else
 					disconnect_client( l_oClient, _( "Unknown command." ) );
@@ -167,7 +172,7 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 	M_ASSERT( !! a_oClient );
 	int l_iFileDescriptor = a_oClient->get_file_descriptor();
 	unregister_file_descriptor_handler( l_iFileDescriptor );
-	f_oRequestSocket.shutdown_client( l_iFileDescriptor );
+	f_oSocket[ IPC_CHANNEL::D_REQUEST ]->shutdown_client( l_iFileDescriptor );
 	f_oRequests.remove( l_iFileDescriptor );
 	out << "client closed connection";
 	if ( a_pcReason )
@@ -179,6 +184,7 @@ void HServer::disconnect_client( yaal::hcore::HSocket::ptr_t& a_oClient,
 
 void HServer::read_request( ORequest& req, ORequest::ORIGIN::origin_t const& origin, yaal::hcore::HString const& a_oString )
 	{
+	M_PROLOG
 	static HString key;
 	key = a_oString.split( "=", 0 );
 	key.trim_left().trim_right();
@@ -186,36 +192,53 @@ void HServer::read_request( ORequest& req, ORequest::ORIGIN::origin_t const& ori
 	value = a_oString.split( "=", 1 );
 	value.trim_left().trim_right();
 	req.update( key, value, origin );
+	M_EPILOG
 	}
 
 void HServer::handler_env( ORequest& a_roRequest, yaal::hcore::HString const& a_oEnv )
 	{
+	M_PROLOG
 	read_request( a_roRequest, ORequest::ORIGIN::D_ENV, a_oEnv );
+	M_EPILOG
 	}
 
 void HServer::handler_cookie( ORequest& a_roRequest, yaal::hcore::HString const& a_oCookie )
 	{
+	M_PROLOG
 	read_request( a_roRequest, ORequest::ORIGIN::D_COOKIE, a_oCookie );
+	M_EPILOG
 	}
 
 void HServer::handler_get( ORequest& a_roRequest, yaal::hcore::HString const& a_oGET )
 	{
+	M_PROLOG
 	read_request( a_roRequest, ORequest::ORIGIN::D_GET, a_oGET );
+	M_EPILOG
 	}
 
 void HServer::handler_post( ORequest& a_roRequest, yaal::hcore::HString const& a_oPOST )
 	{
+	M_PROLOG
 	read_request( a_roRequest, ORequest::ORIGIN::D_POST, a_oPOST );
+	M_EPILOG
 	}
 
 void HServer::handler_done( ORequest& a_roRequest, yaal::hcore::HString const& )
 	{
+	M_PROLOG
 	service_request( a_roRequest );
+	M_EPILOG
+	}
+
+void HServer::handler_shutdown( ORequest&, yaal::hcore::HString const& )
+	{
 	}
 
 void HServer::service_request( ORequest& a_roRequest )
 	{
+	M_PROLOG
 	do_service_request( a_roRequest );
+	M_EPILOG
 	}
 
 }

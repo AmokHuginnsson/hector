@@ -79,8 +79,8 @@ void HApplicationServer::start( void )
 		}
 	hcore::log( LOG_TYPE::D_INFO ) << "Statring application server." << endl;
 	init_server();
-	f_oRequestSocket.set_timeout( setup.f_iSocketWriteTimeout );
-	f_oControlSocket.set_timeout( setup.f_iSocketWriteTimeout );
+	f_oSocket[ IPC_CHANNEL::D_CONTROL ]->set_timeout( setup.f_iSocketWriteTimeout );
+	f_oSocket[ IPC_CHANNEL::D_REQUEST ]->set_timeout( setup.f_iSocketWriteTimeout );
 	M_EPILOG
 	}
 

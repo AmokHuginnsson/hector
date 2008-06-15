@@ -48,13 +48,24 @@ public:
 		static char const* const POST;
 		static char const* const DONE;
 		};
+	struct CONTROL_PROTO
+		{
+		static char const* const SHUTDOWN;
+		static char const* const RELOAD;
+		static char const* const STATUS;
+		};
+	struct IPC_CHANNEL
+		{
+		static int const D_CONTROL = 0;
+		static int const D_REQUEST = 1;
+		static int const D_COUNT = 2;
+		};
 protected:
 	/*{*/
 	int f_iMaxConnections;
-	yaal::hcore::HSocket f_oRequestSocket;
-	yaal::hcore::HSocket f_oControlSocket;
+	yaal::hcore::HSocket::ptr_t f_oSocket[ IPC_CHANNEL::D_COUNT ];
 	requests_t f_oRequests;
-	handlers_t f_oHandlers;
+	handlers_t f_oHandlers[ IPC_CHANNEL::D_COUNT ];
 	/*}*/
 public:
 	/*{*/
@@ -69,6 +80,9 @@ protected:
 	void disconnect_client( yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
 	int handler_connection( int );
 	int handler_message( int );
+	void handler_shutdown( ORequest&, yaal::hcore::HString const& );
+	void handler_reload( ORequest&, yaal::hcore::HString const& );
+	void handler_status( ORequest&, yaal::hcore::HString const& );
 	void handler_env( ORequest&, yaal::hcore::HString const& );
 	void handler_cookie( ORequest&, yaal::hcore::HString const& );
 	void handler_get( ORequest&, yaal::hcore::HString const& );
