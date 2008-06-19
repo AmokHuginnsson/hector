@@ -24,7 +24,6 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <dlfcn.h>
 #include <iostream>
 
 #include <yaal/yaal.h>
@@ -42,29 +41,14 @@ using namespace yaal::tools::util;
 namespace hector
 {
 
-HApplication::HApplication( void ) : f_pvProcessor( NULL ), f_oDOM(), PROCESSOR( NULL )
+HApplication::HApplication( void )
+	: f_oDOM(), f_oProcessor(), PROCESSOR( NULL ), f_oName()
 	{
 	}
 
 HApplication::~HApplication( void )
 	{
-	if ( f_pvProcessor )
-		dlclose( f_pvProcessor );
-	}
-
-template<typename tType>
-union caster_t
-	{
-	void * f_pvObjectPointer;
-	tType FUNCTION_POINTER;
-	};
-
-template<typename tType>
-tType dlsym_wrapper( void* a_pvSpace, char const* const a_pcName )
-	{
-	caster_t<tType> l_xCaster;
-	l_xCaster.f_pvObjectPointer = dlsym( a_pvSpace, a_pcName );
-	return ( l_xCaster.FUNCTION_POINTER );
+	out << "Application `" << f_oName << "' unloaded." << endl;
 	}
 
 void HApplication::load( char const* const name, char const* const path )
@@ -73,28 +57,44 @@ void HApplication::load( char const* const name, char const* const path )
 	static char const* const D_INTERFACE_FILE = "interface.xml";
 	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
 	static char const* const D_PROCESSOR = "processor";
+	f_oName = name;
 	HStringStream interface( path );
 	HStringStream toolkit( path );
 	HStringStream processor( path );
-	hcore::log( LOG_TYPE::D_INFO ) << "Loading application `" << name << "'." << endl;
-	interface << "/" << name << "/" << D_INTERFACE_FILE;
-	toolkit << "/" << name << "/" << D_TOOLKIT_FILE;
-	processor << "/" << name << "/" << D_PROCESSOR;
+	hcore::log( LOG_TYPE::D_INFO ) << "Loading application `" << f_oName << "'." << endl;
+	interface << "/" << f_oName << "/" << D_INTERFACE_FILE;
+	toolkit << "/" << f_oName << "/" << D_TOOLKIT_FILE;
+	processor << "/" << f_oName << "/" << D_PROCESSOR;
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
 	f_oDOM.init( interface.raw() );
+	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
 	f_oDOM.apply_style( toolkit.raw() );
 	f_oDOM.parse();
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
-	f_pvProcessor = dlopen( processor.raw(), RTLD_LAZY | RTLD_LOCAL );
-	if ( f_pvProcessor )
-		out << "processor for `" << name << "' loaded" << endl;
-	else
-		out << "cannot load processor for `" << name << "': " << dlerror() << endl;
-	PROCESSOR = dlsym_wrapper<HApplication::PROCESSOR_t>( f_pvProcessor, "application_processor" );
-	if ( PROCESSOR )
-		out << "processor for `" << name << "' connected" << endl;
-	else
-		out << "cannot connect processor for `" << name << "'" << endl;
+	do
+		{
+		try
+			{
+			f_oProcessor.load( processor.raw() );
+			M_ASSERT( f_oProcessor.is_loaded() );
+			out << "processor for `" << f_oName << "' loaded" << endl;
+			}
+		catch ( HPluginException& e )
+			{
+			out << "cannot load processor for `" << name << "': " << e.what() << endl;
+			break;
+			}
+		try
+			{
+			f_oProcessor.resolve( "application_processor", PROCESSOR );
+			M_ASSERT( PROCESSOR );
+			out << "processor for `" << name << "' connected" << endl;
+			}
+		catch ( HPluginException& e )
+			{
+			out << "cannot connect processor for `" << name << "'" << endl;
+			}
+		}
+	while ( 0 );
 	return;	
 	M_EPILOG
 	}

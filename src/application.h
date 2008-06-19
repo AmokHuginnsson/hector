@@ -28,6 +28,7 @@ Copyright:
 #define __APPLICATION_H
 
 #include <yaal/tools/hxml.h>
+#include <yaal/tools/hplugin.h>
 #include "server.h"
 
 namespace hector
@@ -38,9 +39,10 @@ class HApplication
 public:
 	typedef void ( * PROCESSOR_t )( HApplication&, ORequest& );
 private:
-	void* f_pvProcessor;
 	yaal::tools::HXml f_oDOM;
+	yaal::tools::HPlugin f_oProcessor;
 	PROCESSOR_t PROCESSOR;
+	yaal::hcore::HString f_oName;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication( void );

@@ -120,8 +120,15 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 			HXml::HNode::properties_t::const_iterator symbol = props.find( D_APP_PROP_NAME_SYMBOL );
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
 			HApplication::ptr_t app( new HApplication() );
-			app->load( symbol->second, setup.f_oDataDir );
-			f_oApplications.insert( symbol->second, app );
+			try
+				{
+				app->load( symbol->second, setup.f_oDataDir );
+				f_oApplications.insert( symbol->second, app );
+				}
+			catch ( HException& e )
+				{
+				hcore::log( LOG_TYPE::D_WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
+				}
 			}
 		}
 	M_EPILOG
@@ -198,16 +205,27 @@ void HApplicationServer::clean_request( int opts )
 	M_EPILOG
 	}
 
-void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& app )
+void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName )
 	{
 	M_PROLOG
-	applications_t::iterator it = f_oApplications.find( app );
+	applications_t::iterator it = f_oApplications.find( appName );
 	if ( it != f_oApplications.end() )
 		{
+		HApplication::ptr_t app( new HApplication() );
+		try
+			{
+			app->load( appName, setup.f_oDataDir );
+			f_oApplications.insert( appName, app );
+			}
+		catch ( HException& e )
+			{
+			hcore::log( LOG_TYPE::D_WARNING ) << "Failed to load `" << appName << "': " << e.what() << "." << endl;
+			*sock << "Failed to load `" << appName << "': " << e.what() << "." << endl;
+			}
 		}
 	else
 		{
-		*sock << "no such application: " << app << endl;
+		*sock << "no such application: " << appName << endl;
 		}
 	disconnect_client( IPC_CHANNEL::D_CONTROL, sock, _( "request serviced" ) );
 	M_EPILOG
