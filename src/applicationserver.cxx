@@ -191,10 +191,35 @@ void HApplicationServer::clean_request( int opts )
 		{
 		pending_t::iterator it = f_oPending.find( pid );
 		M_ENSURE( it != f_oPending.end() );
-		disconnect_client( it->second, _( "request serviced" ) );
+		disconnect_client( IPC_CHANNEL::D_REQUEST, it->second, _( "request serviced" ) );
 		f_oPending.erase( it );
 		}
 	return;
+	M_EPILOG
+	}
+
+void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& app )
+	{
+	M_PROLOG
+	applications_t::iterator it = f_oApplications.find( app );
+	if ( it != f_oApplications.end() )
+		{
+		}
+	else
+		{
+		*sock << "no such application: " << app << endl;
+		}
+	disconnect_client( IPC_CHANNEL::D_CONTROL, sock, _( "request serviced" ) );
+	M_EPILOG
+	}
+
+void HApplicationServer::do_status( HSocket::ptr_t& sock )
+	{
+	M_PROLOG
+	*sock << "apps: " << f_oApplications.size() << endl;
+	*sock << "new: " << f_oRequests.size() << endl;
+	*sock << "pending: " << f_oPending.size() << endl;
+	disconnect_client( IPC_CHANNEL::D_CONTROL, sock, _( "request serviced" ) );
 	M_EPILOG
 	}
 

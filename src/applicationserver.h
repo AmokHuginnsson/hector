@@ -56,6 +56,8 @@ public:
 	int process_sigchild( int );
 protected:
 	virtual void do_service_request( ORequest& );
+	virtual void do_reload( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
+	virtual void do_status( yaal::hcore::HSocket::ptr_t& );
 	void clean_request( int );
 private:
 	void read_configuration( yaal::tools::HXml::HConstNodeProxy const& );

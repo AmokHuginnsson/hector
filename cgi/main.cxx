@@ -107,7 +107,7 @@ void query( int argc, char** argv )
 	{
 	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
-	sockPath += "/hector.sock";
+	sockPath += "/request.sock";
 	cout << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
 	try
 		{

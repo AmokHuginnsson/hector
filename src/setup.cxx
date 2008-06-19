@@ -42,9 +42,11 @@ void OSetup::test_setup( void )
 	if ( f_bQuiet && f_bVerbose )
 		yaal::tools::util::failure( 1,
 				_( "quiet and verbose options are exclusive\n" ) );
+#if defined ( TARGET_HECTOR_DAEMON )
 	if ( f_oDataDir.is_empty() )
 		yaal::tools::util::failure( 2,
 				_( "you must specify directory with application data\n" ) );
+#endif
 	if ( f_iMaxConnections < 0 )
 		yaal::tools::util::failure( 3,
 				_( "bad max-connection value set\n" ) );
@@ -55,10 +57,15 @@ void OSetup::test_setup( void )
 	if ( ! root.is_directory() )
 		yaal::tools::util::failure( 5,
 				_( "socket root is invalid\n" ) );
+#if defined ( TARGET_HECTOR_DAEMON )
 	HFSItem data( f_oDataDir );
 	if ( ! ( !! data && data.is_directory() ) )
 		yaal::tools::util::failure( 6,
 				HString ( ! f_oDataDir.is_empty() ? f_oDataDir : "(nil)" ) + _( ": applications database path is invalid\n" ) );
+#elif defined ( TARGET_HECTOR_ADMIN )
+	if ( ! ( f_bStatus || f_bShutdown || ! f_oReload.is_empty() ) )
+		yaal::tools::util::failure( 7, _( "you have to specify some administrative action\n" ) );
+#endif
 	return;
 	M_EPILOG
 	}

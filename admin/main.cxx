@@ -49,7 +49,7 @@ OSetup setup;
 
 }
 
-void query( int, char** );
+void query( void );
 
 int main( int a_iArgc, char* a_ppcArgv[] )
 	{
@@ -64,13 +64,13 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 		setup.f_pcProgramName = a_ppcArgv[ 0 ];
 		process_hectorrc_file();
 		l_iOpt = decode_switches( a_iArgc, a_ppcArgv );
-		setup.f_oLogPath.replace( "hectord", "hector.cgi" );
+		setup.f_oLogPath.replace( "hectord", "hectoradmin" );
 		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
 		setup.test_setup();
 /*		if ( ! cons.is_enabled() )
 			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */
-		query( a_iArgc, a_ppcArgv );
+		query();
 /* ... there is the place main loop ends. :OD-OT */
 		}
 	catch ( ... )
@@ -81,66 +81,88 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 	M_FINAL
 	}
 
-HString escape( HString const& source )
+void show_answer( HSocket& sock )
 	{
 	M_PROLOG
-	static HString result;
-	result = source;
-	result.replace( "\\", "\\\\" ).replace( "\n", "\\n" );
-	return ( result );
-	M_EPILOG
-	}
-
-void push_query( HSocket& sock, HString const& query, char const* const mode )
-	{
-	M_PROLOG
-	HString param;
-	HStringStream buffer;
-	int i = 0;
-	while ( ! ( param = query.split( "&", i ++ ) ).is_empty() )
-		sock << ( buffer << mode << ":" << escape( param ) << endl << buffer );
+	HString msg;
+	while ( sock.read_until( msg ).octets >= 0 )
+		cout << msg << endl;
 	return;
 	M_EPILOG
 	}
 
-void query( int argc, char** argv )
+void query_status( void )
 	{
 	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
-	sockPath += "/hector.sock";
-	cout << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
+	sockPath += "/control.sock";
 	try
 		{
 		HSocket sock( HSocket::TYPE::D_FILE );
 		sock.connect( sockPath );
-		HStringStream buffer;
-		HString POST( "" );
-		HFile in( HFile::D_READING, stdin );
-		while ( in.read_line( POST, HFile::D_UNBUFFERED_READS ) >= 0 )
-			push_query( sock, POST, "post" );
-		for ( int i = 1; i < argc; ++ i )
-			sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
-		char QS[] = "QUERY_STRING=";
-		for ( int i = 0; environ[ i ]; ++ i )
-			{
-			if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) )
-				{
-				push_query( sock, environ[ i ] + sizeof ( QS ) - 1, "get" );
-				continue;
-				}
-			buffer << "env:" << escape( environ[ i ] ) << endl;
-			sock << buffer.consume();
-			}
-		sock << ( buffer << "done" << endl << buffer );
-		HString msg;
-		while ( sock.read_until( msg ).octets >= 0 )
-			cout << msg << endl;
+		sock << "status" << endl;
+		show_answer( sock );
 		}
 	catch ( HSocketException& e )
 		{
-		cout << "Cannot connect to `hector' daemon.<br />" << endl;
+		cout << "Cannot connect to `hector' daemon." << endl;
 		cout << e.what() << endl;
 		}
+	return;
+	M_EPILOG
+	}
+
+void query_shutdown( void )
+	{
+	M_PROLOG
+	HString sockPath( setup.f_oSocketRoot );
+	sockPath += "/control.sock";
+	try
+		{
+		HSocket sock( HSocket::TYPE::D_FILE );
+		sock.connect( sockPath );
+		sock << "shutdown" << endl;
+		show_answer( sock );
+		}
+	catch ( HSocketException& e )
+		{
+		cout << "Cannot connect to `hector' daemon." << endl;
+		cout << e.what() << endl;
+		}
+	return;
+	M_EPILOG
+	}
+
+void query_reload( void )
+	{
+	M_PROLOG
+	HString sockPath( setup.f_oSocketRoot );
+	sockPath += "/control.sock";
+	try
+		{
+		HSocket sock( HSocket::TYPE::D_FILE );
+		sock.connect( sockPath );
+		sock << "reload:" << setup.f_oReload << endl;
+		show_answer( sock );
+		}
+	catch ( HSocketException& e )
+		{
+		cout << "Cannot connect to `hector' daemon." << endl;
+		cout << e.what() << endl;
+		}
+	return;
+	M_EPILOG
+	}
+
+void query( void )
+	{
+	M_PROLOG
+	if ( ! setup.f_oReload.is_empty() )
+		query_reload();
+	if ( setup.f_bStatus )
+		query_status();
+	if ( setup.f_bShutdown )
+		query_shutdown();
 	return;
 	M_EPILOG
 	}
