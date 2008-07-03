@@ -119,14 +119,13 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 			{
 			HXml::HNode::properties_t::const_iterator symbol = props.find( D_APP_PROP_NAME_SYMBOL );
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
-			HApplication::ptr_t app( new HApplication() );
 			try
 				{
-				app->load( symbol->second, setup.f_oDataDir );
-				f_oApplications.insert( symbol->second, app );
+				f_oApplications.insert( symbol->second, OProcessor::get_instance( symbol->second, setup.f_oDataDir ) );
 				}
 			catch ( HException& e )
 				{
+				out << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
 				hcore::log( LOG_TYPE::D_WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
 				}
 			}
@@ -158,7 +157,7 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 			if ( it != f_oApplications.end() )
 				{
 				out << "using application: " << application << endl;
-				it->second->run( a_roRequest );
+				it->second.f_oApplication->process( a_roRequest );
 				}
 			else
 				msg << "no such application: " << application << endl;
@@ -194,10 +193,16 @@ void HApplicationServer::clean_request( int opts )
 	{
 	M_PROLOG
 	int pid = 0;
-	while ( ! f_oPending.is_empty() && ( ( pid = waitpid( WAIT_ANY, NULL, opts | WUNTRACED ) ) > 0 ) )
+	int status = 0;
+	while ( ! f_oPending.is_empty() && ( ( pid = waitpid( WAIT_ANY, &status, opts | WUNTRACED ) ) > 0 ) )
 		{
 		pending_t::iterator it = f_oPending.find( pid );
 		M_ENSURE( it != f_oPending.end() );
+		out << "activex finished with: " << status << "\n";
+		if ( WIFSIGNALED( status ) )
+			cout << "\tby signal: " << WTERMSIG( status ) << endl;
+		else
+			cout << "\tnormally: " << WEXITSTATUS( status ) << endl;
 		disconnect_client( IPC_CHANNEL::D_REQUEST, it->second, _( "request serviced" ) );
 		f_oPending.erase( it );
 		}
@@ -211,11 +216,9 @@ void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName
 	applications_t::iterator it = f_oApplications.find( appName );
 	if ( it != f_oApplications.end() )
 		{
-		HApplication::ptr_t app( new HApplication() );
 		try
 			{
-			app->load( appName, setup.f_oDataDir );
-			f_oApplications.insert( appName, app );
+			f_oApplications.insert( appName, OProcessor::get_instance( appName, setup.f_oDataDir ) );
 			}
 		catch ( HException& e )
 			{

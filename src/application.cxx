@@ -29,6 +29,7 @@ Copyright:
 #include <yaal/yaal.h>
 M_VCSID ( "$Id$" )
 #include "application.h"
+#include "applicationserver.h"
 #include "setup.h"
 
 using namespace std;
@@ -42,7 +43,7 @@ namespace hector
 {
 
 HApplication::HApplication( void )
-	: f_oDOM(), f_oProcessor(), PROCESSOR( NULL ), f_oName()
+	: f_oDOM(), f_oName()
 	{
 	}
 
@@ -51,59 +52,75 @@ HApplication::~HApplication( void )
 	out << "Application `" << f_oName << "' unloaded." << endl;
 	}
 
+OProcessor OProcessor::get_instance( char const* const name, char const* const path )
+	{
+	M_PROLOG
+	static char const* const D_SYMBOL_FACTORY = "factory";
+	static char const* const D_ATTRIBUTE_ACTIVEX = "activex";
+	HStringStream activex( path );
+	HPlugin::ptr_t l_oActiveX( new HPlugin() );
+	activex << "/" << name << "/" << D_ATTRIBUTE_ACTIVEX;
+	HApplication::ptr_t app;
+	l_oActiveX->load( activex.raw() );
+	M_ASSERT( l_oActiveX->is_loaded() );
+	out << "activex nest for `" << name << "' loaded" << endl;
+	typedef HApplication::ptr_t ( *factory_t )( void );
+	factory_t factory;
+	l_oActiveX->resolve( D_SYMBOL_FACTORY, factory );
+	M_ASSERT( factory );
+	out << "activex factory for `" << name << "' connected" << endl;
+	app = factory();
+	if ( ! app )
+		throw HApplicationException( "invalid activex" );
+	OProcessor proc;
+	proc.f_oApplication = app;
+	proc.f_oActiveX = l_oActiveX;
+	app->load( name, path );
+	return ( proc );
+	M_EPILOG
+	}
+
 void HApplication::load( char const* const name, char const* const path )
 	{
 	M_PROLOG
 	static char const* const D_INTERFACE_FILE = "interface.xml";
 	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
-	static char const* const D_PROCESSOR = "processor";
 	f_oName = name;
 	HStringStream interface( path );
 	HStringStream toolkit( path );
-	HStringStream processor( path );
 	hcore::log( LOG_TYPE::D_INFO ) << "Loading application `" << f_oName << "'." << endl;
 	interface << "/" << f_oName << "/" << D_INTERFACE_FILE;
 	toolkit << "/" << f_oName << "/" << D_TOOLKIT_FILE;
-	processor << "/" << f_oName << "/" << D_PROCESSOR;
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
 	f_oDOM.init( interface.raw() );
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
 	f_oDOM.apply_style( toolkit.raw() );
 	f_oDOM.parse();
-	do
-		{
-		try
-			{
-			f_oProcessor.load( processor.raw() );
-			M_ASSERT( f_oProcessor.is_loaded() );
-			out << "processor for `" << f_oName << "' loaded" << endl;
-			}
-		catch ( HPluginException& e )
-			{
-			out << "cannot load processor for `" << name << "': " << e.what() << endl;
-			break;
-			}
-		try
-			{
-			f_oProcessor.resolve( "application_processor", PROCESSOR );
-			M_ASSERT( PROCESSOR );
-			out << "processor for `" << name << "' connected" << endl;
-			}
-		catch ( HPluginException& e )
-			{
-			out << "cannot connect processor for `" << name << "'" << endl;
-			}
-		}
-	while ( 0 );
+	do_load();
 	return;	
 	M_EPILOG
 	}
 
-void HApplication::run( ORequest& req )
+void HApplication::do_load( void )
 	{
-	if ( PROCESSOR )
-		PROCESSOR( *this, req );
+	out << __PRETTY_FUNCTION__ << endl;
+	}
+
+void HApplication::do_process( ORequest const& )
+	{
+	out << __PRETTY_FUNCTION__ << endl;
+	}
+
+void HApplication::process( ORequest& req )
+	{
+	out << __PRETTY_FUNCTION__ << endl;
+	do_process( req );
 	f_oDOM.save( req.socket()->get_file_descriptor() );
+	}
+
+HXml& HApplication::dom( void )
+	{
+	return ( f_oDOM );
 	}
 
 }

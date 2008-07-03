@@ -37,9 +37,17 @@ Copyright:
 namespace hector
 {
 
+struct OProcessor
+	{
+	yaal::tools::HPlugin::ptr_t f_oActiveX;
+	HApplication::ptr_t f_oApplication;
+	OProcessor( void ) : f_oActiveX(), f_oApplication() {}
+	static OProcessor get_instance( char const* const, char const* const );
+	};
+
 class HApplicationServer : public HServer
 	{
-	typedef yaal::hcore::HMap<yaal::hcore::HString, HApplication::ptr_t> applications_t;
+	typedef yaal::hcore::HMap<yaal::hcore::HString, OProcessor> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
 	applications_t f_oApplications;
 	pending_t f_oPending;
