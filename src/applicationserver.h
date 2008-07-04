@@ -39,10 +39,12 @@ namespace hector
 
 struct OProcessor
 	{
+	yaal::hcore::HString f_oBinaryPath;
 	yaal::tools::HPlugin::ptr_t f_oActiveX;
 	HApplication::ptr_t f_oApplication;
-	OProcessor( void ) : f_oActiveX(), f_oApplication() {}
+	OProcessor( yaal::hcore::HString const& path ) : f_oBinaryPath( path ), f_oActiveX(), f_oApplication() {}
 	static OProcessor get_instance( char const* const, char const* const );
+	void reload_binary( void );
 	};
 
 class HApplicationServer : public HServer

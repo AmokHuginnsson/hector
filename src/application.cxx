@@ -72,11 +72,20 @@ OProcessor OProcessor::get_instance( char const* const name, char const* const p
 	app = factory();
 	if ( ! app )
 		throw HApplicationException( "invalid activex" );
-	OProcessor proc;
+	OProcessor proc( activex.raw() );
 	proc.f_oApplication = app;
 	proc.f_oActiveX = l_oActiveX;
 	app->load( name, path );
 	return ( proc );
+	M_EPILOG
+	}
+
+void OProcessor::reload_binary( void )
+	{
+	M_PROLOG
+	f_oActiveX->unload();
+	f_oActiveX->load( f_oBinaryPath );
+	return;
 	M_EPILOG
 	}
 

@@ -218,7 +218,8 @@ void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName
 		{
 		try
 			{
-			f_oApplications.insert( appName, OProcessor::get_instance( appName, setup.f_oDataDir ) );
+			applications_t::iterator newX = f_oApplications.insert( appName, OProcessor::get_instance( appName, setup.f_oDataDir ) );
+			newX->second.reload_binary();
 			}
 		catch ( HException& e )
 			{
