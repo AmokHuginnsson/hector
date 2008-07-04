@@ -34,6 +34,7 @@ using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
+using namespace yaal::dbwrapper;
 
 namespace hector
 {
@@ -222,6 +223,49 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 				}
 			else
 				move_children( *del, req, doc );
+			}
+		}
+	return;
+	M_EPILOG
+	}
+
+void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::tools::HXml& doc, yaal::tools::HXml::HNodeProxy* pick )
+	{
+	M_PROLOG
+	static char const* const D_NODE_QUERY = "query";
+//	static char const* const D_NODE_ITEM = "item";
+	static char const* const D_ATTRIBUTE_SQL = "sql";
+	static HXml waste;
+	if ( ! pick )
+		{
+		waste.create_root( "x" );
+		HXml::HNodeProxy root = waste.get_root();
+		pick = &root;
+		}
+	for ( HXml::HIterator child = node.begin(); child != node.end(); )
+		{
+		HXml::HIterator del = child;
+		++ child;
+		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
+			{
+			if ( (*del).get_name() == D_NODE_QUERY )
+				{
+				HXml::HNode::properties_t& props = (*del).properties();
+				HXml::HNode::properties_t::iterator sqlIt = props.find( D_ATTRIBUTE_SQL );
+				if ( sqlIt != props.end() )
+					{
+					HString sql = sqlIt->second;
+					if ( ! sql.is_empty() )
+						{
+						HRecordSet::ptr_t rs = db->query( sql );
+						for ( HRecordSet::iterator it = rs->begin(); it != rs->end(); ++ it )
+							cout << it[ 0 ] << "|" << it[ 1 ] << endl;
+						}
+					}
+				pick->move_node( *del );
+				}
+			else
+				run_query( *del, db, doc, pick );
 			}
 		}
 	return;

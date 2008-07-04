@@ -28,6 +28,7 @@ Copyright:
 #define __CGI_H
 
 #include <yaal/tools/hxml.h>
+#include <yaal/dbwrapper/hdatabase.h>
 
 #include "orequest.h"
 
@@ -45,6 +46,8 @@ void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t const&, yaal::tools::HXml& );
 void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
+		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
+void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 
 }
