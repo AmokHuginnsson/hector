@@ -103,12 +103,12 @@ void HServer::init_sockets( void )
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << reqSockPath << "' as IPC request inteface." << endl;
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << ctrlSockPath << "' as IPC control inteface." << endl;
 	int err = 0;
-	M_ENSURE( ( ! ( err = ::unlink( reqSockPath ) ) ) || ( errno == ENOENT ) );
-	M_ENSURE( ( ! ( err = ::unlink( ctrlSockPath ) ) ) || ( errno == ENOENT ) );
+	M_ENSURE( ( ! ( err = ::unlink( reqSockPath.raw() ) ) ) || ( errno == ENOENT ) );
+	M_ENSURE( ( ! ( err = ::unlink( ctrlSockPath.raw() ) ) ) || ( errno == ENOENT ) );
 	f_oSocket[ IPC_CHANNEL::D_CONTROL ]->listen( ctrlSockPath );
 	f_oSocket[ IPC_CHANNEL::D_REQUEST ]->listen( reqSockPath );
-	M_ENSURE( ! ::chmod( reqSockPath, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
-	M_ENSURE( ! ::chmod( ctrlSockPath, S_IRUSR | S_IWUSR ) );
+	M_ENSURE( ! ::chmod( reqSockPath.raw(), S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
+	M_ENSURE( ! ::chmod( ctrlSockPath.raw(), S_IRUSR | S_IWUSR ) );
 	return;
 	M_EPILOG
 	}
@@ -149,7 +149,7 @@ int HServer::handler_message( int a_iFileDescriptor )
 		HSocket::HStreamInterface::STATUS const* status = NULL;
 		if ( ( status = &l_oClient->read_until( l_oMessage ) )->code == HSocket::HStreamInterface::STATUS::D_OK )
 			{
-			out << "<-" << static_cast<char const* const>( l_oMessage ) << endl;
+			out << "<-" << l_oMessage << endl;
 			static HString l_oCommand;
 			static HString l_oArgument;
 			l_oCommand = l_oMessage.split( ":", 0 );

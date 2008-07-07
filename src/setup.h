@@ -29,11 +29,15 @@ Copyright:
 
 #include <libintl.h>
 #include <yaal/yaal.h>
+#include <iostream>
 
 #define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
 
 namespace hector
 {
+
+inline std::ostream& operator << ( std::ostream& o, yaal::hcore::HString const& s )
+	{ return ( o << s.raw() ); }
 
 struct OSetup
 	{

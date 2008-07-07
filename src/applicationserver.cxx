@@ -115,7 +115,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 		M_ENSURE( application.get_name() == D_APP_NODE_NAME );
 		HXml::HNode::properties_t const& props = application.properties();
 		HXml::HNode::properties_t::const_iterator load = props.find( D_APP_PROP_NAME_LOAD );
-		if ( ( load != props.end() ) && ( to_bool( load->second ) ) )
+		if ( ( load != props.end() ) && ( lexical_cast<bool>( load->second ) ) )
 			{
 			HXml::HNode::properties_t::const_iterator symbol = props.find( D_APP_PROP_NAME_SYMBOL );
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );

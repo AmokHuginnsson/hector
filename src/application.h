@@ -44,7 +44,7 @@ public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication( void );
 	virtual ~HApplication( void );
-	void load( char const* const, char const* const );
+	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void process( ORequest& );
 protected:
 	virtual void do_load( void );

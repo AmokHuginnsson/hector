@@ -60,8 +60,11 @@ void OSetup::test_setup( void )
 #if defined ( TARGET_HECTOR_DAEMON )
 	HFSItem data( f_oDataDir );
 	if ( ! ( !! data && data.is_directory() ) )
-		yaal::tools::util::failure( 6,
-				HString ( ! f_oDataDir.is_empty() ? f_oDataDir : "(nil)" ) + _( ": applications database path is invalid\n" ) );
+		{
+		HString err( ! f_oDataDir.is_empty() ? f_oDataDir : "(nil)" );
+		err += _( ": applications database path is invalid\n" );
+		yaal::tools::util::failure( 6, err.raw() );
+		}
 #elif defined ( TARGET_HECTOR_ADMIN )
 	if ( ! ( f_bStatus || f_bShutdown || ! f_oReload.is_empty() ) )
 		yaal::tools::util::failure( 7, _( "you have to specify some administrative action\n" ) );

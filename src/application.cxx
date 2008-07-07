@@ -52,7 +52,7 @@ HApplication::~HApplication( void )
 	out << "Application `" << f_oName << "' unloaded." << endl;
 	}
 
-OProcessor OProcessor::get_instance( char const* const name, char const* const path )
+OProcessor OProcessor::get_instance( HString const& name, HString const& path )
 	{
 	M_PROLOG
 	static char const* const D_SYMBOL_FACTORY = "factory";
@@ -89,7 +89,7 @@ void OProcessor::reload_binary( void )
 	M_EPILOG
 	}
 
-void HApplication::load( char const* const name, char const* const path )
+void HApplication::load( HString const& name, HString const& path )
 	{
 	M_PROLOG
 	static char const* const D_INTERFACE_FILE = "interface.xml";

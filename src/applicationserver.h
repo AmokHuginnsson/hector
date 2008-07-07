@@ -43,7 +43,7 @@ struct OProcessor
 	yaal::tools::HPlugin::ptr_t f_oActiveX;
 	HApplication::ptr_t f_oApplication;
 	OProcessor( yaal::hcore::HString const& path ) : f_oBinaryPath( path ), f_oActiveX(), f_oApplication() {}
-	static OProcessor get_instance( char const* const, char const* const );
+	static OProcessor get_instance( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void reload_binary( void );
 	};
 

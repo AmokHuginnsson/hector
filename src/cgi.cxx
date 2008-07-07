@@ -29,6 +29,7 @@ Copyright:
 #include <yaal/yaal.h>
 M_VCSID( "$Id$")
 #include "cgi.h"
+#include "setup.h"
 
 using namespace std;
 using namespace yaal;

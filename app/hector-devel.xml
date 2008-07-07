@@ -6,5 +6,6 @@
 	<applications>
 		<application symbol="hector" name="The Hector Application Server" load="false" start="false" />
 		<application symbol="codestation" name="Code Station" load="true" start="true" />
+		<application symbol="archigrama" name="Code Station" load="true" start="true" />
 	</applications>
 </hector>

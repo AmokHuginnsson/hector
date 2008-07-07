@@ -87,16 +87,16 @@ bool ORequest::lookup( HString const& key, HString& value, ORIGIN::origin_t cons
 	bool bFound = false;
 	( ! bFound ) && ( origin & ORIGIN::D_ENV )
 		&& ( bFound = ( ( it = f_oEnvironment->find( key ) ) != f_oEnvironment->end() ) )
-		&& ( value = it->second );
+		&& ( !! ( value = it->second ) );
 	( ! bFound ) && ( origin & ORIGIN::D_COOKIE )
 		&& ( bFound = ( ( it = f_oCookies->find( key ) )     != f_oCookies->end() ) )
-		&& ( value = it->second );
+		&& ( !! ( value = it->second ) );
 	( ! bFound ) && ( origin & ORIGIN::D_POST )
 		&& ( bFound = ( ( it = f_oPOST->find( key ) )        != f_oPOST->end() ) )
-		&& ( value = it->second );
+		&& ( !! ( value = it->second ) );
 	( ! bFound ) && ( origin & ORIGIN::D_GET )
 		&& ( bFound = ( ( it = f_oGET->find( key ) )         != f_oGET->end() ) )
-		&& ( value = it->second );
+		&& ( !! ( value = it->second ) );
 	return ( ! bFound );
 	M_EPILOG
 	}
