@@ -27,7 +27,7 @@ Copyright:
 #include <iostream>
 
 #include <yaal/yaal.h>
-M_VCSID( "$Id$")
+M_VCSID( "$Id: "__ID__" $" )
 #include "cgi.h"
 #include "setup.h"
 
@@ -57,11 +57,11 @@ bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, char const* const ki
 	if ( classIt != props.end() )
 		{
 		int idx = 0;
-		bool leftLimit = ( ( idx = classIt->second.find( kind ) ) >= 0 )
+		bool leftLimit = ( ( idx = static_cast<int>( classIt->second.find( kind ) ) ) >= 0 )
 			&& ( ! idx || strchr( D_CLASS_SEPARATOR, classIt->second[ idx - 1 ] ) );
 		if ( leftLimit )
 			{
-			int len = ::strlen( kind );
+			int len = static_cast<int>( ::strlen( kind ) );
 			is = ( ( idx + len ) >= classIt->second.get_length() ) || ::strchr( D_CLASS_SEPARATOR, classIt->second[ idx + len ] );
 			}
 		}

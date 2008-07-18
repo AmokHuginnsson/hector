@@ -27,7 +27,7 @@ Copyright:
 #include <iostream>
 
 #include <yaal/yaal.h> /* all hAPI headers */
-M_VCSID ( "$Id$" )
+M_VCSID( "$Id: "__ID__" $" )
 
 #include "version.h"
 #include "setup.h"

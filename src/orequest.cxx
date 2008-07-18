@@ -25,7 +25,7 @@ Copyright:
 */
 
 #include <yaal/yaal.h>
-M_VCSID ( "$Id$" )
+M_VCSID( "$Id: "__ID__" $" )
 #include "orequest.h"
 
 using namespace yaal;
