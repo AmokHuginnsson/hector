@@ -115,8 +115,8 @@ void query( int argc, char** argv )
 		sock.connect( sockPath );
 		HStringStream buffer;
 		HString POST( "" );
-		HFile in( HFile::D_READING, stdin );
-		while ( in.read_line( POST, HFile::D_UNBUFFERED_READS ) >= 0 )
+		HFile in( HFile::OPEN::D_READING, stdin );
+		while ( in.read_line( POST, HFile::READ::D_UNBUFFERED_READS ) >= 0 )
 			push_query( sock, POST, "post" );
 		for ( int i = 1; i < argc; ++ i )
 			sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
