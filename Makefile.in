@@ -36,6 +36,7 @@ $(eval $(call NEW_TARGET,hectoradmin,admin,-DTARGET_HECTOR_ADMIN))
 $(eval $(call NEW_TARGET,codestation,app/codestation,-fPIC,-fPIC -shared --allow-shlib-undefined))
 EXEC_NAME				= 1exec
 CTAGS	= @CTAGS@
+GITID = @GITID@
 
 include $(DIR_ROOT)/_aux/inc-helper-pre.mk
 
