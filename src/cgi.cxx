@@ -230,11 +230,43 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 	M_EPILOG
 	}
 
+void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::tools::HXml::HNodeProxy* pick )
+	{
+	M_PROLOG
+	static char const* const D_NODE_ITEM = "item";
+	static char const* const D_ATTRIBUTE_INDEX = "index";
+	for ( HXml::HIterator child = node.begin(); child != node.end(); )
+		{
+		HXml::HIterator del = child;
+		++ child;
+		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
+			{
+			if ( (*del).get_name() == D_NODE_ITEM )
+				{
+				HXml::HNode::properties_t& props = (*del).properties();
+				HXml::HNode::properties_t::iterator idxIt = props.find( D_ATTRIBUTE_INDEX );
+				if ( idxIt != props.end() )
+					{
+					HString val = it[ lexical_cast<int>( idxIt->second ) ];
+					if ( child == node.end() )
+						child = node.add_node( HXml::HNode::TYPE::D_CONTENT, val );
+					else
+						child = node.insert_node( child, HXml::HNode::TYPE::D_CONTENT, val );
+					}
+				pick->move_node( *del );
+				}
+			else
+				subst_item( *del, it, pick );
+			}
+		}
+	return;
+	M_EPILOG
+	}
+
 void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::tools::HXml& doc, yaal::tools::HXml::HNodeProxy* pick )
 	{
 	M_PROLOG
 	static char const* const D_NODE_QUERY = "query";
-//	static char const* const D_NODE_ITEM = "item";
 	static char const* const D_ATTRIBUTE_SQL = "sql";
 	static HXml waste;
 	if ( ! pick )
@@ -251,19 +283,30 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 			{
 			if ( (*del).get_name() == D_NODE_QUERY )
 				{
-				HXml::HNode::properties_t& props = (*del).properties();
+				HXml::HIterator query = pick->move_node( *del );
+				HXml::HNode::properties_t& props = (*query).properties();
 				HXml::HNode::properties_t::iterator sqlIt = props.find( D_ATTRIBUTE_SQL );
-				if ( sqlIt != props.end() )
+				HXml::HIterator rowIt = (*query).begin();
+				if ( ( rowIt != (*query).end() ) && ( sqlIt != props.end() ) )
 					{
+					HXml::HNodeProxy row = *rowIt;
 					HString sql = sqlIt->second;
 					if ( ! sql.is_empty() )
 						{
 						HRecordSet::ptr_t rs = db->query( sql );
 						for ( HRecordSet::iterator it = rs->begin(); it != rs->end(); ++ it )
-							cout << it[ 0 ] << "|" << it[ 1 ] << endl;
+							{
+							if ( child == node.end() )
+								child = node.copy_node( row );
+							else
+								{
+								child = node.copy_node( child, row );
+								}
+							subst_item( *child, it, pick );
+							++ child;
+							}
 						}
 					}
-				pick->move_node( *del );
 				}
 			else
 				run_query( *del, db, doc, pick );
