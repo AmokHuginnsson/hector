@@ -40,7 +40,12 @@ namespace cgi
 
 typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
 typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> default_t;
-bool is_kind_of( yaal::tools::HXml::HNodeProxy const&, char const* const );
+bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
+bool is_kind_of( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
+bool has_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
+bool is_in_attribute( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
+bool is_kind_of( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString const& );
+bool has_attribute( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString const& );
 void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
