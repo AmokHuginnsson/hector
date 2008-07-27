@@ -31,6 +31,7 @@ M_VCSID( "$Id: "__ID__" $" )
 #include "application.h"
 #include "applicationserver.h"
 #include "setup.h"
+#include "cgi.h"
 
 using namespace std;
 using namespace yaal;
@@ -115,16 +116,47 @@ void HApplication::do_load( void )
 	out << __PRETTY_FUNCTION__ << endl;
 	}
 
-void HApplication::do_process( ORequest const& )
+void HApplication::do_handle_logic( ORequest& req )
 	{
+	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
+	static char const D_LOGIC_PATH[] = "/html/logic/";
+	HXml::HNodeProxy logic = f_oDOM.get_element_by_path( D_LOGIC_PATH );
+	if ( !! logic )
+		cgi::make_cookies( logic, req );
+	return;
+	M_EPILOG
 	}
 
-void HApplication::process( ORequest& req )
+void HApplication::do_generate_page( ORequest const& req )
 	{
+	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
-	do_process( req );
+	cgi::default_t defaults;
+	cgi::waste_children( dom().get_root(), req, defaults );
+	cgi::mark_children( dom().get_root(), req, defaults, dom() );
+	cgi::move_children( dom().get_root(), req, dom() );
+	return;
+	M_EPILOG
+	}
+
+void HApplication::generate_page( ORequest const& req )
+	{
+	M_PROLOG
+	out << __PRETTY_FUNCTION__ << endl;
+	do_generate_page( req );
 	f_oDOM.save( req.socket()->get_file_descriptor() );
+	return;
+	M_EPILOG
+	}
+
+void HApplication::handle_logic( ORequest& req )
+	{
+	M_PROLOG
+	out << __PRETTY_FUNCTION__ << endl;
+	do_handle_logic( req );
+	return;
+	M_EPILOG
 	}
 
 HXml& HApplication::dom( void )

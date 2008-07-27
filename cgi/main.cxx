@@ -86,18 +86,19 @@ HString escape( HString const& source )
 	M_PROLOG
 	static HString result;
 	result = source;
-	result.replace( "\\", "\\\\" ).replace( "\n", "\\n" );
+	result.trim_left().replace( "\\", "\\\\" ).replace( "\n", "\\n" );
+	M_ASSERT( result.get_length() == static_cast<int long>( ::strlen( result.raw() ) ) );
 	return ( result );
 	M_EPILOG
 	}
 
-void push_query( HSocket& sock, HString const& query, char const* const mode )
+void push_query( HSocket& sock, HString const& query, char const* const mode, char const* const delim )
 	{
 	M_PROLOG
 	HString param;
 	HStringStream buffer;
 	int i = 0;
-	while ( ! ( param = query.split( "&", i ++ ) ).is_empty() )
+	while ( ! ( param = query.split( delim, i ++ ) ).is_empty() )
 		sock << ( buffer << mode << ":" << escape( param ) << endl << buffer );
 	return;
 	M_EPILOG
@@ -108,7 +109,6 @@ void query( int argc, char** argv )
 	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += "/request.sock";
-	cout << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
 	try
 		{
 		HSocket sock( HSocket::TYPE::D_FILE );
@@ -117,17 +117,24 @@ void query( int argc, char** argv )
 		HString POST( "" );
 		HFile in( HFile::OPEN::D_READING, stdin );
 		while ( in.read_line( POST, HFile::READ::D_UNBUFFERED_READS ) >= 0 )
-			push_query( sock, POST, "post" );
+			push_query( sock, POST, "post", "&" );
 		for ( int i = 1; i < argc; ++ i )
 			sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
 		char QS[] = "QUERY_STRING=";
+		char CS[] = "HTTP_COOKIE=";
 		for ( int i = 0; environ[ i ]; ++ i )
 			{
 			if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) )
 				{
-				push_query( sock, environ[ i ] + sizeof ( QS ) - 1, "get" );
+				push_query( sock, environ[ i ] + sizeof ( QS ) - 1, "get", "&" );
 				continue;
 				}
+			else if ( ! strncmp( environ[ i ], CS, sizeof ( CS ) - 1 ) )
+				{
+				push_query( sock, environ[ i ] + sizeof ( CS ) - 1, "cookie", ";" );
+				continue;
+				}
+			cout << environ[ i ] << endl;
 			buffer << "env:" << escape( environ[ i ] ) << endl;
 			sock << buffer.consume();
 			}

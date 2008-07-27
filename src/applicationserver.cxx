@@ -157,7 +157,24 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 			if ( it != f_oApplications.end() )
 				{
 				out << "using application: " << application << endl;
-				it->second.f_oApplication->process( a_roRequest );
+				try
+					{
+					a_roRequest.decompress_jar( application );
+					}
+				catch ( HBase64Exception& e )
+					{
+					hcore::log << e.what() << endl;
+					}
+				catch ( ORequestException& e )
+					{
+					hcore::log << e.what() << endl;
+					}
+				it->second.f_oApplication->handle_logic( a_roRequest );
+				ORequest::dictionary_ptr_t jar = a_roRequest.compress_jar( application );
+				for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
+					*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
+				*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
+				it->second.f_oApplication->generate_page( a_roRequest );
 				}
 			else
 				msg << "no such application: " << application << endl;

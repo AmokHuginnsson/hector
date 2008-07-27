@@ -54,6 +54,8 @@ void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
+void make_cookies( yaal::tools::HXml::HNodeProxy, ORequest& );
+		
 
 }
 

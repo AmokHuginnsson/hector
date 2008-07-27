@@ -32,6 +32,7 @@ namespace hector
 
 class ORequest
 	{
+	typedef ORequest self_t;
 public:
 	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
 	typedef yaal::hcore::HPointer<dictionary_t> dictionary_ptr_t;
@@ -44,23 +45,30 @@ public:
 			D_COOKIE = 2,
 			D_GET = 4,
 			D_POST = 8,
-			D_ANY = 15
+			D_JAR = 16,
+			D_ANY = 31
 			} origin_t;
 		};
 private:
 	yaal::hcore::HSocket::ptr_t f_oSocket;
 	dictionary_ptr_t f_oEnvironment;
-	dictionary_ptr_t f_oCookies;
 	dictionary_ptr_t f_oGET;
 	dictionary_ptr_t f_oPOST;
+	dictionary_ptr_t f_oCookies;
+	dictionary_ptr_t f_oJar;
 public:
 	ORequest( yaal::hcore::HSocket::ptr_t );
 	ORequest( ORequest const& );
 	ORequest& operator = ( ORequest const& );
 	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, ORIGIN::origin_t const& );
 	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString&, ORIGIN::origin_t const& = ORIGIN::D_ANY ) const;
+	void decompress_jar( yaal::hcore::HString const& );
+	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
 	yaal::hcore::HSocket::ptr_t socket( void );
+	yaal::hcore::HSocket::ptr_t const socket( void ) const;
 	};
+
+typedef yaal::hcore::HExceptionT<ORequest> ORequestException;
 
 }
 

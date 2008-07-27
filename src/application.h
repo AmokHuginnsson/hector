@@ -45,10 +45,12 @@ public:
 	HApplication( void );
 	virtual ~HApplication( void );
 	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
-	void process( ORequest& );
+	void handle_logic( ORequest& );
+	void generate_page( ORequest const& );
 protected:
 	virtual void do_load( void );
-	virtual void do_process( ORequest const& ) = 0;
+	virtual void do_handle_logic( ORequest& ) = 0;
+	virtual void do_generate_page( ORequest const& ) = 0;
 	yaal::tools::HXml& dom( void );
 private:
 	HApplication( HApplication const& );

@@ -130,7 +130,7 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 		M_ENSURE( kind != props.end() );
 		HString keepItem( "" );
 		/*
-		 * Let's fing out if request have that `kind' specified.
+		 * Let's find out if request have that `kind' specified.
 		 */
 		if ( req.lookup( kind->second, keepItem )
 				|| ( has_attribute( props, D_ATTRIBUTE_VALID )
@@ -388,6 +388,31 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 				}
 			else
 				run_query( *del, db, doc, pick );
+			}
+		}
+	return;
+	M_EPILOG
+	}
+
+void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req )
+	{
+	M_PROLOG
+	static char const D_NODE_COOKIE[] = "cookie";
+	static char const D_ATTRIBUTE_NAME[] = "name";
+	HString value;
+	for ( HXml::HIterator child = logic.begin(); child != logic.end(); ++ child )
+		{
+		if ( (*child).get_type() == HXml::HNode::TYPE::D_NODE )
+			{
+			if ( (*child).get_name() == D_NODE_COOKIE )
+				{
+				HXml::HNode::properties_t& props = (*child).properties();
+				HXml::HNode::properties_t::iterator nameIt = props.find( D_ATTRIBUTE_NAME );
+				M_ENSURE( nameIt != props.end() );
+				M_ENSURE( ! nameIt->second.is_empty() );
+				if ( ! req.lookup( nameIt->second, value, ORequest::ORIGIN::D_POST | ORequest::ORIGIN::D_GET ) )
+					req.update( nameIt->second, value, ORequest::ORIGIN::D_COOKIE );
+				}
 			}
 		}
 	return;

@@ -223,7 +223,7 @@ void HServer::handler_env( HSocket::ptr_t& sock, yaal::hcore::HString const& a_o
 void HServer::handler_cookie( HSocket::ptr_t& sock, yaal::hcore::HString const& a_oCookie )
 	{
 	M_PROLOG
-	read_request( sock, ORequest::ORIGIN::D_COOKIE, a_oCookie );
+	read_request( sock, ORequest::ORIGIN::D_JAR, a_oCookie );
 	M_EPILOG
 	}
 
