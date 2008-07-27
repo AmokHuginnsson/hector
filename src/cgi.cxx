@@ -43,7 +43,6 @@ namespace hector
 namespace cgi
 {
 
-static char const* const D_ATTRIBUTE_ID = "id";
 static HString const D_ATTRIBUTE_CLASS( "class" );
 
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString const& attribute, HString const& element )
@@ -179,6 +178,7 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 	M_PROLOG
 	static char const* const D_CLASS_WASTEABLE = "wasteable";
 	static char const* const D_NODE_KEEP = "keep";
+	static char const* const D_ATTRIBUTE_KIND = "kind";
 	static HXml waste;
 	static keep_t keepGlobal;
 	if ( ! selfwaste )
@@ -202,12 +202,17 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 				}
 			else if ( is_kind_of( *del, D_CLASS_WASTEABLE ) )
 				{
-				HXml::HNode::properties_t::iterator idIt = (*del).properties().find( D_ATTRIBUTE_ID );
-
-				if ( ( idIt != (*del).properties().end() )
-						&& ( keep.find( idIt->second ) == keep.end() )
-						&& ( keepGlobal.find( idIt->second ) == keepGlobal.end() ) )
-					selfwaste->move_node( *del );
+				HXml::HNode::properties_t& props = (*del).properties();
+				HXml::HNode::properties_t::iterator kindIt = props.find( D_ATTRIBUTE_KIND );
+				if ( kindIt != props.end() )
+					{
+					if ( ( keep.find( kindIt->second ) == keep.end() )
+							&& ( keepGlobal.find( kindIt->second ) == keepGlobal.end() ) )
+						selfwaste->move_node( *del );
+					else
+						waste_children( *del, req, defaults, selfwaste );
+					props.erase( kindIt );
+					}
 				else
 					waste_children( *del, req, defaults, selfwaste );
 				}
@@ -225,6 +230,7 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 	M_PROLOG
 	static char const* const D_CLASS_MARKABLE = "markable";
 	static char const* const D_CLASS_CURRENT = " current";
+	static char const* const D_ATTRIBUTE_ID = "id";
 	for ( HXml::HIterator it = node.begin(); it != node.end(); ++ it )
 		{
 		if ( (*it).get_type() == HXml::HNode::TYPE::D_NODE )
