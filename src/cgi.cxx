@@ -180,12 +180,13 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 	static char const* const D_NODE_KEEP = "keep";
 	static char const* const D_ATTRIBUTE_KIND = "kind";
 	static HXml waste;
+	static HXml::HNodeProxy root;
 	static keep_t keepGlobal;
 	if ( ! selfwaste )
 		{
 		keepGlobal.clear();
 		waste.create_root( "x" );
-		HXml::HNodeProxy root = waste.get_root();
+		root = waste.get_root();
 		selfwaste = &root;
 		}
 	keep_t keep;
@@ -275,10 +276,11 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 	static char const* const D_NODE_MOVE = "move";
 	static char const* const D_ATTRIBUTE_TO = "to";
 	static HXml waste;
+	static HXml::HNodeProxy root;
 	if ( ! selfwaste )
 		{
 		waste.create_root( "x" );
-		HXml::HNodeProxy root = waste.get_root();
+		root = waste.get_root();
 		selfwaste = &root;
 		}
 	for ( HXml::HIterator it = node.begin(); it != node.end(); )
