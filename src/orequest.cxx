@@ -170,7 +170,7 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 		jar += it->second;
 		}
 	jar = base64::encode( jar );
-	int size = jar.get_length();
+	int size = static_cast<int>( jar.get_length() );
 	HString properName;
 	HString payload;
 	cookieNo = 0;

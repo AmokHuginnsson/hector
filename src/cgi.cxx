@@ -58,7 +58,7 @@ bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HStri
 			&& ( ! idx || ::strchr( D_ELEMENT_SEPARATOR, attrIt->second[ idx - 1 ] ) );
 		if ( leftLimit )
 			{
-			int len = element.get_length();
+			int len = static_cast<int>( element.get_length() );
 			is = ( ( idx + len ) >= attrIt->second.get_length() ) || ::strchr( D_ELEMENT_SEPARATOR, attrIt->second[ idx + len ] );
 			}
 		}
