@@ -463,6 +463,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 					{
 					if ( keep.find( (*reqIt).first ) == keep.end() )
 						{
+						keep.insert( (*reqIt).first );
 						HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::D_NODE, D_NODE_INPUT );
 						HXml::HNode::properties_t& props = input.properties();
 						props.insert( D_ATTRIBUTE_TYPE, D_ATTRIBUTE_TYPE_VALUE );
