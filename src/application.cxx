@@ -136,6 +136,7 @@ void HApplication::do_generate_page( ORequest const& req )
 	cgi::waste_children( dom().get_root(), req, defaults );
 	cgi::mark_children( dom().get_root(), req, defaults, dom() );
 	cgi::move_children( dom().get_root(), req, dom() );
+	cgi::expand_autobutton( dom().get_root(), req );
 	return;
 	M_EPILOG
 	}

@@ -49,6 +49,8 @@ public:
 			D_ANY = 31
 			} origin_t;
 		};
+	class HConstIterator;
+	typedef HConstIterator const_iterator;
 private:
 	yaal::hcore::HSocket::ptr_t f_oSocket;
 	dictionary_ptr_t f_oEnvironment;
@@ -66,9 +68,27 @@ public:
 	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
 	yaal::hcore::HSocket::ptr_t socket( void );
 	yaal::hcore::HSocket::ptr_t const socket( void ) const;
+	const_iterator begin( void ) const;
+	const_iterator end( void ) const;
+	friend class HConstIterator;
 	};
 
 typedef yaal::hcore::HExceptionT<ORequest> ORequestException;
+
+class ORequest::HConstIterator
+	{
+	ORequest const* f_poOwner;
+	ORequest::ORIGIN::origin_t f_eOrigin;
+	dictionary_t::const_iterator f_oIt;
+public:
+	HConstIterator( HConstIterator const& );
+	bool operator != ( HConstIterator const& ) const;
+	HConstIterator& operator ++ ( void );
+	ORequest::dictionary_t::map_elem_t const& operator* ( void ) const;
+private:
+	HConstIterator( ORequest const*, ORequest::ORIGIN::origin_t const&, ORequest::dictionary_t::const_iterator );
+	friend class ORequest;
+	};
 
 }
 

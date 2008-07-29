@@ -201,5 +201,51 @@ HSocket::ptr_t const ORequest::socket( void ) const
 	return ( f_oSocket );
 	}
 
+ORequest::const_iterator ORequest::begin( void ) const
+	{
+	dictionary_t::const_iterator it = f_oGET->begin();
+	ORIGIN::origin_t o = it != f_oGET->end() ? ORIGIN::D_GET : ORIGIN::D_POST;
+	return ( const_iterator( this, o, o == ORIGIN::D_GET ? it : f_oPOST->begin() ) );
+	}
+
+ORequest::const_iterator ORequest::end( void ) const
+	{
+	return ( const_iterator( this, ORIGIN::D_POST, f_oPOST->end() ) );
+	}
+
+
+ORequest::HConstIterator::HConstIterator( HConstIterator const& it )
+	: f_poOwner( it.f_poOwner ), f_eOrigin( it.f_eOrigin ), f_oIt( it.f_oIt )
+	{
+	}
+
+bool ORequest::HConstIterator::operator != ( HConstIterator const& it ) const
+	{
+	return ( ( f_eOrigin != it.f_eOrigin ) || ( f_oIt != it.f_oIt ) );
+	}
+
+ORequest::HConstIterator& ORequest::HConstIterator::operator ++ ( void )
+	{
+	M_ASSERT( ( f_eOrigin == ORequest::ORIGIN::D_GET ) || ( f_oIt != f_poOwner->f_oPOST->end() ) );
+	++ f_oIt;
+	if ( ( f_eOrigin == ORequest::ORIGIN::D_GET ) && ( f_oIt == f_poOwner->f_oGET->end() ) )
+		{
+		f_eOrigin = ORequest::ORIGIN::D_POST;
+		f_oIt = f_poOwner->f_oPOST->begin();
+		}
+	return ( *this );
+	}
+
+ORequest::dictionary_t::map_elem_t const& ORequest::HConstIterator::operator* ( void ) const
+	{
+	return ( *f_oIt );
+	}
+
+ORequest::HConstIterator::HConstIterator( ORequest const* a_poOwner,
+		ORequest::ORIGIN::origin_t const& origin, ORequest::dictionary_t::const_iterator it )
+	: f_poOwner( a_poOwner ), f_eOrigin( origin ), f_oIt( it )
+	{
+	}
+
 }
 

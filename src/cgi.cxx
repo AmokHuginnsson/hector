@@ -427,6 +427,58 @@ void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req )
 	M_EPILOG
 	}
 
+void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req )
+	{
+	M_PROLOG
+	static char const* const D_CLASS_AUTOBUTTON = "autobutton";
+	static char const* const D_NODE_FIELDSET = "fieldset";
+	static char const* const D_NODE_INPUT = "input";
+	static char const* const D_ATTRIBUTE_TYPE = "type";
+	static char const* const D_ATTRIBUTE_TYPE_VALUE = "hidden";
+	static char const* const D_ATTRIBUTE_NAME = "name";
+	static char const* const D_ATTRIBUTE_VALUE = "value";
+	for ( HXml::HIterator it = node.begin(); it != node.end(); ++ it )
+		{
+		if ( (*it).get_type() == HXml::HNode::TYPE::D_NODE )
+			{
+			if ( is_kind_of( *it, D_CLASS_AUTOBUTTON ) )
+				{
+				HXml::HIterator fieldsetIt = (*it).begin();
+				M_ENSURE( fieldsetIt != (*it).end() );
+				HXml::HNodeProxy fieldset = *fieldsetIt;
+				M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::D_NODE )
+						&& ( fieldset.get_name() == D_NODE_FIELDSET ) );
+				keep_t keep;
+				for ( HXml::HIterator fieldIt = fieldset.begin(); fieldIt != fieldset.end(); ++ fieldIt )
+					{
+					if ( (*fieldIt).get_type() == HXml::HNode::TYPE::D_NODE )
+						{
+						HXml::HNode::properties_t& props = (*fieldIt).properties();
+						HXml::HNode::properties_t::iterator nameIt = props.find( D_ATTRIBUTE_NAME );
+						if ( nameIt != props.end() )
+							keep.insert( nameIt->second );
+						}
+					}
+				for ( ORequest::const_iterator reqIt = req.begin(); reqIt != req.end(); ++ reqIt )
+					{
+					if ( keep.find( (*reqIt).first ) == keep.end() )
+						{
+						HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::D_NODE, D_NODE_INPUT );
+						HXml::HNode::properties_t& props = input.properties();
+						props.insert( D_ATTRIBUTE_TYPE, D_ATTRIBUTE_TYPE_VALUE );
+						props.insert( D_ATTRIBUTE_NAME, (*reqIt).first );
+						props.insert( D_ATTRIBUTE_VALUE, (*reqIt).second );
+						}
+					}
+				}
+			else
+				expand_autobutton( *it, req );
+			}
+		}
+	return;
+	M_EPILOG
+	}
+
 }
 
 }
