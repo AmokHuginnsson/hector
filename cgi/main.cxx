@@ -134,7 +134,6 @@ void query( int argc, char** argv )
 				push_query( sock, environ[ i ] + sizeof ( CS ) - 1, "cookie", ";" );
 				continue;
 				}
-			cout << environ[ i ] << endl;
 			buffer << "env:" << escape( environ[ i ] ) << endl;
 			sock << buffer.consume();
 			}
