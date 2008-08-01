@@ -62,6 +62,7 @@ OProcessor OProcessor::get_instance( HString const& name, HString const& path )
 	HPlugin::ptr_t l_oActiveX( new HPlugin() );
 	activex << "/" << name << "/" << D_ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
+	out << "Trying path: `" << activex.raw() << "' for activex: `" << name << "'" << endl;
 	l_oActiveX->load( activex.raw() );
 	M_ASSERT( l_oActiveX->is_loaded() );
 	out << "activex nest for `" << name << "' loaded" << endl;

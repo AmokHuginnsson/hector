@@ -28,6 +28,20 @@ fi
 
 JAIL="/home/${SERVICE}/"
 
+conditional_chattr() {
+	if [ -d ${1} ] ; then
+		chattr -i ${1}/*
+	fi
+}
+
+conditional_umount() {
+	MOUNTED=`awk '/\/home\/hector\/proc/' /proc/mounts`
+	if [ "x${MOUNTED}" != "x" ] ; then
+		umount -f /home/${SERVICE}/proc
+	fi
+}
+
+adv ./_deploy/init stop
 adv /bin/rm -fr nest
 adv mkdir -p nest/etc/conf nest/var/db/keys
 adv cp build/${DAEMON}/1exec nest/
@@ -35,15 +49,17 @@ adv cp -a ~/usr/lib nest
 adv cp -a ~/src/yaal/yaalrc nest/etc/conf/
 adv cp -a ~/src/${SERVICE}/hectorrc nest/etc/conf/
 adv cp -a ~/var/db/keys/yaal.* nest/var/db/keys/
-adv chattr -i ${JAIL}/nest/*
-umount /home/${SERVICE}/proc
-adv /bin/rm -r ${JAIL}/*
+adv conditional_chattr ${JAIL}/nest "${JAIL}/nest/*"
+adv conditional_umount
+adv /bin/rm -rf ${JAIL}/*
 
 adv cp -a ~/src/cellar/web nest/app
+adv cp -a ~/src/${SERVICE}/app/hector-test.xml nest/app/hector.xml
 for ITEM in nest/app/* ; do
 	if [ -f ${ITEM}/interface.xml ] ; then
 		APP=`basename ${ITEM}`
 		if [ -f ./build/${APP}/1exec ] ; then
+			adv /bin/rm -f nest/app/${APP}/activex
 			adv cp -f ./build/${APP}/1exec nest/app/${APP}/activex
 			adv chmod 644 nest/app/${APP}/activex
 		fi
@@ -54,11 +70,16 @@ adv mkdir -p ${JAIL}/tmp/hector ${JAIL}/bin
 adv mv nest ${JAIL}/
 adv cp /bin/bash-minimal ${JAIL}/bin/sh
 adv chmod 1757 ${JAIL}/tmp
+adv chmod 755 ${JAIL}/tmp/hector
 adv chown -R root:root ${JAIL}/nest/
 adv chown ${SERVICE}:service ${JAIL}/nest/ ${JAIL}/tmp/hector
 adv chmod -R a+rX ${JAIL}/bin ${JAIL}/nest/*
 adv makejail ./_deploy/jail-${DAEMON}.py
-adv /bin/rm ${JAIL}/nest/x_*
+if [ ! -f ${JAIL}/etc/passwd ] ; then
+	echo "Deployment failed!"
+	exit 1
+fi
+adv /bin/rm -f ${JAIL}/nest/x_*
 adv "grep service /etc/group > ${JAIL}/etc/group"
 adv chattr +i ${JAIL}/nest/*
 

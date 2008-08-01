@@ -30,6 +30,8 @@ SCRIPTNAME="${0}"
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
 
+VERBOSE="yes"
+
 # Define LSB log_* functions.
 # Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
 . /lib/lsb/init-functions
@@ -38,8 +40,13 @@ SCRIPTNAME="${0}"
 # Function that starts the daemon/service
 #
 
+is_running() {
+	launchtool --check -t hector > /dev/null 2>&1
+}
+
 do_start() {
 # Read configuration variable file if it is present
+	is_running && echo "already running ... " && return
 	launchtool -C ${HECTOR_SRC}/_deploy/launch-hectord.conf
 	sleep 1
 	chmod 755 ${SOCKDIR}
@@ -49,7 +56,11 @@ do_start() {
 # Function that stops the daemon/service
 #
 do_stop() {
-	launchtool -k 2 -t hector
+	is_running || echo "not running ... "
+	is_running || return
+	is_running && launchtool -k 2 -t hector
+	is_running && sleep 1 && is_running &&	launchtool -k 15 -t hector > /dev/null 2>&1
+	is_running && sleep 1 && is_running &&	launchtool -k 9 -t hector  > /dev/null 2>&1
 }
 
 #
