@@ -43,7 +43,6 @@ do_start() {
 	launchtool -C ${HECTOR_SRC}/_deploy/launch-hectord.conf
 	sleep 1
 	chmod 755 ${SOCKDIR}
-	chmod 666 ${SOCKDIR}/*
 }
 
 #
