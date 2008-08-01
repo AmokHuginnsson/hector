@@ -44,8 +44,8 @@ for ITEM in nest/app/* ; do
 	if [ -f ${ITEM}/interface.xml ] ; then
 		APP=`basename ${ITEM}`
 		if [ -f ./build/${APP}/1exec ] ; then
-			adv cp -f ./build/${APP}/1exec nest/app/${APP}/processor
-			adv chmod 644 nest/app/${APP}/processor
+			adv cp -f ./build/${APP}/1exec nest/app/${APP}/activex
+			adv chmod 644 nest/app/${APP}/activex
 		fi
 	fi
 done
