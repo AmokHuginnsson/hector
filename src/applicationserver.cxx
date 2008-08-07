@@ -177,7 +177,7 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 				it->second.f_oApplication->generate_page( a_roRequest );
 				}
 			else
-				msg << "no such application: " << application << endl;
+				msg << "\n\nno such application: " << application << endl;
 			}
 		*sock << msg.consume();
 		_exit( 0 );
