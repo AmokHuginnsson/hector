@@ -90,16 +90,16 @@ dnl We need to know what operating system hector will be compiled on.
 AC_MSG_RESULT([--- Guessing host operating system ... ---              [[64%]]])
 AC_CHECK_FILE(
 	[[/etc/rc]],
-	[AC_DEFINE([[__HOST_OS_TYPE_FREEBSD__]]) _HOST________=['FreeBSD. ---  ']],
+	[AC_DEFINE([__HOST_OS_TYPE_FREEBSD__],[],[The operating system is FreeBSD.]) _HOST________=['FreeBSD. ---  ']],
 	[AC_CHECK_FILE(
 		[[/etc/debconf.conf]],
-		[AC_DEFINE([[__HOST_OS_TYPE_DEBIAN__]]) _HOST________=['Debian. ---   ']],
+		[AC_DEFINE([__HOST_OS_TYPE_DEBIAN__],[],[The operating system is Debian.]) _HOST________=['Debian. ---   ']],
 		[AC_CHECK_FILE(
 			[[/etc/poldek/poldek.conf]],
-			[AC_DEFINE([[__HOST_OS_TYPE_PLD__]]) _HOST________=['PLD. ---      ']],
+			[AC_DEFINE([__HOST_OS_TYPE_PLD__],[],[The operating system is PLD.]) _HOST________=['PLD. ---      ']],
 			[AC_CHECK_FILE(
 				[[/etc/random-seed]],
-				[AC_DEFINE([[__HOST_OS_TYPE_SLACKWARE__]]) _HOST________=['Slackware. ---']],
+				[AC_DEFINE([__HOST_OS_TYPE_SLACKWARE__],[],[The operating system is Slackware.]) _HOST________=['Slackware. ---']],
 				[AC_MSG_ERROR([Can not recognize host operating system type!])]
 			)]
 		)]
@@ -162,21 +162,19 @@ AC_CHECK_LIB([hdata],[yaal_hdata_main],
 AC_MSG_RESULT([--- All needed libraries found. ---                     [[83%]]])
 
 AC_MSG_RESULT([--- Looking for needed headers ... ---                  [[84%]]])
-AC_CHECK_HEADERS([[ncurses/ncurses.h]],_NCURSES_HEADER=['ncurses/ncurses.h'],
-	[AC_CHECK_HEADERS([[ncurses.h]],_NCURSES_HEADER=['ncurses.h'],
-			[AC_MSG_ERROR([Can not continue without ncurses devel!])])])
-AC_CHECK_HEADERS([[yaal/yaal.h]],,
+AC_CHECK_HEADERS([yaal/yaal.h],,
 			[AC_MSG_ERROR([[Can not continue without yaal devel!]])])
 AC_MSG_RESULT([--- Done looking for needed header, all found. ---      [[92%]]])
 
-dnl We need to check if out ncurses devel is not brain-damaged.
-AC_MSG_RESULT([--- Libraries/environment sanity check ... ---          [[93%]]])
-AC_MSG_CHECKING([if your ncurses-devel is brain-damaged])
-CXXFLAGS=["-W -Wall -Werror -Wcast-align -Wconversion -Wwrite-strings -pedantic-errors -Wcast-qual"]
-AC_COMPILE_IFELSE([#include <$_NCURSES_HEADER>
-void foo(){printw("x");}],[AC_MSG_RESULT([[no :)]])],
-	[AC_MSG_RESULT([[yes :(]])
-		AC_MSG_ERROR([Can not continue with brain-damaged ncurses.])])
+AH_TOP([/* $Id$ */
+
+#ifndef __HECTOR_CONFIG_H
+#define __HECTOR_CONFIG_H
+
+/* Define core behavior here. */])
+AH_BOTTOM([
+#endif /* not __HECTOR_CONFIG_H */
+])
 
 dnl We have to set up proper compiler/linker flags.
 AC_OUTPUT([Makefile])
