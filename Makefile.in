@@ -28,7 +28,7 @@ export DIR_ROOT	?= $(CURDIR)
 VERSION				= 0
 SUBVERSION		= 0
 EXTRAVERSION	= 0
-include $(DIR_ROOT)/_aux/common-paths.mk
+include $(DIR_ROOT)/_aux/mk/0_paths.mk
 LIBS						= pthread hcore hconsole hdata dbwrapper tools
 $(eval $(call NEW_TARGET,hectord,src,-DTARGET_HECTOR_DAEMON,-rdynamic))
 $(eval $(call NEW_TARGET,hector.cgi,cgi,-DTARGET_HECTOR_CGI))
