@@ -1,5 +1,7 @@
 #! /bin/sh
 
+set -e
+
 SERVICE="hector"
 DAEMON="${SERVICE}d"
 SHELLLIB="${HOME}/src/server/shell-lib"
@@ -53,8 +55,11 @@ adv conditional_chattr ${JAIL}/nest "${JAIL}/nest/*"
 adv conditional_umount
 adv /bin/rm -rf ${JAIL}/*
 
-adv cp -a ~/src/cellar/web nest/app
-adv cp -a ~/src/${SERVICE}/app/hector-test.xml nest/app/hector.xml
+adv mkdir -p nest/app
+HECTOR_SETUP=`readlink ${HOME}/src/${SERVICE}/app/hector.xml`
+adv cp -a ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP} nest/app/hector.xml
+APPS=`xmlstarlet sel -T -t -m "/hector/applications/application[@load='true']" -o ${HOME}/src/cellar/web/ -v '@symbol' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP}`
+adv cp -af ${APPS} nest/app/
 for ITEM in nest/app/* ; do
 	if [ -f ${ITEM}/interface.xml ] ; then
 		APP=`basename ${ITEM}`
