@@ -24,8 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __CGI_H
-#define __CGI_H
+#ifndef CGI_HXX_INCLUDED
+#define CGI_HXX_INCLUDED
 
 #include <yaal/tools/hxml.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>
@@ -62,5 +62,5 @@ void make_cookies( yaal::tools::HXml::HNodeProxy, ORequest& );
 
 }
 
-#endif /* not __CGI_H */
+#endif /* not CGI_HXX_INCLUDED */
 

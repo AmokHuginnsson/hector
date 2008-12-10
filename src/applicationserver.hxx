@@ -24,8 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __APPLICATIONSERVER_H
-#define __APPLICATIONSERVER_H
+#ifndef APPLICATIONSERVER_HXX_INCLUDED
+#define APPLICATIONSERVER_HXX_INCLUDED
 
 #include <yaal/hcore/hstring.hxx>
 #include <yaal/hcore/hmap.hxx>
@@ -76,5 +76,5 @@ private:
 
 }
 
-#endif /* not __APPLICATIONSERVER_H */
+#endif /* not APPLICATIONSERVER_HXX_INCLUDED */
 

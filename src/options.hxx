@@ -24,8 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __OPTIONS_H
-#define __OPTIONS_H
+#ifndef OPTIONS_HXX_INCLUDED
+#define OPTIONS_HXX_INCLUDED
 
 namespace hector
 {
@@ -35,5 +35,5 @@ int decode_switches( int, char ** );
 
 }
 
-#endif /* __OPTIONS_H */
+#endif /* OPTIONS_HXX_INCLUDED */
 

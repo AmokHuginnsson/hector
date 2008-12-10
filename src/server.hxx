@@ -24,8 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __SERVER_H
-#define __SERVER_H
+#ifndef SERVER_HXX_INCLUDED
+#define SERVER_HXX_INCLUDED
 
 #include <yaal/tools/hprocess.hxx>
 
@@ -101,5 +101,5 @@ int main_server( void );
 
 }
 
-#endif /* not __SERVER_H */
+#endif /* not SERVER_HXX_INCLUDED */
 

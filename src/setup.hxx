@@ -24,8 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __SETUP_H
-#define __SETUP_H
+#ifndef SETUP_HXX_INCLUDED
+#define SETUP_HXX_INCLUDED
 
 #include <libintl.h>
 #include <yaal/yaal.hxx>
@@ -76,4 +76,4 @@ extern OSetup setup;
 
 }
 
-#endif /* __SETUP_H */
+#endif /* SETUP_HXX_INCLUDED */

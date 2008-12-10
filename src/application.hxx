@@ -24,8 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef __APPLICATION_H
-#define __APPLICATION_H
+#ifndef APPLICATION_HXX_INCLUDED
+#define APPLICATION_HXX_INCLUDED
 
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/hplugin.hxx>
@@ -61,5 +61,5 @@ typedef yaal::hcore::HExceptionT<HApplication> HApplicationException;
 
 }
 
-#endif /* not __APPLICATION_H */
+#endif /* not APPLICATION_HXX_INCLUDED */
 
