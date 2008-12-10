@@ -26,13 +26,13 @@ Copyright:
 
 #include <iostream>
 
-#include <yaal/yaal.h> /* all hAPI headers */
+#include <yaal/yaal.hxx> /* all hAPI headers */
 M_VCSID( "$Id: "__ID__" $" )
 
-#include "version.h"
-#include "setup.h"
-#include "options.h"
-#include "applicationserver.h"
+#include "version.hxx"
+#include "setup.hxx"
+#include "options.hxx"
+#include "applicationserver.hxx"
 
 using namespace std;
 using namespace yaal;

@@ -1,7 +1,7 @@
 /*
 ---            `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski             ---
 
-	setup.h - this file is integral part of `hector' project.
+	setup.hxx - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -28,7 +28,7 @@ Copyright:
 #define __SETUP_H
 
 #include <libintl.h>
-#include <yaal/yaal.h>
+#include <yaal/yaal.hxx>
 #include <iostream>
 
 #define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
@@ -57,7 +57,7 @@ struct OSetup
 	yaal::hcore::HString f_oSocketRoot;
 	yaal::hcore::HString f_oReload;
 	/* self-sufficient */
-	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.h" );
+	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.hxx" );
 	OSetup( void )
 		: f_bQuiet( false ), f_bVerbose( false ),
 		f_bHelp( false ), f_bShutdown( false ),

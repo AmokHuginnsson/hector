@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	application.h - this file is integral part of `hector' project.
+	application.hxx - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -27,9 +27,9 @@ Copyright:
 #ifndef __APPLICATION_H
 #define __APPLICATION_H
 
-#include <yaal/tools/hxml.h>
-#include <yaal/tools/hplugin.h>
-#include "server.h"
+#include <yaal/tools/hxml.hxx>
+#include <yaal/tools/hplugin.hxx>
+#include "server.hxx"
 
 namespace hector
 {

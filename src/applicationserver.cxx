@@ -27,10 +27,10 @@ Copyright:
 #include <sys/wait.h>
 #include <iostream>
 
-#include <yaal/yaal.h>
+#include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
-#include "applicationserver.h"
-#include "setup.h"
+#include "applicationserver.hxx"
+#include "setup.hxx"
 
 using namespace std;
 using namespace yaal;
@@ -67,7 +67,7 @@ void HApplicationServer::start( void )
 	static char const* const D_NODE_APPLICATIONS = "applications";
 	HStringStream confPath( setup.f_oDataDir );
 	confPath << D_CONFIGURATION_FILE;
-	f_oConfiguration.load( confPath.raw() );
+	f_oConfiguration.load( HStreamInterface::ptr_t( new HFile( confPath.string() ) ) );
 	HXml::HConstNodeProxy hector = f_oConfiguration.get_root();
 	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it )
 		{

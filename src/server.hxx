@@ -1,7 +1,7 @@
 /*
 ---           `gameground' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	server.h - this file is integral part of `gameground' project.
+	server.hxx - this file is integral part of `gameground' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -27,9 +27,9 @@ Copyright:
 #ifndef __SERVER_H
 #define __SERVER_H
 
-#include <yaal/tools/hprocess.h>
+#include <yaal/tools/hprocess.hxx>
 
-#include "orequest.h"
+#include "orequest.hxx"
 
 namespace hector
 {

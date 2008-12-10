@@ -26,12 +26,12 @@ Copyright:
 
 #include <iostream>
 
-#include <yaal/yaal.h>
+#include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
-#include "application.h"
-#include "applicationserver.h"
-#include "setup.h"
-#include "cgi.h"
+#include "application.hxx"
+#include "applicationserver.hxx"
+#include "setup.hxx"
+#include "cgi.hxx"
 
 using namespace std;
 using namespace yaal;
@@ -103,7 +103,7 @@ void HApplication::load( HString const& name, HString const& path )
 	interface << "/" << f_oName << "/" << D_INTERFACE_FILE;
 	toolkit << "/" << f_oName << "/" << D_TOOLKIT_FILE;
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
-	f_oDOM.init( interface.raw() );
+	f_oDOM.init( HStreamInterface::ptr_t( new HFile( interface.string() ) ) );
 	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
 	f_oDOM.apply_style( toolkit.raw() );
 	f_oDOM.parse();
@@ -147,7 +147,7 @@ void HApplication::generate_page( ORequest const& req )
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req );
-	f_oDOM.save( req.socket()->get_file_descriptor() );
+	f_oDOM.save( req.socket() );
 	return;
 	M_EPILOG
 	}

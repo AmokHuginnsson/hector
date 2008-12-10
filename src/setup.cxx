@@ -24,9 +24,9 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/yaal.h>
+#include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
-#include "setup.h"
+#include "setup.hxx"
 
 using namespace yaal::hcore;
 using namespace yaal::tools;

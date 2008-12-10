@@ -28,12 +28,12 @@ Copyright:
 #include <cstring>
 #include <cstdio>
 
-#include <yaal/yaal.h>
+#include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 
-#include "options.h"
-#include "version.h"
-#include "setup.h"
+#include "options.hxx"
+#include "version.hxx"
+#include "setup.hxx"
 
 using namespace yaal;
 using namespace yaal::hcore;

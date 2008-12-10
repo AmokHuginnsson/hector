@@ -26,10 +26,10 @@ Copyright:
 
 #include <iostream>
 
-#include <yaal/yaal.h>
+#include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
-#include "cgi.h"
-#include "setup.h"
+#include "cgi.hxx"
+#include "setup.hxx"
 
 using namespace std;
 using namespace yaal;

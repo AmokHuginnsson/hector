@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	cgi.h - this file is integral part of `hector' project.
+	cgi.hxx - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -27,10 +27,10 @@ Copyright:
 #ifndef __CGI_H
 #define __CGI_H
 
-#include <yaal/tools/hxml.h>
-#include <yaal/dbwrapper/hdatabase.h>
+#include <yaal/tools/hxml.hxx>
+#include <yaal/dbwrapper/hdatabase.hxx>
 
-#include "orequest.h"
+#include "orequest.hxx"
 
 namespace	hector
 {
