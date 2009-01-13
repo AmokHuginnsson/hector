@@ -83,7 +83,7 @@ void ORequest::update( HString const& key, HString const& value, ORIGIN::origin_
 		default:
 			M_ASSERT( ! "bad origin" );
 		}
-	dict->insert( key, value );
+	(*dict)[ key ] = value;
 	return;
 	M_EPILOG
 	}
@@ -145,7 +145,7 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 		{
 		name = realCookie.split( "=", 0 );
 		M_ENSURE( ! name.is_empty() );
-		f_oCookies->insert( name, realCookie.mid( name.get_length() + 1 ) ); /* + 1 for '=' char */
+		(*f_oCookies)[ name ] = realCookie.mid( name.get_length() + 1 ); /* + 1 for '=' char */
 		}
 	return;
 	M_EPILOG
@@ -185,7 +185,7 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 			}
 		else
 			payload = jar.mid( offset, D_PAYLOAD_SIZE );
-		f_oJar->insert( properName, payload );
+		(*f_oJar)[ properName ] = payload;
 		}
 	return ( f_oJar );
 	M_EPILOG

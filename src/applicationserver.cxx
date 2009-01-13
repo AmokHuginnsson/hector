@@ -121,7 +121,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
 			try
 				{
-				f_oApplications.insert( symbol->second, OProcessor::get_instance( symbol->second, setup.f_oDataDir ) );
+				f_oApplications[ symbol->second ] = OActiveX::get_instance( symbol->second, setup.f_oDataDir );
 				}
 			catch ( HException& e )
 				{
@@ -183,7 +183,7 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 		_exit( 0 );
 		}
 	else
-		f_oPending.insert( pid, sock );
+		f_oPending.insert( hcore::make_pair( pid, sock ) );
 	M_EPILOG
 	}
 
@@ -235,8 +235,8 @@ void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName
 		{
 		try
 			{
-			applications_t::iterator newX = f_oApplications.insert( appName, OProcessor::get_instance( appName, setup.f_oDataDir ) );
-			newX->second.reload_binary();
+			OActiveX& newX = f_oApplications[ appName ] = OActiveX::get_instance( appName, setup.f_oDataDir );
+			newX.reload_binary();
 			}
 		catch ( HException& e )
 			{

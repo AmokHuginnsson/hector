@@ -146,7 +146,7 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 				 * Alright, yes we have.
 				 */
 				keepItem = defaultIt->second;
-				defaults.insert( kind->second, keepItem );
+				defaults[ kind->second ] = keepItem;
 				}
 			}
 		if ( ! keepItem.is_empty() )
@@ -161,7 +161,7 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 					if ( keepIt != global.end() )
 						global.erase( keepIt );
 					}
-				defaults.insert( kind->second, keepItem );
+				defaults[ kind->second ] = keepItem;
 				global.insert( keepItem );
 				}
 			db.insert( keepItem );
@@ -466,9 +466,9 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 						keep.insert( (*reqIt).first );
 						HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::D_NODE, D_NODE_INPUT );
 						HXml::HNode::properties_t& props = input.properties();
-						props.insert( D_ATTRIBUTE_TYPE, D_ATTRIBUTE_TYPE_VALUE );
-						props.insert( D_ATTRIBUTE_NAME, (*reqIt).first );
-						props.insert( D_ATTRIBUTE_VALUE, (*reqIt).second );
+						props[ D_ATTRIBUTE_TYPE ] = D_ATTRIBUTE_TYPE_VALUE;
+						props[ D_ATTRIBUTE_NAME ] = (*reqIt).first;
+						props[ D_ATTRIBUTE_VALUE ] = (*reqIt).second;
 						}
 					}
 				}

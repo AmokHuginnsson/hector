@@ -32,24 +32,14 @@ Copyright:
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/signals.hxx>
 #include "server.hxx"
-#include "application.hxx"
+#include "oactivex.hxx"
 
 namespace hector
 {
 
-struct OProcessor
-	{
-	yaal::hcore::HString f_oBinaryPath;
-	yaal::tools::HPlugin::ptr_t f_oActiveX;
-	HApplication::ptr_t f_oApplication;
-	OProcessor( yaal::hcore::HString const& path ) : f_oBinaryPath( path ), f_oActiveX(), f_oApplication() {}
-	static OProcessor get_instance( yaal::hcore::HString const&, yaal::hcore::HString const& );
-	void reload_binary( void );
-	};
-
 class HApplicationServer : public HServer
 	{
-	typedef yaal::hcore::HMap<yaal::hcore::HString, OProcessor> applications_t;
+	typedef yaal::hcore::HMap<yaal::hcore::HString, OActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
 	applications_t f_oApplications;
 	pending_t f_oPending;

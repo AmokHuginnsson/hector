@@ -53,7 +53,7 @@ HApplication::~HApplication( void )
 	out << "Application `" << f_oName << "' unloaded." << endl;
 	}
 
-OProcessor OProcessor::get_instance( HString const& name, HString const& path )
+OActiveX OActiveX::get_instance( HString const& name, HString const& path )
 	{
 	M_PROLOG
 	static char const* const D_SYMBOL_FACTORY = "factory";
@@ -74,7 +74,7 @@ OProcessor OProcessor::get_instance( HString const& name, HString const& path )
 	app = factory();
 	if ( ! app )
 		throw HApplicationException( "invalid activex" );
-	OProcessor proc( activex.raw() );
+	OActiveX proc( activex.raw() );
 	proc.f_oApplication = app;
 	proc.f_oActiveX = l_oActiveX;
 	app->load( name, path );
@@ -82,7 +82,7 @@ OProcessor OProcessor::get_instance( HString const& name, HString const& path )
 	M_EPILOG
 	}
 
-void OProcessor::reload_binary( void )
+void OActiveX::reload_binary( void )
 	{
 	M_PROLOG
 	f_oActiveX->unload();

@@ -59,7 +59,7 @@ private:
 	dictionary_ptr_t f_oCookies;
 	dictionary_ptr_t f_oJar;
 public:
-	ORequest( yaal::hcore::HSocket::ptr_t );
+	ORequest( yaal::hcore::HSocket::ptr_t = yaal::hcore::HSocket::ptr_t() );
 	ORequest( ORequest const& );
 	ORequest& operator = ( ORequest const& );
 	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, ORIGIN::origin_t const& );

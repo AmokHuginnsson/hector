@@ -125,7 +125,7 @@ int HServer::handler_connection( int msgFd )
 	else
 		{
 		if ( channel == IPC_CHANNEL::D_REQUEST )
-			f_oRequests.insert( fd, ORequest( l_oClient ) );
+			f_oRequests[ fd ] = ORequest( l_oClient );
 		register_file_descriptor_handler( fd, &HServer::handler_message );
 		}
 	out << green << "new connection" << lightgray << endl;
