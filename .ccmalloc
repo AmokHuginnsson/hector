@@ -67,7 +67,7 @@ file ./1exec
 % Can be used alternatively to the 'log' command if you want to use
 % ccmalloc for debugging parallel applications where several copies of
 % the program you are debugging must be run simoultaneously. In this
-% case you can not use 'log' because you do not want to write to the same
+% case you cannot use 'log' because you do not want to write to the same
 % log file. Using 'logpid' uses a file name ending with the <pid> of
 % the process which means the name is unique even if several copies of
 % your program are run simoultaneously.
