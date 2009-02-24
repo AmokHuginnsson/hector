@@ -24,7 +24,6 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <iostream>
 #include <unistd.h> /* the `char** environ;' variable */
 
 #include <yaal/yaal.hxx> /* all hAPI headers */
@@ -34,7 +33,6 @@ M_VCSID ( "$Id$" )
 #include "setup.hxx"
 #include "options.hxx"
 
-using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::hconsole;

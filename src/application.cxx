@@ -24,8 +24,6 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <iostream>
-
 #include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "application.hxx"
@@ -33,7 +31,6 @@ M_VCSID( "$Id: "__ID__" $" )
 #include "setup.hxx"
 #include "cgi.hxx"
 
-using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::hconsole;

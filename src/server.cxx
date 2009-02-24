@@ -26,15 +26,12 @@ Copyright:
 
 #include <sys/stat.h>
 
-#include <iostream>
-
 #include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "server.hxx"
 
 #include "setup.hxx"
 
-using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::hconsole;
