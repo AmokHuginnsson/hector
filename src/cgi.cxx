@@ -418,7 +418,7 @@ void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req )
 				HXml::HNode::properties_t::iterator nameIt = props.find( D_ATTRIBUTE_NAME );
 				M_ENSURE( nameIt != props.end() );
 				M_ENSURE( ! nameIt->second.is_empty() );
-				if ( ! req.lookup( nameIt->second, value, ORequest::ORIGIN::D_POST | ORequest::ORIGIN::D_GET ) )
+				if ( ! req.lookup( nameIt->second, value, ORequest::origin_t( ORequest::ORIGIN::D_POST ) | ORequest::ORIGIN::D_GET ) )
 					req.update( nameIt->second, value, ORequest::ORIGIN::D_COOKIE );
 				}
 			}

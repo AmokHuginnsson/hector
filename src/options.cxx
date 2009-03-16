@@ -76,24 +76,24 @@ simple_callback_t dump( usage, NULL );
 simple_callback_t version_call( version, NULL );
 OOption n_psOptions[] =
 	{
-		{ "log_path", D_HSTRING, & setup.f_oLogPath, NULL, OOption::D_REQUIRED, "path", "path pointing to file for application logs", NULL },
+		{ "log_path", TYPE::D_HSTRING, & setup.f_oLogPath, NULL, OOption::D_REQUIRED, "path", "path pointing to file for application logs", NULL },
 #if defined ( TARGET_HECTOR_DAEMON )
-		{ "data_dir", D_HSTRING, &setup.f_oDataDir, "D", OOption::D_REQUIRED, "path", "find application data here", NULL },
-		{ "max_connections", D_INT, &setup.f_iMaxConnections, "M", OOption::D_REQUIRED, "count", "maximum number of concurent connections", NULL },
+		{ "data_dir", TYPE::D_HSTRING, &setup.f_oDataDir, "D", OOption::D_REQUIRED, "path", "find application data here", NULL },
+		{ "max_connections", TYPE::D_INT, &setup.f_iMaxConnections, "M", OOption::D_REQUIRED, "count", "maximum number of concurent connections", NULL },
 #elif defined ( TARGET_HECTOR_ADMIN )
-		{ "shutdown", D_BOOL, &setup.f_bShutdown, "S", OOption::D_NONE, NULL, "shutdown server nicely", NULL },
-		{ "reload", D_HSTRING, &setup.f_oReload, "r", OOption::D_REQUIRED, "app", "reload given application", NULL },
-		{ "status", D_BOOL, &setup.f_bStatus, "i", OOption::D_NONE, NULL, "print server information", NULL },
+		{ "shutdown", TYPE::D_BOOL, &setup.f_bShutdown, "S", OOption::D_NONE, NULL, "shutdown server nicely", NULL },
+		{ "reload", TYPE::D_HSTRING, &setup.f_oReload, "r", OOption::D_REQUIRED, "app", "reload given application", NULL },
+		{ "status", TYPE::D_BOOL, &setup.f_bStatus, "i", OOption::D_NONE, NULL, "print server information", NULL },
 #endif
-		{ "timeout_write", D_INT, &setup.f_iSocketWriteTimeout, "T", OOption::D_REQUIRED, "seconds", "timeout for socket write operation", NULL },
-		{ "socket_root", D_HSTRING, &setup.f_oSocketRoot, "R", OOption::D_REQUIRED, "path", "root path for communication socket", NULL },
-		{ "quiet", D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
-		{ "silent", D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
-		{ "verbose", D_BOOL, &setup.f_bVerbose, "v", OOption::D_NONE, NULL, "print more information", NULL },
-		{ "help", D_BOOL, &setup.f_bHelp, "h", OOption::D_NONE, NULL, "display this help and exit", &help },
-		{ "dump-configuration", D_VOID, NULL, "W", OOption::D_NONE, NULL, "dump current configuration", &dump },
-		{ "version", D_VOID, NULL, "V", OOption::D_NONE, NULL, "output version information and exit", &version_call },
-		{ NULL, D_VOID, NULL, NULL, OOption::D_NONE, NULL, NULL, NULL }
+		{ "timeout_write", TYPE::D_INT, &setup.f_iSocketWriteTimeout, "T", OOption::D_REQUIRED, "seconds", "timeout for socket write operation", NULL },
+		{ "socket_root", TYPE::D_HSTRING, &setup.f_oSocketRoot, "R", OOption::D_REQUIRED, "path", "root path for communication socket", NULL },
+		{ "quiet", TYPE::D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
+		{ "silent", TYPE::D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
+		{ "verbose", TYPE::D_BOOL, &setup.f_bVerbose, "v", OOption::D_NONE, NULL, "print more information", NULL },
+		{ "help", TYPE::D_BOOL, &setup.f_bHelp, "h", OOption::D_NONE, NULL, "display this help and exit", &help },
+		{ "dump-configuration", TYPE::D_VOID, NULL, "W", OOption::D_NONE, NULL, "dump current configuration", &dump },
+		{ "version", TYPE::D_VOID, NULL, "V", OOption::D_NONE, NULL, "output version information and exit", &version_call },
+		{ NULL, TYPE::D_VOID, NULL, NULL, OOption::D_NONE, NULL, NULL, NULL }
 	};
 
 }

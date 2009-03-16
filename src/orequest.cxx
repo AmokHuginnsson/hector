@@ -69,11 +69,11 @@ ORequest& ORequest::operator = ( ORequest const& req )
 	return ( *this );
 	}
 
-void ORequest::update( HString const& key, HString const& value, ORIGIN::origin_t const& origin )
+void ORequest::update( HString const& key, HString const& value, origin_t const& origin )
 	{
 	M_PROLOG
 	dictionary_t* dict = NULL;
-	switch ( origin )
+	switch ( origin.value() )
 		{
 		case ( ORIGIN::D_ENV ):    dict = &*f_oEnvironment; break;
 		case ( ORIGIN::D_POST ):   dict = &*f_oPOST;        break;
@@ -88,21 +88,21 @@ void ORequest::update( HString const& key, HString const& value, ORIGIN::origin_
 	M_EPILOG
 	}
 
-bool ORequest::lookup( HString const& key, HString& value, ORIGIN::origin_t const& origin ) const
+bool ORequest::lookup( HString const& key, HString& value, origin_t const& origin ) const
 	{
 	M_PROLOG
 	dictionary_t::const_iterator it = f_oEnvironment->find( key );
 	bool bFound = false;
-	( ! bFound ) && ( origin & ORIGIN::D_ENV )
+	( ! bFound ) && ( !!( origin & ORIGIN::D_ENV ) )
 		&& ( bFound = ( ( it = f_oEnvironment->find( key ) ) != f_oEnvironment->end() ) )
 		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( origin & ORIGIN::D_POST )
+	( ! bFound ) && ( !!( origin & ORIGIN::D_POST ) )
 		&& ( bFound = ( ( it = f_oPOST->find( key ) )        != f_oPOST->end() ) )
 		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( origin & ORIGIN::D_GET )
+	( ! bFound ) && ( !!( origin & ORIGIN::D_GET ) )
 		&& ( bFound = ( ( it = f_oGET->find( key ) )         != f_oGET->end() ) )
 		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( origin & ORIGIN::D_COOKIE )
+	( ! bFound ) && ( !!( origin & ORIGIN::D_COOKIE ) )
 		&& ( bFound = ( ( it = f_oCookies->find( key ) )     != f_oCookies->end() ) )
 		&& ( !! ( value = it->second ) );
 	return ( ! bFound );
@@ -204,7 +204,7 @@ HSocket::ptr_t const ORequest::socket( void ) const
 ORequest::const_iterator ORequest::begin( void ) const
 	{
 	dictionary_t::const_iterator it = f_oGET->begin();
-	ORIGIN::origin_t o = it != f_oGET->end() ? ORIGIN::D_GET : ORIGIN::D_POST;
+	origin_t o = it != f_oGET->end() ? ORIGIN::D_GET : ORIGIN::D_POST;
 	return ( const_iterator( this, o, o == ORIGIN::D_GET ? it : f_oPOST->begin() ) );
 	}
 
@@ -242,7 +242,7 @@ ORequest::dictionary_t::map_elem_t const& ORequest::HConstIterator::operator* ( 
 	}
 
 ORequest::HConstIterator::HConstIterator( ORequest const* a_poOwner,
-		ORequest::ORIGIN::origin_t const& origin, ORequest::dictionary_t::const_iterator it )
+		ORequest::origin_t const& origin, ORequest::dictionary_t::const_iterator it )
 	: f_poOwner( a_poOwner ), f_eOrigin( origin ), f_oIt( it )
 	{
 	}

@@ -47,8 +47,9 @@ public:
 			D_POST = 8,
 			D_JAR = 16,
 			D_ANY = 31
-			} origin_t;
+			} enum_t;
 		};
+	typedef yaal::hcore::HStrongEnum<ORIGIN> origin_t;
 	class HConstIterator;
 	typedef HConstIterator const_iterator;
 private:
@@ -62,8 +63,8 @@ public:
 	ORequest( yaal::hcore::HSocket::ptr_t = yaal::hcore::HSocket::ptr_t() );
 	ORequest( ORequest const& );
 	ORequest& operator = ( ORequest const& );
-	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, ORIGIN::origin_t const& );
-	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString&, ORIGIN::origin_t const& = ORIGIN::D_ANY ) const;
+	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, origin_t const& );
+	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString&, origin_t const& = ORIGIN::D_ANY ) const;
 	void decompress_jar( yaal::hcore::HString const& );
 	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
 	yaal::hcore::HSocket::ptr_t socket( void );
@@ -78,7 +79,7 @@ typedef yaal::hcore::HExceptionT<ORequest> ORequestException;
 class ORequest::HConstIterator
 	{
 	ORequest const* f_poOwner;
-	ORequest::ORIGIN::origin_t f_eOrigin;
+	ORequest::origin_t f_eOrigin;
 	dictionary_t::const_iterator f_oIt;
 public:
 	HConstIterator( HConstIterator const& );
@@ -86,7 +87,7 @@ public:
 	HConstIterator& operator ++ ( void );
 	ORequest::dictionary_t::map_elem_t const& operator* ( void ) const;
 private:
-	HConstIterator( ORequest const*, ORequest::ORIGIN::origin_t const&, ORequest::dictionary_t::const_iterator );
+	HConstIterator( ORequest const*, ORequest::origin_t const&, ORequest::dictionary_t::const_iterator );
 	friend class ORequest;
 	};
 

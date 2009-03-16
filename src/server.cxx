@@ -57,8 +57,10 @@ HServer::HServer( int a_iConnections )
 	f_oSocket(), f_oRequests(), f_oHandlers()
 	{
 	M_PROLOG
-	f_oSocket[ IPC_CHANNEL::D_CONTROL ] = HSocket::ptr_t( new HSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ) );
-	f_oSocket[ IPC_CHANNEL::D_REQUEST ] = HSocket::ptr_t( new HSocket( HSocket::TYPE::D_FILE | HSocket::TYPE::D_NONBLOCKING, a_iConnections ) );
+	f_oSocket[ IPC_CHANNEL::D_CONTROL ] = HSocket::ptr_t(
+			new HSocket( HSocket::socket_type_t( HSocket::TYPE::D_FILE ) | HSocket::TYPE::D_NONBLOCKING, a_iConnections ) );
+	f_oSocket[ IPC_CHANNEL::D_REQUEST ] = HSocket::ptr_t(
+			new HSocket( HSocket::socket_type_t( HSocket::TYPE::D_FILE ) | HSocket::TYPE::D_NONBLOCKING, a_iConnections ) );
 	return;
 	M_EPILOG
 	}
@@ -190,7 +192,7 @@ void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t const& channel,
 	M_EPILOG
 	}
 
-void HServer::read_request( HSocket::ptr_t& sock, ORequest::ORIGIN::origin_t const& origin, yaal::hcore::HString const& a_oString )
+void HServer::read_request( HSocket::ptr_t& sock, ORequest::origin_t const& origin, yaal::hcore::HString const& a_oString )
 	{
 	M_PROLOG
 	requests_t::iterator reqIt;

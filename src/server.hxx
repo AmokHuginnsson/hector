@@ -89,7 +89,7 @@ protected:
 	void handler_get( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_post( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_done( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void read_request( yaal::hcore::HSocket::ptr_t&, ORequest::ORIGIN::origin_t const&, yaal::hcore::HString const& );
+	void read_request( yaal::hcore::HSocket::ptr_t&, ORequest::origin_t const&, yaal::hcore::HString const& );
 	void service_request( ORequest& );
 	virtual void do_service_request( ORequest& ) = 0;
 	virtual void do_reload( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& ) = 0;
