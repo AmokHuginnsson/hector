@@ -162,7 +162,7 @@ AH_BOTTOM([
 ])
 
 dnl We have to set up proper compiler/linker flags.
-AC_OUTPUT([Makefile])
+AC_OUTPUT([Makefile.mk])
 AC_MSG_RESULT([--- All ok, good luck! ---                     	       [[100%]]])
 AC_MSG_RESULT([[Now you can type \`make'.]])
 
