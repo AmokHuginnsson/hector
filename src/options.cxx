@@ -57,7 +57,7 @@ void usage( void* ) __attribute__(( __noreturn__ ));
 void usage( void* arg )
 	{
 	OOptionInfo* info = static_cast<OOptionInfo*>( arg );
-	info->PROC( info->_opt, info->_size, setup.f_pcProgramName, "XML based Web Application Server.", NULL );
+	info->PROC( info->_opt, setup.f_pcProgramName, "XML based Web Application Server.", NULL );
 	throw ( setup.f_bHelp ? 0 : 1 );
 	}
 
@@ -71,51 +71,42 @@ void version( void* )
 namespace
 {
 
-simple_callback_t help( usage, NULL );
-simple_callback_t dump( usage, NULL );
-simple_callback_t version_call( version, NULL );
-OOption n_psOptions[] =
-	{
-		{ "log_path", TYPE::D_HSTRING, & setup.f_oLogPath, NULL, OOption::D_REQUIRED, "path", "path pointing to file for application logs", NULL },
-#if defined ( TARGET_HECTOR_DAEMON )
-		{ "data_dir", TYPE::D_HSTRING, &setup.f_oDataDir, "D", OOption::D_REQUIRED, "path", "find application data here", NULL },
-		{ "max_connections", TYPE::D_INT, &setup.f_iMaxConnections, "M", OOption::D_REQUIRED, "count", "maximum number of concurent connections", NULL },
-#elif defined ( TARGET_HECTOR_ADMIN )
-		{ "shutdown", TYPE::D_BOOL, &setup.f_bShutdown, "S", OOption::D_NONE, NULL, "shutdown server nicely", NULL },
-		{ "reload", TYPE::D_HSTRING, &setup.f_oReload, "r", OOption::D_REQUIRED, "app", "reload given application", NULL },
-		{ "status", TYPE::D_BOOL, &setup.f_bStatus, "i", OOption::D_NONE, NULL, "print server information", NULL },
-#endif
-		{ "timeout_write", TYPE::D_INT, &setup.f_iSocketWriteTimeout, "T", OOption::D_REQUIRED, "seconds", "timeout for socket write operation", NULL },
-		{ "socket_root", TYPE::D_HSTRING, &setup.f_oSocketRoot, "R", OOption::D_REQUIRED, "path", "root path for communication socket", NULL },
-		{ "quiet", TYPE::D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
-		{ "silent", TYPE::D_BOOL, &setup.f_bQuiet, "q", OOption::D_NONE, NULL, "inhibit usual output", NULL },
-		{ "verbose", TYPE::D_BOOL, &setup.f_bVerbose, "v", OOption::D_NONE, NULL, "print more information", NULL },
-		{ "help", TYPE::D_BOOL, &setup.f_bHelp, "h", OOption::D_NONE, NULL, "display this help and exit", &help },
-		{ "dump-configuration", TYPE::D_VOID, NULL, "W", OOption::D_NONE, NULL, "dump current configuration", &dump },
-		{ "version", TYPE::D_VOID, NULL, "V", OOption::D_NONE, NULL, "output version information and exit", &version_call },
-		{ NULL, TYPE::D_VOID, NULL, NULL, OOption::D_NONE, NULL, NULL, NULL }
-	};
+HProgramOptionsHandler::simple_callback_t help( usage, NULL );
+HProgramOptionsHandler::simple_callback_t dump( usage, NULL );
+HProgramOptionsHandler::simple_callback_t version_call( version, NULL );
 
 }
 
-int process_hectorrc_file( void )
-	{
-	rc_file::process_rc_file ( "hector", HString(), n_psOptions, NULL );
-	if ( ! setup.f_oLogPath )
-		setup.f_oLogPath = "hectord.log";
-	return ( 0 );
-	}
-
-int decode_switches( int a_iArgc, char** a_ppcArgv )
+int handle_program_options( int a_iArgc, char** a_ppcArgv )
 	{
 	M_PROLOG
+	HProgramOptionsHandler po;
+	po( "log_path", program_options_helper::option_value( setup.f_oLogPath ), NULL, HProgramOptionsHandler::OOption::TYPE::D_REQUIRED, "path", "path pointing to file for application logs", NULL )
+#if defined ( TARGET_HECTOR_DAEMON )
+		( "data_dir", program_options_helper::option_value( setup.f_oDataDir ), "D", HProgramOptionsHandler::OOption::TYPE::D_REQUIRED, "path", "find application data here", NULL )
+		( "max_connections", program_options_helper::option_value( setup.f_iMaxConnections ), "M", HProgramOptionsHandler::OOption::TYPE::D_REQUIRED, "count", "maximum number of concurent connections", NULL )
+#elif defined ( TARGET_HECTOR_ADMIN )
+		( "shutdown", program_options_helper::option_value( setup.f_bShutdown ), "S", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "shutdown server nicely", NULL )
+		( "reload", program_options_helper::option_value( setup.f_oReload ), "r", HProgramOptionsHandler::OOption::TYPE::D_REQUIRED, "app", "reload given application", NULL )
+		( "status", program_options_helper::option_value( setup.f_bStatus ), "i", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "print server information", NULL )
+#endif
+		( "timeout_write", program_options_helper::option_value( setup.f_iSocketWriteTimeout ), "T", HProgramOptionsHandler::OOption::TYPE::D_REQUIRED, "seconds", "timeout for socket write operation", NULL )
+		( "socket_root", program_options_helper::option_value( setup.f_oSocketRoot ), "R", HProgramOptionsHandler::OOption::TYPE::D_REQUIRED, "path", "root path for communication socket", NULL )
+		( "quiet", program_options_helper::option_value( setup.f_bQuiet ), "q", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "inhibit usual output", NULL )
+		( "silent", program_options_helper::option_value( setup.f_bQuiet ), "q", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "inhibit usual output", NULL )
+		( "verbose", program_options_helper::option_value( setup.f_bVerbose ), "v", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "print more information", NULL )
+		( "help", program_options_helper::option_value( setup.f_bHelp ), "h", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "display this help and exit", &help )
+		( "dump-configuration", program_options_helper::no_value, "W", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "dump current configuration", &dump )
+		( "version", program_options_helper::no_value, "V", HProgramOptionsHandler::OOption::TYPE::D_NONE, NULL, "output version information and exit", &version_call );
+	po.process_rc_file( "hector", "", NULL );
+	if ( setup.f_oLogPath.is_empty() )
+		setup.f_oLogPath = "hectord.log";
 	int l_iUnknown = 0, l_iNonOption = 0;
-	OOptionInfo info( n_psOptions, sizeof ( n_psOptions ) / sizeof ( OOption ), util::show_help );
-	OOptionInfo infoConf( n_psOptions, sizeof ( n_psOptions ) / sizeof ( OOption ), util::dump_configuration );
+	OOptionInfo info( po.get_options(), util::show_help );
+	OOptionInfo infoConf( po.get_options(), util::dump_configuration );
 	help.second = &info;
 	dump.second = &infoConf;
-	l_iNonOption = cl_switch::decode_switches( a_iArgc, a_ppcArgv, n_psOptions,
-			info._size, &l_iUnknown );
+	l_iNonOption = po.process_command_line( a_iArgc, a_ppcArgv, &l_iUnknown );
 	if ( l_iUnknown > 0 )
 		usage( &info );
 	return ( l_iNonOption );

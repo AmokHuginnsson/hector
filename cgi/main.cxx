@@ -60,8 +60,7 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 /* TO-DO: enter main loop code here */
 		HSignalServiceFactory::get_instance();
 		setup.f_pcProgramName = a_ppcArgv[ 0 ];
-		process_hectorrc_file();
-		l_iOpt = decode_switches( a_iArgc, a_ppcArgv );
+		l_iOpt = handle_program_options( a_iArgc, a_ppcArgv );
 		setup.f_oLogPath.replace( "hectord", "hector.cgi" );
 		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
 		setup.test_setup();
