@@ -46,7 +46,6 @@ struct OSetup
 	static char const* const D_DEFAULT_SOCKET_ROOT;
 	bool f_bQuiet;			/* --quiet, --silent */
 	bool f_bVerbose;		/* --verbose */
-	bool f_bHelp;
 	bool f_bShutdown;
 	bool f_bStatus;
 	char* f_pcProgramName;
@@ -60,7 +59,7 @@ struct OSetup
 	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.hxx" );
 	OSetup( void )
 		: f_bQuiet( false ), f_bVerbose( false ),
-		f_bHelp( false ), f_bShutdown( false ),
+		f_bShutdown( false ),
 		f_bStatus( false ), f_pcProgramName( NULL ),
 		f_iMaxConnections( D_DEFAULT_MAX_CONNECTIONS ),
 		f_iSocketWriteTimeout( D_DEFAULT_SOCKET_WRITE_TIMEOUT ),
