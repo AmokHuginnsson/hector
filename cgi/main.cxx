@@ -92,11 +92,10 @@ HString escape( HString const& source )
 void push_query( HSocket& sock, HString const& query, char const* const mode, char const* const delim )
 	{
 	M_PROLOG
-	HString param;
 	HStringStream buffer;
-	int i = 0;
-	while ( ! ( param = query.split( delim, i ++ ) ).is_empty() )
-		sock << ( buffer << mode << ":" << escape( param ) << endl << buffer );
+	HTokenizer t( query, delim, HTokenizer::D_SKIP_EMPTY );
+	for ( HTokenizer::HIterator it = t.begin(), end = t.end(); it != end; ++ it )
+		sock << ( buffer << mode << ":" << escape( *it ) << endl << buffer );
 	return;
 	M_EPILOG
 	}

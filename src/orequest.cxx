@@ -138,14 +138,15 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 	M_ENSURE( jar.get_length() == size );
 	jar = base64::decode( jar );
 	f_oJar->clear();
-	HString& realCookie = buf;
 	cookieNo = 0;
 	HString name;
-	while ( ! ( realCookie = jar.split( "\001", cookieNo ++ ) ).is_empty() )
+	HTokenizer t( jar, "\001", HTokenizer::D_SKIP_EMPTY );
+	for ( HTokenizer::HIterator it = t.begin(), endIt = t.end(); it != endIt; ++ it )
 		{
-		name = realCookie.split( "=", 0 );
+		int long sepIdx = (*it).find( "=" );
+		name = (*it).left( sepIdx >= 0 ? sepIdx : LONG_MAX );
 		M_ENSURE( ! name.is_empty() );
-		(*f_oCookies)[ name ] = realCookie.mid( name.get_length() + 1 ); /* + 1 for '=' char */
+		(*f_oCookies)[ name ] = (*it).mid( sepIdx + 1 ); /* + 1 for '=' char */
 		}
 	return;
 	M_EPILOG

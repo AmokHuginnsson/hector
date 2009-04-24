@@ -242,7 +242,7 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 				HXml::HNode::properties_t::iterator id = props.find( D_ATTRIBUTE_ID );
 				if ( id != props.end() )
 					{
-					HString subject = id->second.split( "-", 1 );
+					HString subject = id->second.mid( id->second.find( "-" ) + 1 ); /* + 1 for '-' character */
 					if ( ! subject.is_empty() )
 						{
 						HString object;

@@ -151,8 +151,9 @@ int HServer::handler_message( int a_iFileDescriptor )
 			out << "<-" << l_oMessage << endl;
 			static HString l_oCommand;
 			static HString l_oArgument;
-			l_oCommand = l_oMessage.split( ":", 0 );
-			l_oArgument = l_oMessage.mid( l_oCommand.get_length() + 1 );
+			int long sepIdx = l_oMessage.find( ":" );
+			l_oCommand = l_oMessage.left( sepIdx >= 0 ? sepIdx : LONG_MAX );
+			l_oArgument = l_oMessage.mid( sepIdx + 1 );
 			int l_iMsgLength = static_cast<int>( l_oCommand.get_length() );
 			if ( l_iMsgLength < 1 )
 				disconnect_client( channel, l_oClient, _( "Malformed data." ) );
@@ -201,10 +202,11 @@ void HServer::read_request( HSocket::ptr_t& sock, ORequest::origin_t const& orig
 	else
 		{
 		static HString key;
-		key = a_oString.split( "=", 0 );
-		key.trim_left().trim_right();
 		static HString value;
-		value = a_oString.split( "=", 1 );
+		int long sepIdx = a_oString.find( "=" );
+		key = a_oString.left( sepIdx >= 0 ? sepIdx : LONG_MAX );
+		value = a_oString.mid( sepIdx + 1 );
+		key.trim_left().trim_right();
 		value.trim_left().trim_right();
 		reqIt->second.update( key, value, origin );
 		}
