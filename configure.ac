@@ -14,7 +14,7 @@ AC_CONFIG_AUX_DIR([../yaal/_aux])
 dnl hector is not Free Software.
 AC_COPYRIGHT([[hector (c) 2003 All rights reserved.]])
 
-AC_CHECK_PROG(HAS_GIT,[git-log],["true"],["false"])
+AC_CHECK_PROG(HAS_GIT,[git],["true"],["false"])
 AC_MSG_CHECKING([git id sub-command])
 AC_SUBST(GITID,[true])
 if test ["$HAS_GIT"] = ["true"] ; then
