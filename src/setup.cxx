@@ -34,7 +34,7 @@ using namespace yaal::tools;
 namespace hector
 {
 
-char const* const OSetup::D_DEFAULT_SOCKET_ROOT = "/tmp/hector/";
+char const* const OSetup::DEFAULT_SOCKET_ROOT = "/tmp/hector/";
 
 void OSetup::test_setup( void )
 	{

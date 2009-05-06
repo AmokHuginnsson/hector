@@ -95,7 +95,7 @@ void query_status( void )
 	sockPath += "/control.sock";
 	try
 		{
-		HSocket sock( HSocket::TYPE::D_FILE );
+		HSocket sock( HSocket::TYPE::FILE );
 		sock.connect( sockPath );
 		sock << "status" << endl;
 		show_answer( sock );
@@ -116,7 +116,7 @@ void query_shutdown( void )
 	sockPath += "/control.sock";
 	try
 		{
-		HSocket sock( HSocket::TYPE::D_FILE );
+		HSocket sock( HSocket::TYPE::FILE );
 		sock.connect( sockPath );
 		sock << "shutdown" << endl;
 		show_answer( sock );
@@ -137,7 +137,7 @@ void query_reload( void )
 	sockPath += "/control.sock";
 	try
 		{
-		HSocket sock( HSocket::TYPE::D_FILE );
+		HSocket sock( HSocket::TYPE::FILE );
 		sock.connect( sockPath );
 		sock << "reload:" << setup.f_oReload << endl;
 		show_answer( sock );

@@ -60,40 +60,40 @@ void HApplicationServer::start( void )
 	ss.register_handler( SIGCHLD, handler );
 	register_file_descriptor_handler( f_oSigChildEvent.get_reader_fd(), &HApplicationServer::process_sigchild );
 
-	static char const* const D_CONFIGURATION_FILE = "/hector.xml";
-	static char const* const D_NODE_CONFIGURATION = "configuration";
-	static char const* const D_NODE_APPLICATIONS = "applications";
+	static char const* const CONFIGURATION_FILE = "/hector.xml";
+	static char const* const NODE_CONFIGURATION = "configuration";
+	static char const* const NODE_APPLICATIONS = "applications";
 	HStringStream confPath( setup.f_oDataDir );
-	confPath << D_CONFIGURATION_FILE;
+	confPath << CONFIGURATION_FILE;
 	f_oConfiguration.load( HStreamInterface::ptr_t( new HFile( confPath.string() ) ) );
 	HXml::HConstNodeProxy hector = f_oConfiguration.get_root();
 	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it )
 		{
 		HString const& name = (*it).get_name();
-		if ( name == D_NODE_CONFIGURATION )
+		if ( name == NODE_CONFIGURATION )
 			read_configuration( *it );
-		else if ( name == D_NODE_APPLICATIONS )
+		else if ( name == NODE_APPLICATIONS )
 			read_applications( *it );
 		}
-	hcore::log( LOG_TYPE::D_INFO ) << "Statring application server." << endl;
+	hcore::log( LOG_TYPE::INFO ) << "Statring application server." << endl;
 	init_server();
-	f_oSocket[ IPC_CHANNEL::D_CONTROL ]->set_timeout( setup.f_iSocketWriteTimeout );
-	f_oSocket[ IPC_CHANNEL::D_REQUEST ]->set_timeout( setup.f_iSocketWriteTimeout );
+	f_oSocket[ IPC_CHANNEL::CONTROL ]->set_timeout( setup.f_iSocketWriteTimeout );
+	f_oSocket[ IPC_CHANNEL::REQUEST ]->set_timeout( setup.f_iSocketWriteTimeout );
 	M_EPILOG
 	}
 
 void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& configuration )
 	{
 	M_PROLOG
-	static char const* const D_NODE_DEFAULT_APPLICATION = "default_application";
-	static char const* const D_PROP_NAME = "name";
+	static char const* const NODE_DEFAULT_APPLICATION = "default_application";
+	static char const* const PROP_NAME = "name";
 	for ( HXml::HConstIterator it = configuration.begin(); it != configuration.end(); ++ it )
 		{
 		HString const& name = (*it).get_name();
-		if ( name == D_NODE_DEFAULT_APPLICATION )
+		if ( name == NODE_DEFAULT_APPLICATION )
 			{
 			HXml::HNode::properties_t const& props = (*it).properties();
-			HXml::HNode::properties_t::const_iterator nameAttr = props.find( D_PROP_NAME );
+			HXml::HNode::properties_t::const_iterator nameAttr = props.find( PROP_NAME );
 			if ( nameAttr != props.end() )
 				f_oDefaultApplication = nameAttr->second;
 			}
@@ -104,18 +104,18 @@ void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& config
 void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applications )
 	{
 	M_PROLOG
-	static char const* const D_APP_NODE_NAME = "application";
-	static char const* const D_APP_PROP_NAME_SYMBOL = "symbol";
-	static char const* const D_APP_PROP_NAME_LOAD = "load";
+	static char const* const APP_NODE_NAME = "application";
+	static char const* const APP_PROP_NAME_SYMBOL = "symbol";
+	static char const* const APP_PROP_NAME_LOAD = "load";
 	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it )
 		{
 		HXml::HConstNodeProxy application = *it;
-		M_ENSURE( application.get_name() == D_APP_NODE_NAME );
+		M_ENSURE( application.get_name() == APP_NODE_NAME );
 		HXml::HNode::properties_t const& props = application.properties();
-		HXml::HNode::properties_t::const_iterator load = props.find( D_APP_PROP_NAME_LOAD );
+		HXml::HNode::properties_t::const_iterator load = props.find( APP_PROP_NAME_LOAD );
 		if ( ( load != props.end() ) && ( lexical_cast<bool>( load->second ) ) )
 			{
-			HXml::HNode::properties_t::const_iterator symbol = props.find( D_APP_PROP_NAME_SYMBOL );
+			HXml::HNode::properties_t::const_iterator symbol = props.find( APP_PROP_NAME_SYMBOL );
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
 			try
 				{
@@ -124,7 +124,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 			catch ( HException& e )
 				{
 				out << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
-				hcore::log( LOG_TYPE::D_WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
+				hcore::log( LOG_TYPE::WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
 				}
 			}
 		}
@@ -218,7 +218,7 @@ void HApplicationServer::clean_request( int opts )
 			cout << "\tby signal: " << WTERMSIG( status ) << endl;
 		else
 			cout << "\tnormally: " << WEXITSTATUS( status ) << endl;
-		disconnect_client( IPC_CHANNEL::D_REQUEST, it->second, _( "request serviced" ) );
+		disconnect_client( IPC_CHANNEL::REQUEST, it->second, _( "request serviced" ) );
 		f_oPending.erase( it );
 		}
 	return;
@@ -238,7 +238,7 @@ void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName
 			}
 		catch ( HException& e )
 			{
-			hcore::log( LOG_TYPE::D_WARNING ) << "Failed to load `" << appName << "': " << e.what() << "." << endl;
+			hcore::log( LOG_TYPE::WARNING ) << "Failed to load `" << appName << "': " << e.what() << "." << endl;
 			*sock << "Failed to load `" << appName << "': " << e.what() << "." << endl;
 			}
 		}
@@ -246,7 +246,7 @@ void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName
 		{
 		*sock << "no such application: " << appName << endl;
 		}
-	disconnect_client( IPC_CHANNEL::D_CONTROL, sock, _( "request serviced" ) );
+	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
 	M_EPILOG
 	}
 
@@ -256,7 +256,7 @@ void HApplicationServer::do_status( HSocket::ptr_t& sock )
 	*sock << "apps: " << f_oApplications.size() << endl;
 	*sock << "new: " << f_oRequests.size() << endl;
 	*sock << "pending: " << f_oPending.size() << endl;
-	disconnect_client( IPC_CHANNEL::D_CONTROL, sock, _( "request serviced" ) );
+	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
 	M_EPILOG
 	}
 

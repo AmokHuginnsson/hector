@@ -43,23 +43,23 @@ namespace hector
 namespace cgi
 {
 
-static HString const D_ATTRIBUTE_CLASS( "class" );
+static HString const ATTRIBUTE_CLASS( "class" );
 
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString const& attribute, HString const& element )
 	{
 	M_PROLOG
-	static char const* const D_ELEMENT_SEPARATOR = " \t";
+	static char const* const ELEMENT_SEPARATOR = " \t";
 	HXml::HNode::properties_t::const_iterator attrIt = props.find( attribute );
 	bool is = false;
 	if ( attrIt != props.end() )
 		{
 		int idx = 0;
 		bool leftLimit = ( ( idx = static_cast<int>( attrIt->second.find( element ) ) ) >= 0 )
-			&& ( ! idx || ::strchr( D_ELEMENT_SEPARATOR, attrIt->second[ idx - 1 ] ) );
+			&& ( ! idx || ::strchr( ELEMENT_SEPARATOR, attrIt->second[ idx - 1 ] ) );
 		if ( leftLimit )
 			{
 			int len = static_cast<int>( element.get_length() );
-			is = ( ( idx + len ) >= attrIt->second.get_length() ) || ::strchr( D_ELEMENT_SEPARATOR, attrIt->second[ idx + len ] );
+			is = ( ( idx + len ) >= attrIt->second.get_length() ) || ::strchr( ELEMENT_SEPARATOR, attrIt->second[ idx + len ] );
 			}
 		}
 	return ( is );
@@ -69,7 +69,7 @@ bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HStri
 bool is_kind_of( yaal::tools::HXml::HNode::properties_t const& props, HString const& kind )
 	{
 	M_PROLOG
-	return ( is_in_attribute( props, D_ATTRIBUTE_CLASS, kind ) );
+	return ( is_in_attribute( props, ATTRIBUTE_CLASS, kind ) );
 	M_EPILOG
 	}
 
@@ -84,7 +84,7 @@ bool has_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString
 bool is_in_attribute( yaal::tools::HXml::HNodeProxy const& node, HString const& attribute, HString const& element )
 	{
 	M_PROLOG
-	M_ASSERT( node.get_type() == HXml::HNode::TYPE::D_NODE );
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	HXml::HNode::properties_t const& props = node.properties();
 	return ( is_in_attribute( props, attribute, element ) );
 	M_EPILOG
@@ -93,14 +93,14 @@ bool is_in_attribute( yaal::tools::HXml::HNodeProxy const& node, HString const& 
 bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, HString const& kind )
 	{
 	M_PROLOG
-	return ( is_in_attribute( node, D_ATTRIBUTE_CLASS, kind ) );
+	return ( is_in_attribute( node, ATTRIBUTE_CLASS, kind ) );
 	M_EPILOG
 	}
 
 bool has_attribute( yaal::tools::HXml::HNodeProxy const& node, HString const& attribute )
 	{
 	M_PROLOG
-	M_ASSERT( node.get_type() == HXml::HNode::TYPE::D_NODE );
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	HXml::HNode::properties_t const& props = node.properties();
 	return ( has_attribute( props, attribute ) );
 	M_EPILOG
@@ -109,20 +109,20 @@ bool has_attribute( yaal::tools::HXml::HNodeProxy const& node, HString const& at
 void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep_t& global, default_t& defaults )
 	{
 	M_PROLOG
-	static HString const D_NODE_KEEP_RULE( "rule" );
-	static HString const D_ATTRIBUTE_KIND( "kind" );
-	static HString const D_ATTRIBUTE_DEFAULT( "default" );
-	static HString const D_ATTRIBUTE_VALID( "valid" );
-	static HString const D_ATTRIBUTE_GLOBAL( "global" );
+	static HString const NODE_KEEP_RULE( "rule" );
+	static HString const ATTRIBUTE_KIND( "kind" );
+	static HString const ATTRIBUTE_DEFAULT( "default" );
+	static HString const ATTRIBUTE_VALID( "valid" );
+	static HString const ATTRIBUTE_GLOBAL( "global" );
 	/*
 	 * Look thru all <rule />'s.
 	 */
 	for ( HXml::HIterator it = keep.begin(); it != keep.end(); ++ it )
 		{
-		M_ENSURE( (*it).get_type() == HXml::HNode::TYPE::D_NODE );
-		M_ENSURE( (*it).get_name() == D_NODE_KEEP_RULE );
+		M_ENSURE( (*it).get_type() == HXml::HNode::TYPE::NODE );
+		M_ENSURE( (*it).get_name() == NODE_KEEP_RULE );
 		HXml::HNode::properties_t& props = (*it).properties();
-		HXml::HNode::properties_t::iterator kind = props.find( D_ATTRIBUTE_KIND );
+		HXml::HNode::properties_t::iterator kind = props.find( ATTRIBUTE_KIND );
 		/*
 		 * All <rule />'s must have kind="" attribute.
 		 */
@@ -132,14 +132,14 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 		 * Let's find out if request have that `kind' specified.
 		 */
 		if ( req.lookup( kind->second, keepItem )
-				|| ( has_attribute( props, D_ATTRIBUTE_VALID )
-					&& ! is_in_attribute( props, D_ATTRIBUTE_VALID, keepItem ) ) )
+				|| ( has_attribute( props, ATTRIBUTE_VALID )
+					&& ! is_in_attribute( props, ATTRIBUTE_VALID, keepItem ) ) )
 			{
 			/*
 			 * No it appears not, so let's see if we have default value for that kind.
 			 */
 			keepItem = "";
-			HXml::HNode::properties_t::iterator defaultIt = props.find( D_ATTRIBUTE_DEFAULT );
+			HXml::HNode::properties_t::iterator defaultIt = props.find( ATTRIBUTE_DEFAULT );
 			if ( defaultIt != props.end() )
 				{
 				/*
@@ -151,7 +151,7 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 			}
 		if ( ! keepItem.is_empty() )
 			{
-			HXml::HNode::properties_t::iterator globalIt = props.find( D_ATTRIBUTE_GLOBAL );
+			HXml::HNode::properties_t::iterator globalIt = props.find( ATTRIBUTE_GLOBAL );
 			if ( ( globalIt != props.end() ) && lexical_cast<bool>( globalIt->second ) )
 				{
 				default_t::iterator defIt = defaults.find( kind->second );
@@ -176,9 +176,9 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 		HXml::HNodeProxy* selfwaste )
 	{
 	M_PROLOG
-	static char const* const D_CLASS_WASTEABLE = "wasteable";
-	static char const* const D_NODE_KEEP = "keep";
-	static char const* const D_ATTRIBUTE_KIND = "kind";
+	static char const* const CLASS_WASTEABLE = "wasteable";
+	static char const* const NODE_KEEP = "keep";
+	static char const* const ATTRIBUTE_KIND = "kind";
 	static HXml waste;
 	static HXml::HNodeProxy root;
 	static keep_t keepGlobal;
@@ -194,17 +194,17 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 		{
 		HXml::HIterator del = it;
 		++ it;
-		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
+		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			if ( (*del).get_name() == D_NODE_KEEP )
+			if ( (*del).get_name() == NODE_KEEP )
 				{
 				build_keep_db( *del, req, keep, keepGlobal, defaults );
 				selfwaste->move_node( *del );
 				}
-			else if ( is_kind_of( *del, D_CLASS_WASTEABLE ) )
+			else if ( is_kind_of( *del, CLASS_WASTEABLE ) )
 				{
 				HXml::HNode::properties_t& props = (*del).properties();
-				HXml::HNode::properties_t::iterator kindIt = props.find( D_ATTRIBUTE_KIND );
+				HXml::HNode::properties_t::iterator kindIt = props.find( ATTRIBUTE_KIND );
 				if ( kindIt != props.end() )
 					{
 					if ( ( keep.find( kindIt->second ) == keep.end() )
@@ -229,17 +229,17 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 		ORequest const& req, default_t const& defaults, HXml& doc )
 	{
 	M_PROLOG
-	static char const* const D_CLASS_MARKABLE = "markable";
-	static char const* const D_CLASS_CURRENT = " current";
-	static char const* const D_ATTRIBUTE_ID = "id";
+	static char const* const CLASS_MARKABLE = "markable";
+	static char const* const CLASS_CURRENT = " current";
+	static char const* const ATTRIBUTE_ID = "id";
 	for ( HXml::HIterator it = node.begin(); it != node.end(); ++ it )
 		{
-		if ( (*it).get_type() == HXml::HNode::TYPE::D_NODE )
+		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
 			{
 			HXml::HNode::properties_t& props = (*it).properties();
-			if ( is_kind_of( props, D_CLASS_MARKABLE ) )
+			if ( is_kind_of( props, CLASS_MARKABLE ) )
 				{
-				HXml::HNode::properties_t::iterator id = props.find( D_ATTRIBUTE_ID );
+				HXml::HNode::properties_t::iterator id = props.find( ATTRIBUTE_ID );
 				if ( id != props.end() )
 					{
 					HString subject = id->second.mid( id->second.find( "-" ) + 1 ); /* + 1 for '-' character */
@@ -256,7 +256,7 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 							{
 							HXml::HNodeProxy mark = doc.get_element_by_id( subject + "-" + object );
 							if ( !! mark )
-								mark.properties()[ D_ATTRIBUTE_CLASS ] += D_CLASS_CURRENT;
+								mark.properties()[ ATTRIBUTE_CLASS ] += CLASS_CURRENT;
 							}
 						}
 					}
@@ -273,8 +273,8 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 		yaal::tools::HXml& doc, HXml::HNodeProxy* selfwaste )
 	{
 	M_PROLOG
-	static char const* const D_NODE_MOVE = "move";
-	static char const* const D_ATTRIBUTE_TO = "to";
+	static char const* const NODE_MOVE = "move";
+	static char const* const ATTRIBUTE_TO = "to";
 	static HXml waste;
 	static HXml::HNodeProxy root;
 	if ( ! selfwaste )
@@ -287,12 +287,12 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 		{
 		HXml::HIterator del = it;
 		++ it;
-		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
+		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			if ( (*del).get_name() == D_NODE_MOVE )
+			if ( (*del).get_name() == NODE_MOVE )
 				{
 				HXml::HNode::properties_t& props = (*del).properties();
-				HXml::HNode::properties_t::iterator toIt = props.find( D_ATTRIBUTE_TO );
+				HXml::HNode::properties_t::iterator toIt = props.find( ATTRIBUTE_TO );
 				if ( toIt != props.end() )
 					{
 					HXml::HNodeProxy to = doc.get_element_by_path( toIt->second );
@@ -319,25 +319,25 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::tools::HXml::HNodeProxy* pick )
 	{
 	M_PROLOG
-	static char const* const D_NODE_ITEM = "item";
-	static char const* const D_ATTRIBUTE_INDEX = "index";
+	static char const* const NODE_ITEM = "item";
+	static char const* const ATTRIBUTE_INDEX = "index";
 	for ( HXml::HIterator child = node.begin(); child != node.end(); )
 		{
 		HXml::HIterator del = child;
 		++ child;
-		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
+		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			if ( (*del).get_name() == D_NODE_ITEM )
+			if ( (*del).get_name() == NODE_ITEM )
 				{
 				HXml::HNode::properties_t& props = (*del).properties();
-				HXml::HNode::properties_t::iterator idxIt = props.find( D_ATTRIBUTE_INDEX );
+				HXml::HNode::properties_t::iterator idxIt = props.find( ATTRIBUTE_INDEX );
 				if ( idxIt != props.end() )
 					{
 					HString val = it[ lexical_cast<int>( idxIt->second ) ];
 					if ( child == node.end() )
-						child = node.add_node( HXml::HNode::TYPE::D_CONTENT, val );
+						child = node.add_node( HXml::HNode::TYPE::CONTENT, val );
 					else
-						child = node.insert_node( child, HXml::HNode::TYPE::D_CONTENT, val );
+						child = node.insert_node( child, HXml::HNode::TYPE::CONTENT, val );
 					}
 				pick->move_node( *del );
 				}
@@ -352,8 +352,8 @@ void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::to
 void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::tools::HXml& doc, yaal::tools::HXml::HNodeProxy* pick )
 	{
 	M_PROLOG
-	static char const* const D_NODE_QUERY = "query";
-	static char const* const D_ATTRIBUTE_SQL = "sql";
+	static char const* const NODE_QUERY = "query";
+	static char const* const ATTRIBUTE_SQL = "sql";
 	static HXml waste;
 	if ( ! pick )
 		{
@@ -365,13 +365,13 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 		{
 		HXml::HIterator del = child;
 		++ child;
-		if ( (*del).get_type() == HXml::HNode::TYPE::D_NODE )
+		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			if ( (*del).get_name() == D_NODE_QUERY )
+			if ( (*del).get_name() == NODE_QUERY )
 				{
 				HXml::HIterator query = pick->move_node( *del );
 				HXml::HNode::properties_t& props = (*query).properties();
-				HXml::HNode::properties_t::iterator sqlIt = props.find( D_ATTRIBUTE_SQL );
+				HXml::HNode::properties_t::iterator sqlIt = props.find( ATTRIBUTE_SQL );
 				HXml::HIterator rowIt = (*query).begin();
 				if ( ( rowIt != (*query).end() ) && ( sqlIt != props.end() ) )
 					{
@@ -405,21 +405,21 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req )
 	{
 	M_PROLOG
-	static char const D_NODE_COOKIE[] = "cookie";
-	static char const D_ATTRIBUTE_NAME[] = "name";
+	static char const NODE_COOKIE[] = "cookie";
+	static char const ATTRIBUTE_NAME[] = "name";
 	HString value;
 	for ( HXml::HIterator child = logic.begin(); child != logic.end(); ++ child )
 		{
-		if ( (*child).get_type() == HXml::HNode::TYPE::D_NODE )
+		if ( (*child).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			if ( (*child).get_name() == D_NODE_COOKIE )
+			if ( (*child).get_name() == NODE_COOKIE )
 				{
 				HXml::HNode::properties_t& props = (*child).properties();
-				HXml::HNode::properties_t::iterator nameIt = props.find( D_ATTRIBUTE_NAME );
+				HXml::HNode::properties_t::iterator nameIt = props.find( ATTRIBUTE_NAME );
 				M_ENSURE( nameIt != props.end() );
 				M_ENSURE( ! nameIt->second.is_empty() );
-				if ( ! req.lookup( nameIt->second, value, ORequest::origin_t( ORequest::ORIGIN::D_POST ) | ORequest::ORIGIN::D_GET ) )
-					req.update( nameIt->second, value, ORequest::ORIGIN::D_COOKIE );
+				if ( ! req.lookup( nameIt->second, value, ORequest::origin_t( ORequest::ORIGIN::POST ) | ORequest::ORIGIN::GET ) )
+					req.update( nameIt->second, value, ORequest::ORIGIN::COOKIE );
 				}
 			}
 		}
@@ -430,31 +430,31 @@ void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req )
 void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req )
 	{
 	M_PROLOG
-	static char const* const D_CLASS_AUTOBUTTON = "autobutton";
-	static char const* const D_NODE_FIELDSET = "fieldset";
-	static char const* const D_NODE_INPUT = "input";
-	static char const* const D_ATTRIBUTE_TYPE = "type";
-	static char const* const D_ATTRIBUTE_TYPE_VALUE = "hidden";
-	static char const* const D_ATTRIBUTE_NAME = "name";
-	static char const* const D_ATTRIBUTE_VALUE = "value";
+	static char const* const CLASS_AUTOBUTTON = "autobutton";
+	static char const* const NODE_FIELDSET = "fieldset";
+	static char const* const NODE_INPUT = "input";
+	static char const* const ATTRIBUTE_TYPE = "type";
+	static char const* const ATTRIBUTE_TYPE_VALUE = "hidden";
+	static char const* const ATTRIBUTE_NAME = "name";
+	static char const* const ATTRIBUTE_VALUE = "value";
 	for ( HXml::HIterator it = node.begin(); it != node.end(); ++ it )
 		{
-		if ( (*it).get_type() == HXml::HNode::TYPE::D_NODE )
+		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			if ( is_kind_of( *it, D_CLASS_AUTOBUTTON ) )
+			if ( is_kind_of( *it, CLASS_AUTOBUTTON ) )
 				{
 				HXml::HIterator fieldsetIt = (*it).begin();
 				M_ENSURE( fieldsetIt != (*it).end() );
 				HXml::HNodeProxy fieldset = *fieldsetIt;
-				M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::D_NODE )
-						&& ( fieldset.get_name() == D_NODE_FIELDSET ) );
+				M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::NODE )
+						&& ( fieldset.get_name() == NODE_FIELDSET ) );
 				keep_t keep;
 				for ( HXml::HIterator fieldIt = fieldset.begin(); fieldIt != fieldset.end(); ++ fieldIt )
 					{
-					if ( (*fieldIt).get_type() == HXml::HNode::TYPE::D_NODE )
+					if ( (*fieldIt).get_type() == HXml::HNode::TYPE::NODE )
 						{
 						HXml::HNode::properties_t& props = (*fieldIt).properties();
-						HXml::HNode::properties_t::iterator nameIt = props.find( D_ATTRIBUTE_NAME );
+						HXml::HNode::properties_t::iterator nameIt = props.find( ATTRIBUTE_NAME );
 						if ( nameIt != props.end() )
 							keep.insert( nameIt->second );
 						}
@@ -464,11 +464,11 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 					if ( keep.find( (*reqIt).first ) == keep.end() )
 						{
 						keep.insert( (*reqIt).first );
-						HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::D_NODE, D_NODE_INPUT );
+						HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::NODE, NODE_INPUT );
 						HXml::HNode::properties_t& props = input.properties();
-						props[ D_ATTRIBUTE_TYPE ] = D_ATTRIBUTE_TYPE_VALUE;
-						props[ D_ATTRIBUTE_NAME ] = (*reqIt).first;
-						props[ D_ATTRIBUTE_VALUE ] = (*reqIt).second;
+						props[ ATTRIBUTE_TYPE ] = ATTRIBUTE_TYPE_VALUE;
+						props[ ATTRIBUTE_NAME ] = (*reqIt).first;
+						props[ ATTRIBUTE_VALUE ] = (*reqIt).second;
 						}
 					}
 				}

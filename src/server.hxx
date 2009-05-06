@@ -57,16 +57,16 @@ public:
 	struct IPC_CHANNEL
 		{
 		typedef int ipc_channel_t;
-		static int const D_CONTROL;
-		static int const D_REQUEST;
-		static int const D_COUNT = 2;
+		static int const CONTROL;
+		static int const REQUEST;
+		static int const COUNT = 2;
 		};
 protected:
 	/*{*/
 	int f_iMaxConnections;
-	yaal::hcore::HSocket::ptr_t f_oSocket[ IPC_CHANNEL::D_COUNT ];
+	yaal::hcore::HSocket::ptr_t f_oSocket[ IPC_CHANNEL::COUNT ];
 	requests_t f_oRequests;
-	handlers_t f_oHandlers[ IPC_CHANNEL::D_COUNT ];
+	handlers_t f_oHandlers[ IPC_CHANNEL::COUNT ];
 	/*}*/
 public:
 	/*{*/

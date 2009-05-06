@@ -75,11 +75,11 @@ void ORequest::update( HString const& key, HString const& value, origin_t const&
 	dictionary_t* dict = NULL;
 	switch ( origin.value() )
 		{
-		case ( ORIGIN::D_ENV ):    dict = &*f_oEnvironment; break;
-		case ( ORIGIN::D_POST ):   dict = &*f_oPOST;        break;
-		case ( ORIGIN::D_GET ):    dict = &*f_oGET;         break;
-		case ( ORIGIN::D_COOKIE ): dict = &*f_oCookies;     break;
-		case ( ORIGIN::D_JAR ):    dict = &*f_oJar;     break;
+		case ( ORIGIN::ENV ):    dict = &*f_oEnvironment; break;
+		case ( ORIGIN::POST ):   dict = &*f_oPOST;        break;
+		case ( ORIGIN::GET ):    dict = &*f_oGET;         break;
+		case ( ORIGIN::COOKIE ): dict = &*f_oCookies;     break;
+		case ( ORIGIN::JAR ):    dict = &*f_oJar;     break;
 		default:
 			M_ASSERT( ! "bad origin" );
 		}
@@ -93,16 +93,16 @@ bool ORequest::lookup( HString const& key, HString& value, origin_t const& origi
 	M_PROLOG
 	dictionary_t::const_iterator it = f_oEnvironment->find( key );
 	bool bFound = false;
-	( ! bFound ) && ( !!( origin & ORIGIN::D_ENV ) )
+	( ! bFound ) && ( !!( origin & ORIGIN::ENV ) )
 		&& ( bFound = ( ( it = f_oEnvironment->find( key ) ) != f_oEnvironment->end() ) )
 		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( !!( origin & ORIGIN::D_POST ) )
+	( ! bFound ) && ( !!( origin & ORIGIN::POST ) )
 		&& ( bFound = ( ( it = f_oPOST->find( key ) )        != f_oPOST->end() ) )
 		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( !!( origin & ORIGIN::D_GET ) )
+	( ! bFound ) && ( !!( origin & ORIGIN::GET ) )
 		&& ( bFound = ( ( it = f_oGET->find( key ) )         != f_oGET->end() ) )
 		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( !!( origin & ORIGIN::D_COOKIE ) )
+	( ! bFound ) && ( !!( origin & ORIGIN::COOKIE ) )
 		&& ( bFound = ( ( it = f_oCookies->find( key ) )     != f_oCookies->end() ) )
 		&& ( !! ( value = it->second ) );
 	return ( ! bFound );
@@ -112,12 +112,12 @@ bool ORequest::lookup( HString const& key, HString& value, origin_t const& origi
 void ORequest::decompress_jar( yaal::hcore::HString const& app )
 	{
 	M_PROLOG
-	static int const D_MAX_COOKIE_SIZE = 4096;
-	static int const D_MAX_COOKIES_PER_PATH = 20;
-	static int const D_SIZE_SIZE = 4; /* 12ab */
+	static int const MAX_COOKIE_SIZE = 4096;
+	static int const MAX_COOKIES_PER_PATH = 20;
+	static int const SIZE_SIZE = 4; /* 12ab */
 	HString buf;
 	HString& properName = buf;
-	HString jar( D_MAX_COOKIES_PER_PATH * D_MAX_COOKIE_SIZE, true );
+	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, true );
 	int cookieNo = 0;
 	int size = 0;
 	jar = "";
@@ -128,8 +128,8 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 			continue;
 		if ( ! cookieNo )
 			{
-			size = lexical_cast<int>( it->second.left( D_SIZE_SIZE ) );
-			jar += it->second.mid( D_SIZE_SIZE );
+			size = lexical_cast<int>( it->second.left( SIZE_SIZE ) );
+			jar += it->second.mid( SIZE_SIZE );
 			}
 		else
 			jar += it->second;
@@ -140,7 +140,7 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 	f_oJar->clear();
 	cookieNo = 0;
 	HString name;
-	HTokenizer t( jar, "\001", HTokenizer::D_SKIP_EMPTY );
+	HTokenizer t( jar, "\001", HTokenizer::SKIP_EMPTY );
 	for ( HTokenizer::HIterator it = t.begin(), endIt = t.end(); it != endIt; ++ it )
 		{
 		int long sepIdx = (*it).find( "=" );
@@ -155,11 +155,11 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& app )
 	{
 	M_PROLOG
-	static int const D_MAX_COOKIE_SIZE = 4096;
-	static int const D_MAX_COOKIES_PER_PATH = 20;
-	static int const D_META_SIZE = 512;
-	static int const D_PAYLOAD_SIZE = D_MAX_COOKIE_SIZE - D_META_SIZE;
-	HString jar( D_MAX_COOKIES_PER_PATH * D_MAX_COOKIE_SIZE, true );
+	static int const MAX_COOKIE_SIZE = 4096;
+	static int const MAX_COOKIES_PER_PATH = 20;
+	static int const META_SIZE = 512;
+	static int const PAYLOAD_SIZE = MAX_COOKIE_SIZE - META_SIZE;
+	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, true );
 	jar = "";
 	int cookieNo = 0;
 	for ( dictionary_t::iterator it = f_oCookies->begin(); it != f_oCookies->end(); ++ it, ++ cookieNo )
@@ -176,16 +176,16 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 	HString payload;
 	cookieNo = 0;
 	f_oJar->clear();
-	for ( int offset = 0; offset < size; offset += D_PAYLOAD_SIZE, ++ cookieNo )
+	for ( int offset = 0; offset < size; offset += PAYLOAD_SIZE, ++ cookieNo )
 		{
 		properName.format( "%s%02d", app.raw(), cookieNo );
 		if ( ! offset )
 			{
 			payload.format( "%04d", size );
-			payload += jar.mid( offset, D_PAYLOAD_SIZE );
+			payload += jar.mid( offset, PAYLOAD_SIZE );
 			}
 		else
-			payload = jar.mid( offset, D_PAYLOAD_SIZE );
+			payload = jar.mid( offset, PAYLOAD_SIZE );
 		(*f_oJar)[ properName ] = payload;
 		}
 	return ( f_oJar );
@@ -205,13 +205,13 @@ HSocket::ptr_t const ORequest::socket( void ) const
 ORequest::const_iterator ORequest::begin( void ) const
 	{
 	dictionary_t::const_iterator it = f_oGET->begin();
-	origin_t o = it != f_oGET->end() ? ORIGIN::D_GET : ORIGIN::D_POST;
-	return ( const_iterator( this, o, o == ORIGIN::D_GET ? it : f_oPOST->begin() ) );
+	origin_t o = it != f_oGET->end() ? ORIGIN::GET : ORIGIN::POST;
+	return ( const_iterator( this, o, o == ORIGIN::GET ? it : f_oPOST->begin() ) );
 	}
 
 ORequest::const_iterator ORequest::end( void ) const
 	{
-	return ( const_iterator( this, ORIGIN::D_POST, f_oPOST->end() ) );
+	return ( const_iterator( this, ORIGIN::POST, f_oPOST->end() ) );
 	}
 
 
@@ -227,11 +227,11 @@ bool ORequest::HConstIterator::operator != ( HConstIterator const& it ) const
 
 ORequest::HConstIterator& ORequest::HConstIterator::operator ++ ( void )
 	{
-	M_ASSERT( ( f_eOrigin == ORequest::ORIGIN::D_GET ) || ( f_oIt != f_poOwner->f_oPOST->end() ) );
+	M_ASSERT( ( f_eOrigin == ORequest::ORIGIN::GET ) || ( f_oIt != f_poOwner->f_oPOST->end() ) );
 	++ f_oIt;
-	if ( ( f_eOrigin == ORequest::ORIGIN::D_GET ) && ( f_oIt == f_poOwner->f_oGET->end() ) )
+	if ( ( f_eOrigin == ORequest::ORIGIN::GET ) && ( f_oIt == f_poOwner->f_oGET->end() ) )
 		{
-		f_eOrigin = ORequest::ORIGIN::D_POST;
+		f_eOrigin = ORequest::ORIGIN::POST;
 		f_oIt = f_poOwner->f_oPOST->begin();
 		}
 	return ( *this );

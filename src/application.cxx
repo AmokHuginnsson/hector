@@ -53,11 +53,11 @@ HApplication::~HApplication( void )
 OActiveX OActiveX::get_instance( HString const& name, HString const& path )
 	{
 	M_PROLOG
-	static char const* const D_SYMBOL_FACTORY = "factory";
-	static char const* const D_ATTRIBUTE_ACTIVEX = "activex";
+	static char const* const SYMBOL_FACTORY = "factory";
+	static char const* const ATTRIBUTE_ACTIVEX = "activex";
 	HStringStream activex( path );
 	HPlugin::ptr_t l_oActiveX( new HPlugin() );
-	activex << "/" << name << "/" << D_ATTRIBUTE_ACTIVEX;
+	activex << "/" << name << "/" << ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
 	out << "Trying path: `" << activex.raw() << "' for activex: `" << name << "'" << endl;
 	l_oActiveX->load( activex.raw() );
@@ -65,7 +65,7 @@ OActiveX OActiveX::get_instance( HString const& name, HString const& path )
 	out << "activex nest for `" << name << "' loaded" << endl;
 	typedef HApplication::ptr_t ( *factory_t )( void );
 	factory_t factory;
-	l_oActiveX->resolve( D_SYMBOL_FACTORY, factory );
+	l_oActiveX->resolve( SYMBOL_FACTORY, factory );
 	M_ASSERT( factory );
 	out << "activex factory for `" << name << "' connected" << endl;
 	app = factory();
@@ -91,17 +91,17 @@ void OActiveX::reload_binary( void )
 void HApplication::load( HString const& name, HString const& path )
 	{
 	M_PROLOG
-	static char const* const D_INTERFACE_FILE = "interface.xml";
-	static char const* const D_TOOLKIT_FILE = "toolkit.xml";
+	static char const* const INTERFACE_FILE = "interface.xml";
+	static char const* const TOOLKIT_FILE = "toolkit.xml";
 	f_oName = name;
 	HStringStream interface( path );
 	HStringStream toolkit( path );
-	hcore::log( LOG_TYPE::D_INFO ) << "Loading application `" << f_oName << "'." << endl;
-	interface << "/" << f_oName << "/" << D_INTERFACE_FILE;
-	toolkit << "/" << f_oName << "/" << D_TOOLKIT_FILE;
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
+	hcore::log( LOG_TYPE::INFO ) << "Loading application `" << f_oName << "'." << endl;
+	interface << "/" << f_oName << "/" << INTERFACE_FILE;
+	toolkit << "/" << f_oName << "/" << TOOLKIT_FILE;
+	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
 	f_oDOM.init( HStreamInterface::ptr_t( new HFile( interface.string() ) ) );
-	hcore::log( LOG_TYPE::D_INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
+	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
 	f_oDOM.apply_style( toolkit.raw() );
 	f_oDOM.parse();
 	do_load();
@@ -118,8 +118,8 @@ void HApplication::do_handle_logic( ORequest& req )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
-	static char const D_LOGIC_PATH[] = "/html/logic/";
-	HXml::HNodeProxy logic = f_oDOM.get_element_by_path( D_LOGIC_PATH );
+	static char const LOGIC_PATH[] = "/html/logic/";
+	HXml::HNodeProxy logic = f_oDOM.get_element_by_path( LOGIC_PATH );
 	if ( !! logic )
 		cgi::make_cookies( logic, req );
 	return;

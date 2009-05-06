@@ -93,7 +93,7 @@ void push_query( HSocket& sock, HString const& query, char const* const mode, ch
 	{
 	M_PROLOG
 	HStringStream buffer;
-	HTokenizer t( query, delim, HTokenizer::D_SKIP_EMPTY );
+	HTokenizer t( query, delim, HTokenizer::SKIP_EMPTY );
 	for ( HTokenizer::HIterator it = t.begin(), end = t.end(); it != end; ++ it )
 		sock << ( buffer << mode << ":" << escape( *it ) << endl << buffer );
 	return;
@@ -107,12 +107,12 @@ void query( int argc, char** argv )
 	sockPath += "/request.sock";
 	try
 		{
-		HSocket sock( HSocket::TYPE::D_FILE );
+		HSocket sock( HSocket::TYPE::FILE );
 		sock.connect( sockPath );
 		HStringStream buffer;
 		HString POST( "" );
-		HFile in( HFile::OPEN::D_READING, stdin );
-		while ( in.read_line( POST, HFile::READ::D_UNBUFFERED_READS ) >= 0 )
+		HFile in( HFile::OPEN::READING, stdin );
+		while ( in.read_line( POST, HFile::READ::UNBUFFERED_READS ) >= 0 )
 			push_query( sock, POST, "post", "&" );
 		for ( int i = 1; i < argc; ++ i )
 			sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );

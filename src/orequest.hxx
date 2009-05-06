@@ -40,13 +40,13 @@ public:
 		{
 		typedef enum
 			{
-			D_NONE = 0,
-			D_ENV = 1,
-			D_COOKIE = 2,
-			D_GET = 4,
-			D_POST = 8,
-			D_JAR = 16,
-			D_ANY = 31
+			NONE = 0,
+			ENV = 1,
+			COOKIE = 2,
+			GET = 4,
+			POST = 8,
+			JAR = 16,
+			ANY = 31
 			} enum_t;
 		};
 	typedef yaal::hcore::HStrongEnum<ORIGIN> origin_t;
@@ -64,7 +64,7 @@ public:
 	ORequest( ORequest const& );
 	ORequest& operator = ( ORequest const& );
 	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, origin_t const& );
-	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString&, origin_t const& = ORIGIN::D_ANY ) const;
+	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString&, origin_t const& = ORIGIN::ANY ) const;
 	void decompress_jar( yaal::hcore::HString const& );
 	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
 	yaal::hcore::HSocket::ptr_t socket( void );
