@@ -33,7 +33,6 @@ M_VCSID( "$Id: "__ID__" $" )
 
 using namespace yaal;
 using namespace yaal::hcore;
-using namespace yaal::hconsole;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
 
@@ -48,44 +47,6 @@ HApplication::HApplication( void )
 HApplication::~HApplication( void )
 	{
 	out << "Application `" << f_oName << "' unloaded." << endl;
-	}
-
-OActiveX OActiveX::get_instance( HString const& name, HString const& path )
-	{
-	M_PROLOG
-	static char const* const SYMBOL_FACTORY = "factory";
-	static char const* const ATTRIBUTE_ACTIVEX = "activex";
-	HStringStream activex( path );
-	HPlugin::ptr_t l_oActiveX( new HPlugin() );
-	activex << "/" << name << "/" << ATTRIBUTE_ACTIVEX;
-	HApplication::ptr_t app;
-	out << "Trying path: `" << activex.raw() << "' for activex: `" << name << "'" << endl;
-	l_oActiveX->load( activex.raw() );
-	M_ASSERT( l_oActiveX->is_loaded() );
-	out << "activex nest for `" << name << "' loaded" << endl;
-	typedef HApplication::ptr_t ( *factory_t )( void );
-	factory_t factory;
-	l_oActiveX->resolve( SYMBOL_FACTORY, factory );
-	M_ASSERT( factory );
-	out << "activex factory for `" << name << "' connected" << endl;
-	app = factory();
-	if ( ! app )
-		throw HApplicationException( "invalid activex" );
-	OActiveX proc( activex.raw() );
-	proc.f_oApplication = app;
-	proc.f_oActiveX = l_oActiveX;
-	app->load( name, path );
-	return ( proc );
-	M_EPILOG
-	}
-
-void OActiveX::reload_binary( void )
-	{
-	M_PROLOG
-	f_oActiveX->unload();
-	f_oActiveX->load( f_oBinaryPath );
-	return;
-	M_EPILOG
 	}
 
 void HApplication::load( HString const& name, HString const& path )

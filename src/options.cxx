@@ -72,6 +72,7 @@ int handle_program_options( int a_iArgc, char** a_ppcArgv )
 #elif defined ( TARGET_HECTOR_ADMIN )
 		( "shutdown", program_options_helper::option_value( setup.f_bShutdown ), "S", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "shutdown server nicely" )
 		( "reload", program_options_helper::option_value( setup.f_oReload ), "r", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "app", "reload given application" )
+		( "restart", program_options_helper::option_value( setup.f_oRestart ), "A", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "app", "restart given application (reboot activex)" )
 		( "status", program_options_helper::option_value( setup.f_bStatus ), "i", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "print server information" )
 #endif
 		( "timeout_write", program_options_helper::option_value( setup.f_iSocketWriteTimeout ), "T", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "seconds", "timeout for socket write operation" )

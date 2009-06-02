@@ -55,6 +55,7 @@ struct OSetup
 	yaal::hcore::HString f_oDataDir;
 	yaal::hcore::HString f_oSocketRoot;
 	yaal::hcore::HString f_oReload;
+	yaal::hcore::HString f_oRestart;
 	/* self-sufficient */
 	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.hxx" );
 	OSetup( void )
@@ -64,7 +65,7 @@ struct OSetup
 		f_iMaxConnections( DEFAULT_MAX_CONNECTIONS ),
 		f_iSocketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT ),
 		f_oLogPath(), f_oDataDir(), f_oSocketRoot( DEFAULT_SOCKET_ROOT ),
-		f_oReload() {}
+		f_oReload(), f_oRestart() {}
 	void test_setup( void );
 private:
 	OSetup ( OSetup const & );

@@ -130,7 +130,7 @@ void query_shutdown( void )
 	M_EPILOG
 	}
 
-void query_reload( void )
+void query_restart_reload( char const* const action_, HString const& object_ )
 	{
 	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
@@ -139,7 +139,7 @@ void query_reload( void )
 		{
 		HSocket sock( HSocket::TYPE::FILE );
 		sock.connect( sockPath );
-		sock << "reload:" << setup.f_oReload << endl;
+		sock << action_ << object_ << endl;
 		show_answer( sock );
 		}
 	catch ( HSocketException& e )
@@ -155,7 +155,9 @@ void query( void )
 	{
 	M_PROLOG
 	if ( ! setup.f_oReload.is_empty() )
-		query_reload();
+		query_restart_reload( "reload:", setup.f_oReload );
+	if ( ! setup.f_oRestart.is_empty() )
+		query_restart_reload( "restart:", setup.f_oRestart );
 	if ( setup.f_bStatus )
 		query_status();
 	if ( setup.f_bShutdown )

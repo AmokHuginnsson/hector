@@ -43,6 +43,7 @@ namespace hector
 
 char const* const HServer::CONTROL_PROTO::SHUTDOWN = "shutdown";
 char const* const HServer::CONTROL_PROTO::RELOAD = "reload";
+char const* const HServer::CONTROL_PROTO::RESTART = "restart";
 char const* const HServer::CONTROL_PROTO::STATUS = "status";
 char const* const HServer::REQUEST_PROTO::ENV = "env";
 char const* const HServer::REQUEST_PROTO::COOKIE = "cookie";
@@ -75,7 +76,7 @@ int HServer::init_server( void )
 	M_PROLOG
 	init_sockets();
 	f_oHandlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::SHUTDOWN ] = &HServer::handler_shutdown;
-	f_oHandlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::RELOAD ] = &HServer::handler_reload;
+	f_oHandlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::RESTART ] = &HServer::handler_restart;
 	f_oHandlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::STATUS ] = &HServer::handler_status;
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::ENV ] = &HServer::handler_env;
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::COOKIE ] = &HServer::handler_cookie;
@@ -258,9 +259,9 @@ void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& )
 	f_bLoop = false;
 	}
 
-void HServer::handler_reload( HSocket::ptr_t& sock, yaal::hcore::HString const& app )
+void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app )
 	{
-	do_reload( sock, app );
+	do_restart( sock, app );
 	}
 
 void HServer::handler_status( HSocket::ptr_t& sock, yaal::hcore::HString const& )

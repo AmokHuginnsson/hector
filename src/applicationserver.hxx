@@ -32,14 +32,14 @@ Copyright:
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/signals.hxx>
 #include "server.hxx"
-#include "oactivex.hxx"
+#include "hactivex.hxx"
 
 namespace hector
 {
 
 class HApplicationServer : public HServer
 	{
-	typedef yaal::hcore::HMap<yaal::hcore::HString, OActiveX> applications_t;
+	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
 	applications_t f_oApplications;
 	pending_t f_oPending;
@@ -56,7 +56,7 @@ public:
 	int process_sigchild( int );
 protected:
 	virtual void do_service_request( ORequest& );
-	virtual void do_reload( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
+	virtual void do_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	virtual void do_status( yaal::hcore::HSocket::ptr_t& );
 	void clean_request( int );
 private:

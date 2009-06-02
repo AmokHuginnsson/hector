@@ -119,7 +119,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
 			try
 				{
-				f_oApplications[ symbol->second ] = OActiveX::get_instance( symbol->second, setup.f_oDataDir );
+				f_oApplications[ symbol->second ] = HActiveX::get_instance( symbol->second, setup.f_oDataDir );
 				}
 			catch ( HException& e )
 				{
@@ -167,12 +167,12 @@ void HApplicationServer::do_service_request( ORequest& a_roRequest )
 					{
 					hcore::log << e.what() << endl;
 					}
-				it->second.f_oApplication->handle_logic( a_roRequest );
+				it->second.handle_logic( a_roRequest );
 				ORequest::dictionary_ptr_t jar = a_roRequest.compress_jar( application );
 				for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
 					*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
 				*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
-				it->second.f_oApplication->generate_page( a_roRequest );
+				it->second.generate_page( a_roRequest );
 				}
 			else
 				msg << "\n\nno such application: " << application << endl;
@@ -225,7 +225,7 @@ void HApplicationServer::clean_request( int opts )
 	M_EPILOG
 	}
 
-void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName )
+void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appName )
 	{
 	M_PROLOG
 	applications_t::iterator it = f_oApplications.find( appName );
@@ -233,7 +233,7 @@ void HApplicationServer::do_reload( HSocket::ptr_t& sock, HString const& appName
 		{
 		try
 			{
-			OActiveX& newX = f_oApplications[ appName ] = OActiveX::get_instance( appName, setup.f_oDataDir );
+			HActiveX& newX = f_oApplications[ appName ] = HActiveX::get_instance( appName, setup.f_oDataDir );
 			newX.reload_binary();
 			}
 		catch ( HException& e )

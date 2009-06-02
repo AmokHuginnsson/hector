@@ -66,7 +66,7 @@ void OSetup::test_setup( void )
 		yaal::tools::util::failure( 6, err.raw() );
 		}
 #elif defined ( TARGET_HECTOR_ADMIN )
-	if ( ! ( f_bStatus || f_bShutdown || ! f_oReload.is_empty() ) )
+	if ( ! ( f_bStatus || f_bShutdown || ! f_oReload.is_empty() || ! f_oRestart.is_empty() ) )
 		yaal::tools::util::failure( 7, _( "you have to specify some administrative action\n" ) );
 #endif
 	return;

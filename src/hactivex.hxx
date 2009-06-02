@@ -32,14 +32,17 @@ Copyright:
 namespace hector
 {
 
-struct OActiveX
+class HActiveX
 	{
 	yaal::hcore::HString f_oBinaryPath;
 	yaal::tools::HPlugin::ptr_t f_oActiveX;
 	HApplication::ptr_t f_oApplication;
-	OActiveX( yaal::hcore::HString const& path = yaal::hcore::HString() ) : f_oBinaryPath( path ), f_oActiveX(), f_oApplication() {}
-	static OActiveX get_instance( yaal::hcore::HString const&, yaal::hcore::HString const& );
+public:
+	HActiveX( yaal::hcore::HString const& path = yaal::hcore::HString() ) : f_oBinaryPath( path ), f_oActiveX(), f_oApplication() {}
+	static HActiveX get_instance( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void reload_binary( void );
+	void handle_logic( ORequest& );
+	void generate_page( ORequest const& );
 	};
 
 }
