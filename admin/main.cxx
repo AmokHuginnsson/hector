@@ -82,8 +82,10 @@ void show_answer( HSocket& sock )
 	{
 	M_PROLOG
 	HString msg;
-	while ( sock.read_until( msg ).octets >= 0 )
+	HStreamInterface::STATUS s;
+	while ( ( s = sock.read_until( msg ) ).octets >= 0 )
 		cout << msg << endl;
+	cout << "status: " << ( s.code == HStreamInterface::STATUS::OK ? "ok" : ( s.code == HStreamInterface::STATUS::ERROR ? "error" : "repeat" ) ) << endl;
 	return;
 	M_EPILOG
 	}
@@ -93,18 +95,10 @@ void query_status( void )
 	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += "/control.sock";
-	try
-		{
-		HSocket sock( HSocket::TYPE::FILE );
-		sock.connect( sockPath );
-		sock << "status" << endl;
-		show_answer( sock );
-		}
-	catch ( HSocketException& e )
-		{
-		cout << "Cannot connect to `hector' daemon." << endl;
-		cout << e.what() << endl;
-		}
+	HSocket sock( HSocket::TYPE::FILE );
+	sock.connect( sockPath );
+	sock << "status" << endl;
+	show_answer( sock );
 	return;
 	M_EPILOG
 	}
@@ -114,18 +108,10 @@ void query_shutdown( void )
 	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += "/control.sock";
-	try
-		{
-		HSocket sock( HSocket::TYPE::FILE );
-		sock.connect( sockPath );
-		sock << "shutdown" << endl;
-		show_answer( sock );
-		}
-	catch ( HSocketException& e )
-		{
-		cout << "Cannot connect to `hector' daemon." << endl;
-		cout << e.what() << endl;
-		}
+	HSocket sock( HSocket::TYPE::FILE );
+	sock.connect( sockPath );
+	sock << "shutdown" << endl;
+	show_answer( sock );
 	return;
 	M_EPILOG
 	}
@@ -135,18 +121,10 @@ void query_restart_reload( char const* const action_, HString const& object_ )
 	M_PROLOG
 	HString sockPath( setup.f_oSocketRoot );
 	sockPath += "/control.sock";
-	try
-		{
-		HSocket sock( HSocket::TYPE::FILE );
-		sock.connect( sockPath );
-		sock << action_ << object_ << endl;
-		show_answer( sock );
-		}
-	catch ( HSocketException& e )
-		{
-		cout << "Cannot connect to `hector' daemon." << endl;
-		cout << e.what() << endl;
-		}
+	HSocket sock( HSocket::TYPE::FILE );
+	sock.connect( sockPath );
+	sock << action_ << object_ << endl;
+	show_answer( sock );
 	return;
 	M_EPILOG
 	}
@@ -154,14 +132,22 @@ void query_restart_reload( char const* const action_, HString const& object_ )
 void query( void )
 	{
 	M_PROLOG
-	if ( ! setup.f_oReload.is_empty() )
-		query_restart_reload( "reload:", setup.f_oReload );
-	if ( ! setup.f_oRestart.is_empty() )
-		query_restart_reload( "restart:", setup.f_oRestart );
-	if ( setup.f_bStatus )
-		query_status();
-	if ( setup.f_bShutdown )
-		query_shutdown();
+	try
+		{
+		if ( ! setup.f_oReload.is_empty() )
+			query_restart_reload( "reload:", setup.f_oReload );
+		if ( ! setup.f_oRestart.is_empty() )
+			query_restart_reload( "restart:", setup.f_oRestart );
+		if ( setup.f_bStatus )
+			query_status();
+		if ( setup.f_bShutdown )
+			query_shutdown();
+		}
+	catch ( HSocketException& e )
+		{
+		cout << "Cannot connect to `hector' daemon." << endl;
+		cout << e.what() << endl;
+		}
 	return;
 	M_EPILOG
 	}

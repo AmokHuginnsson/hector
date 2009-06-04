@@ -5,6 +5,7 @@ log_path "x_hectord.log"
 application "app"
 data_dir "./${NEST}/app/"
 max_connections 128
+max_working_threads 5
 timeout_write 5
 socket_root "/tmp/hector"
 

@@ -42,6 +42,7 @@ inline std::ostream& operator << ( std::ostream& o, yaal::hcore::HString const& 
 struct OSetup
 	{
 	static int const DEFAULT_MAX_CONNECTIONS = 2;
+	static int const DEFAULT_MAX_WORKING_THREADS = 2;
 	static int const DEFAULT_SOCKET_WRITE_TIMEOUT = 5; /* seconds */
 	static char const* const DEFAULT_SOCKET_ROOT;
 	bool f_bQuiet;			/* --quiet, --silent */
@@ -50,6 +51,7 @@ struct OSetup
 	bool f_bStatus;
 	char* f_pcProgramName;
 	int f_iMaxConnections;
+	int f_iMaxWorkingThreads;
 	int f_iSocketWriteTimeout;
 	yaal::hcore::HString f_oLogPath;
 	yaal::hcore::HString f_oDataDir;
@@ -63,6 +65,7 @@ struct OSetup
 		f_bShutdown( false ),
 		f_bStatus( false ), f_pcProgramName( NULL ),
 		f_iMaxConnections( DEFAULT_MAX_CONNECTIONS ),
+		f_iMaxWorkingThreads( DEFAULT_MAX_WORKING_THREADS ),
 		f_iSocketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT ),
 		f_oLogPath(), f_oDataDir(), f_oSocketRoot( DEFAULT_SOCKET_ROOT ),
 		f_oReload(), f_oRestart() {}

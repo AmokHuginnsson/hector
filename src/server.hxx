@@ -28,6 +28,7 @@ Copyright:
 #define SERVER_HXX_INCLUDED
 
 #include <yaal/tools/hprocess.hxx>
+#include <yaal/tools/hworkflow.hxx>
 
 #include "orequest.hxx"
 
@@ -68,6 +69,7 @@ protected:
 	yaal::hcore::HSocket::ptr_t f_oSocket[ IPC_CHANNEL::COUNT ];
 	requests_t f_oRequests;
 	handlers_t f_oHandlers[ IPC_CHANNEL::COUNT ];
+	yaal::tools::HWorkFlow f_oWorker;
 	/*}*/
 public:
 	/*{*/

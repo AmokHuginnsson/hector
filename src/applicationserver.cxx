@@ -235,6 +235,7 @@ void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appNam
 			{
 			HActiveX& newX = f_oApplications[ appName ] = HActiveX::get_instance( appName, setup.f_oDataDir );
 			newX.reload_binary();
+			*sock << "application `" << appName << "' reloaded successfully" << endl;
 			}
 		catch ( HException& e )
 			{

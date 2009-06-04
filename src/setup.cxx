@@ -39,35 +39,47 @@ char const* const OSetup::DEFAULT_SOCKET_ROOT = "/tmp/hector/";
 void OSetup::test_setup( void )
 	{
 	M_PROLOG
+	int failNo( 0 );
+	++ failNo;
 	if ( f_bQuiet && f_bVerbose )
-		yaal::tools::util::failure( 1,
+		yaal::tools::util::failure( failNo,
 				_( "quiet and verbose options are exclusive\n" ) );
 #if defined ( TARGET_HECTOR_DAEMON )
+	++ failNo;
 	if ( f_oDataDir.is_empty() )
-		yaal::tools::util::failure( 2,
+		yaal::tools::util::failure( failNo,
 				_( "you must specify directory with application data\n" ) );
 #endif
+	++ failNo;
 	if ( f_iMaxConnections < 0 )
-		yaal::tools::util::failure( 3,
-				_( "bad max-connection value set\n" ) );
+		yaal::tools::util::failure( failNo,
+				_( "bad max_connection value set\n" ) );
+	++ failNo;
+	if ( f_iMaxWorkingThreads < 0 )
+		yaal::tools::util::failure( failNo,
+				_( "bad max_working_threads value set\n" ) );
+	++ failNo;
 	if ( f_iSocketWriteTimeout < 0 )
-		yaal::tools::util::failure( 4,
+		yaal::tools::util::failure( failNo,
 				_( "negative write timeout set\n" ) );
 	HFSItem root( f_oSocketRoot );
+	++ failNo;
 	if ( ! root.is_directory() )
-		yaal::tools::util::failure( 5,
+		yaal::tools::util::failure( failNo,
 				_( "socket root is invalid\n" ) );
 #if defined ( TARGET_HECTOR_DAEMON )
 	HFSItem data( f_oDataDir );
+	++ failNo;
 	if ( ! ( !! data && data.is_directory() ) )
 		{
 		HString err( ! f_oDataDir.is_empty() ? f_oDataDir : "(nil)" );
 		err += _( ": applications database path is invalid\n" );
-		yaal::tools::util::failure( 6, err.raw() );
+		yaal::tools::util::failure( failNo, err.raw() );
 		}
 #elif defined ( TARGET_HECTOR_ADMIN )
+	++ failNo;
 	if ( ! ( f_bStatus || f_bShutdown || ! f_oReload.is_empty() || ! f_oRestart.is_empty() ) )
-		yaal::tools::util::failure( 7, _( "you have to specify some administrative action\n" ) );
+		yaal::tools::util::failure( failNo, _( "you have to specify some administrative action\n" ) );
 #endif
 	return;
 	M_EPILOG
