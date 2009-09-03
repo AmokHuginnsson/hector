@@ -261,11 +261,7 @@ void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& )
 
 void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app )
 	{
-	f_oWorker.push_task(
-			call<HServer&,
-				void (HServer::*)( HSocket::ptr_t&, yaal::hcore::HString const& ),
-				HSocket::ptr_t&, yaal::hcore::HString const&>(
-					*this, &HServer::do_restart, sock, app ) );
+	f_oWorker.push_task( bound_call<HServer&>( *this, &HServer::do_restart, sock, app ) );
 	}
 
 void HServer::handler_status( HSocket::ptr_t& sock, yaal::hcore::HString const& )
