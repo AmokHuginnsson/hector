@@ -24,7 +24,7 @@
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
 # FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 
-export DIR_ROOT	?= $(CURDIR)
+$(foreach DIR,$(subst /, ,$(CURDIR)), $(eval $(eval DIR_ROOT_TEST=$(DIR_ROOT_TEST)/$(DIR)) $(if $(realpath $(DIR_ROOT_TEST)/_aux/mk/0_paths.mk),export DIR_ROOT ?= $(DIR_ROOT_TEST))))
 VERSION				= 0
 SUBVERSION		= 0
 EXTRAVERSION	= 0
