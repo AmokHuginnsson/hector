@@ -50,7 +50,3 @@ cgi-exe:
 	g++ -lpthread -lssl -lrt build/hector.cgi/*.o /home/amok/usr/lib/libtools.a /home/amok/usr/lib/libhcore.a -o exec
 	strip exec
 
-ifeq ($(CURDIR),$(DIR_BUILD))
--include $(OBJS:.$(OS)=.$(DS))
-endif
-
