@@ -32,7 +32,7 @@ Copyright:
 M_VCSID( "$Id: "__ID__" $" )
 
 #include "options.hxx"
-#include "version.hxx"
+#include "config.hxx"
 #include "setup.hxx"
 
 using namespace yaal;
@@ -53,7 +53,7 @@ bool set_variables( HString& a_roOption, HString& a_roValue )
 void version( void* ) __attribute__(( __noreturn__ ));
 void version( void* )
 	{
-	printf ( "`hector' %s\n", VER );
+	cout << PACKAGE_STRING << endl;
 	throw ( 0 );
 	}
 

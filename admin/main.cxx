@@ -29,7 +29,6 @@ Copyright:
 #include <yaal/yaal.hxx> /* all hAPI headers */
 M_VCSID ( "$Id$" )
 
-#include "version.hxx"
 #include "setup.hxx"
 #include "options.hxx"
 
