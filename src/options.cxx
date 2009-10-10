@@ -65,25 +65,25 @@ int handle_program_options( int a_iArgc, char** a_ppcArgv )
 	HProgramOptionsHandler po;
 	OOptionInfo info( po, setup.f_pcProgramName, "XML based Web Application Server.", NULL );
 	bool stop = false;
-	po( "log_path", program_options_helper::option_value( setup.f_oLogPath ), NULL, HProgramOptionsHandler::OOption::TYPE::REQUIRED, "path", "path pointing to file for application logs" )
+	po( "log_path", program_options_helper::option_value( setup.f_oLogPath ), HProgramOptionsHandler::OOption::TYPE::REQUIRED, "path pointing to file for application logs", "path" )
 #if defined ( TARGET_HECTOR_DAEMON )
-		( "data_dir", program_options_helper::option_value( setup.f_oDataDir ), "D", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "path", "find application data here" )
-		( "max_connections", program_options_helper::option_value( setup.f_iMaxConnections ), "M", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "count", "maximum number of concurent connections" )
-		( "max_working_threads", program_options_helper::option_value( setup.f_iMaxWorkingThreads ), "j", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "count", "maximum number of internal task processing threads" )
+		( "data_dir", program_options_helper::option_value( setup.f_oDataDir ), "D", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "find application data here", "path" )
+		( "max_connections", program_options_helper::option_value( setup.f_iMaxConnections ), "M", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "maximum number of concurent connections", "count" )
+		( "max_working_threads", program_options_helper::option_value( setup.f_iMaxWorkingThreads ), "j", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "maximum number of internal task processing threads", "count" )
 #elif defined ( TARGET_HECTOR_ADMIN )
-		( "shutdown", program_options_helper::option_value( setup.f_bShutdown ), "S", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "shutdown server nicely" )
-		( "reload", program_options_helper::option_value( setup.f_oReload ), "r", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "app", "reload given application" )
-		( "restart", program_options_helper::option_value( setup.f_oRestart ), "A", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "app", "restart given application (reboot activex)" )
-		( "status", program_options_helper::option_value( setup.f_bStatus ), "i", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "print server information" )
+		( "shutdown", program_options_helper::option_value( setup.f_bShutdown ), "S", HProgramOptionsHandler::OOption::TYPE::NONE, "shutdown server nicely" )
+		( "reload", program_options_helper::option_value( setup.f_oReload ), "r", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "reload given application", "app" )
+		( "restart", program_options_helper::option_value( setup.f_oRestart ), "A", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "restart given application (reboot activex)", "app" )
+		( "status", program_options_helper::option_value( setup.f_bStatus ), "i", HProgramOptionsHandler::OOption::TYPE::NONE, "print server information" )
 #endif
-		( "timeout_write", program_options_helper::option_value( setup.f_iSocketWriteTimeout ), "T", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "seconds", "timeout for socket write operation" )
-		( "socket_root", program_options_helper::option_value( setup.f_oSocketRoot ), "R", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "path", "root path for communication socket" )
-		( "quiet", program_options_helper::option_value( setup.f_bQuiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "inhibit usual output" )
-		( "silent", program_options_helper::option_value( setup.f_bQuiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "inhibit usual output" )
-		( "verbose", program_options_helper::option_value( setup.f_bVerbose ), "v", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "print more information" )
-		( "help", program_options_helper::option_value( stop ), "h", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "display this help and stop", program_options_helper::callback( util::show_help, &info ) )
-		( "dump-configuration", program_options_helper::option_value( stop ), "W", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "dump current configuration", program_options_helper::callback( util::dump_configuration, &info ) )
-		( "version", program_options_helper::no_value, "V", HProgramOptionsHandler::OOption::TYPE::NONE, NULL, "output version information and stop", program_options_helper::callback( version, NULL ) );
+		( "timeout_write", program_options_helper::option_value( setup.f_iSocketWriteTimeout ), "T", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "timeout for socket write operation", "seconds" )
+		( "socket_root", program_options_helper::option_value( setup.f_oSocketRoot ), "R", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "root path for communication socket", "path" )
+		( "quiet", program_options_helper::option_value( setup.f_bQuiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
+		( "silent", program_options_helper::option_value( setup.f_bQuiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
+		( "verbose", program_options_helper::option_value( setup.f_bVerbose ), "v", HProgramOptionsHandler::OOption::TYPE::NONE, "print more information" )
+		( "help", program_options_helper::option_value( stop ), "h", HProgramOptionsHandler::OOption::TYPE::NONE, "display this help and stop", program_options_helper::callback( util::show_help, &info ) )
+		( "dump-configuration", program_options_helper::option_value( stop ), "W", HProgramOptionsHandler::OOption::TYPE::NONE, "dump current configuration", program_options_helper::callback( util::dump_configuration, &info ) )
+		( "version", program_options_helper::no_value, "V", HProgramOptionsHandler::OOption::TYPE::NONE, "output version information and stop", program_options_helper::callback( version, NULL ) );
 	po.process_rc_file( "hector", "", NULL );
 	if ( setup.f_oLogPath.is_empty() )
 		setup.f_oLogPath = "hectord.log";
