@@ -10,5 +10,5 @@ echo "${@}" >> /tmp/cgi.log
 #	echo "#${LINE}#" >> /tmp/cgi.log
 #done
 
-exec ./build/hector.cgi/1exec "${@}"
+exec ./build/debug/hector.cgi/1exec "${@}"
 
