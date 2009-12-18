@@ -146,8 +146,8 @@ int HServer::handler_message( int a_iFileDescriptor )
 		}
 	if ( !! l_oClient )
 		{
-		HSocket::HStreamInterface::STATUS const* status = NULL;
-		if ( ( status = &l_oClient->read_until( l_oMessage ) )->code == HSocket::HStreamInterface::STATUS::OK )
+		int long nRead( 0 );
+		if ( ( nRead = l_oClient->read_until( l_oMessage ) ) > 0 )
 			{
 			out << "<-" << l_oMessage << endl;
 			static HString l_oCommand;
@@ -167,9 +167,9 @@ int HServer::handler_message( int a_iFileDescriptor )
 					disconnect_client( channel, l_oClient, _( "Unknown command." ) );
 				}
 			}
-		else if ( status->code == HSocket::HStreamInterface::STATUS::ERROR )
+		else if ( ! nRead )
 			disconnect_client( channel, l_oClient );
-		/* else status->code == HSocket::HStreamInterface::STATUS::REPEAT */
+		/* else nRead < 0 => REPEAT */
 		}
 	return ( 0 );
 	M_EPILOG

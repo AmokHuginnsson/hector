@@ -81,10 +81,10 @@ void show_answer( HSocket& sock )
 	{
 	M_PROLOG
 	HString msg;
-	HStreamInterface::STATUS s;
-	while ( ( s = sock.read_until( msg ) ).octets >= 0 )
+	int long nRead( 0 );
+	while ( ( nRead = sock.read_until( msg ) ) > 0 )
 		cout << msg << endl;
-	cout << "status: " << ( s.code == HStreamInterface::STATUS::OK ? "ok" : ( s.code == HStreamInterface::STATUS::ERROR ? "error" : "repeat" ) ) << endl;
+	cout << "status: " << ( nRead > 0 ? "ok" : ( ! nRead ? "error" : "repeat" ) ) << endl;
 	return;
 	M_EPILOG
 	}
