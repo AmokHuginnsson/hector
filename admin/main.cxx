@@ -82,9 +82,17 @@ void show_answer( HSocket& sock )
 	M_PROLOG
 	HString msg;
 	int long nRead( 0 );
-	while ( ( nRead = sock.read_until( msg ) ) > 0 )
+	bool err( false );
+	while ( ( nRead = sock.read_until( msg ) ) )
+		{
+		if ( nRead < 0 )
+			{
+			err = true;
+			continue;
+			}
 		cout << msg << endl;
-	cout << "status: " << ( nRead > 0 ? "ok" : ( ! nRead ? "error" : "repeat" ) ) << endl;
+		}
+	cout << "status: " << ( ! err ? "ok" : "error" ) << endl;
 	return;
 	M_EPILOG
 	}

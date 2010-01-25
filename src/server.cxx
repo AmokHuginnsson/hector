@@ -261,12 +261,16 @@ void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& )
 
 void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app )
 	{
+	M_PROLOG
 	f_oWorker.push_task( bound_call( &HServer::do_restart, this, sock, app ) );
+	M_EPILOG
 	}
 
 void HServer::handler_status( HSocket::ptr_t& sock, yaal::hcore::HString const& )
 	{
+	M_PROLOG
 	do_status( sock );
+	M_EPILOG
 	}
 
 void HServer::service_request( ORequest& a_roRequest )
