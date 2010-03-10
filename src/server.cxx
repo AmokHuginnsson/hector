@@ -153,7 +153,7 @@ int HServer::handler_message( int a_iFileDescriptor )
 			static HString l_oCommand;
 			static HString l_oArgument;
 			int long sepIdx = l_oMessage.find( ":" );
-			l_oCommand = l_oMessage.left( sepIdx >= 0 ? sepIdx : LONG_MAX );
+			l_oCommand = l_oMessage.left( sepIdx >= 0 ? sepIdx : meta::max_signed<int long>::value );
 			l_oArgument = l_oMessage.mid( sepIdx + 1 );
 			int l_iMsgLength = static_cast<int>( l_oCommand.get_length() );
 			if ( l_iMsgLength < 1 )
@@ -205,7 +205,7 @@ void HServer::read_request( HSocket::ptr_t& sock, ORequest::origin_t const& orig
 		static HString key;
 		static HString value;
 		int long sepIdx = a_oString.find( "=" );
-		key = a_oString.left( sepIdx >= 0 ? sepIdx : LONG_MAX );
+		key = a_oString.left( sepIdx >= 0 ? sepIdx : meta::max_signed<int long>::value );
 		value = a_oString.mid( sepIdx + 1 );
 		key.trim_left().trim_right();
 		value.trim_left().trim_right();

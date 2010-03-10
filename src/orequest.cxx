@@ -144,7 +144,7 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 	for ( HTokenizer::HIterator it = t.begin(), endIt = t.end(); it != endIt; ++ it )
 		{
 		int long sepIdx = (*it).find( "=" );
-		name = (*it).left( sepIdx >= 0 ? sepIdx : LONG_MAX );
+		name = (*it).left( sepIdx >= 0 ? sepIdx : meta::max_signed<int long>::value );
 		M_ENSURE( ! name.is_empty() );
 		(*f_oCookies)[ name ] = (*it).mid( sepIdx + 1 ); /* + 1 for '=' char */
 		}
