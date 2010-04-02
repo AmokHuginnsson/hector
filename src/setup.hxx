@@ -31,6 +31,8 @@ Copyright:
 #include <yaal/yaal.hxx>
 #include <iostream>
 
+#include "config.hxx"
+
 #define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
 
 namespace hector
