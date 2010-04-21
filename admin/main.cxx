@@ -24,6 +24,7 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <cstdlib>
 #include <unistd.h> /* the `char** environ;' variable */
 
 #include <yaal/yaal.hxx> /* all hAPI headers */

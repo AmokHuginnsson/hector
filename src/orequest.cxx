@@ -237,7 +237,7 @@ ORequest::HConstIterator& ORequest::HConstIterator::operator ++ ( void )
 	return ( *this );
 	}
 
-ORequest::dictionary_t::map_elem_t const& ORequest::HConstIterator::operator* ( void ) const
+ORequest::dictionary_t::value_type const& ORequest::HConstIterator::operator* ( void ) const
 	{
 	return ( *f_oIt );
 	}

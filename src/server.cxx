@@ -83,8 +83,8 @@ int HServer::init_server( void )
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::GET ] = &HServer::handler_get;
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::POST ] = &HServer::handler_post;
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::DONE ] = &HServer::handler_done;
-	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor(), &HServer::handler_connection );
-	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::REQUEST ]->get_file_descriptor(), &HServer::handler_connection );
+	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor(), bound_call( &HServer::handler_connection, this, _1 ) );
+	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::REQUEST ]->get_file_descriptor(), bound_call( &HServer::handler_connection, this, _1 ) );
 	HProcess::init ( 3600 );
 	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );
@@ -113,7 +113,7 @@ void HServer::init_sockets( void )
 	M_EPILOG
 	}
 
-int HServer::handler_connection( int msgFd )
+void HServer::handler_connection( int msgFd )
 	{
 	M_PROLOG
 	IPC_CHANNEL::ipc_channel_t channel = f_oSocket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor() == msgFd ? IPC_CHANNEL::CONTROL : IPC_CHANNEL::REQUEST;
@@ -126,14 +126,14 @@ int HServer::handler_connection( int msgFd )
 		{
 		if ( channel == IPC_CHANNEL::REQUEST )
 			f_oRequests[ fd ] = ORequest( l_oClient );
-		register_file_descriptor_handler( fd, &HServer::handler_message );
+		register_file_descriptor_handler( fd, bound_call( &HServer::handler_message, this, _1 ) );
 		}
 	out << green << "new connection" << lightgray << endl;
-	return ( 0 );
+	return;
 	M_EPILOG
 	}
 
-int HServer::handler_message( int a_iFileDescriptor )
+void HServer::handler_message( int a_iFileDescriptor )
 	{
 	M_PROLOG
 	HString l_oMessage;
@@ -171,7 +171,7 @@ int HServer::handler_message( int a_iFileDescriptor )
 			disconnect_client( channel, l_oClient );
 		/* else nRead < 0 => REPEAT */
 		}
-	return ( 0 );
+	return;
 	M_EPILOG
 	}
 

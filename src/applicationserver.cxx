@@ -58,14 +58,14 @@ void HApplicationServer::start( void )
 	HSignalService& ss = HSignalServiceFactory::get_instance();
 	HSignalService::HHandlerGeneric::ptr_t handler( new HSignalService::HHandlerExternal( this, &HApplicationServer::on_sigchild ) );
 	ss.register_handler( SIGCHLD, handler );
-	register_file_descriptor_handler( f_oSigChildEvent.get_reader_fd(), &HApplicationServer::process_sigchild );
+	register_file_descriptor_handler( f_oSigChildEvent.get_reader_fd(), bound_call( &HApplicationServer::process_sigchild, this, _1 ) );
 
 	static char const* const CONFIGURATION_FILE = "/hector.xml";
 	static char const* const NODE_CONFIGURATION = "configuration";
 	static char const* const NODE_APPLICATIONS = "applications";
 	HStringStream confPath( setup.f_oDataDir );
 	confPath << CONFIGURATION_FILE;
-	f_oConfiguration.load( HStreamInterface::ptr_t( new HFile( confPath.string() ) ) );
+	f_oConfiguration.load( HStreamInterface::ptr_t( new HFile( confPath.string(), HFile::OPEN::READING ) ) );
 	HXml::HConstNodeProxy hector = f_oConfiguration.get_root();
 	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it )
 		{
@@ -193,14 +193,14 @@ int HApplicationServer::on_sigchild( int a_iSigNo )
 	M_EPILOG
 	}
 
-int HApplicationServer::process_sigchild( int )
+void HApplicationServer::process_sigchild( int )
 	{
 	M_PROLOG
 	int dummy = 0;
 	f_oSigChildEvent.read( &dummy, sizeof( dummy ) );
 	M_ASSERT( dummy == SIGCHLD );
 	clean_request( WNOHANG );
-	return ( 0 );
+	return;
 	M_EPILOG
 	}
 

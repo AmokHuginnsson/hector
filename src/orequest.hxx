@@ -85,7 +85,7 @@ public:
 	HConstIterator( HConstIterator const& );
 	bool operator != ( HConstIterator const& ) const;
 	HConstIterator& operator ++ ( void );
-	ORequest::dictionary_t::map_elem_t const& operator* ( void ) const;
+	ORequest::dictionary_t::value_type const& operator* ( void ) const;
 private:
 	HConstIterator( ORequest const*, ORequest::origin_t const&, ORequest::dictionary_t::const_iterator );
 	friend class ORequest;

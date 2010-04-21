@@ -82,8 +82,8 @@ protected:
 	/*{*/
 	void init_sockets( void );
 	void disconnect_client( IPC_CHANNEL::ipc_channel_t const&, yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
-	int handler_connection( int );
-	int handler_message( int );
+	void handler_connection( int );
+	void handler_message( int );
 	void handler_shutdown( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_status( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );

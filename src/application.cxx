@@ -61,7 +61,7 @@ void HApplication::load( HString const& name, HString const& path )
 	interface << "/" << f_oName << "/" << INTERFACE_FILE;
 	toolkit << "/" << f_oName << "/" << TOOLKIT_FILE;
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
-	f_oDOM.init( HStreamInterface::ptr_t( new HFile( interface.string() ) ) );
+	f_oDOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ) );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
 	f_oDOM.apply_style( toolkit.raw() );
 	f_oDOM.parse();

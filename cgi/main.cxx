@@ -24,6 +24,7 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <cstdlib>
 #include <unistd.h> /* the `char** environ;' variable */
 
 #include <yaal/yaal.hxx> /* all hAPI headers */
@@ -110,7 +111,7 @@ void query( int argc, char** argv )
 		sock.connect( sockPath );
 		HStringStream buffer;
 		HString POST( "" );
-		HFile in( HFile::OPEN::READING, stdin );
+		HFile in( stdin );
 		while ( in.read_line( POST, HFile::READ::UNBUFFERED_READS ) >= 0 )
 			push_query( sock, POST, "post", "&" );
 		for ( int i = 1; i < argc; ++ i )

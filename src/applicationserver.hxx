@@ -53,7 +53,7 @@ public:
 	void stop( void );
 	void run( void );
 	int on_sigchild( int );
-	int process_sigchild( int );
+	void process_sigchild( int );
 protected:
 	virtual void do_service_request( ORequest& );
 	virtual void do_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
