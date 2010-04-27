@@ -56,8 +56,7 @@ void HApplicationServer::start( void )
 	{
 	M_PROLOG
 	HSignalService& ss = HSignalServiceFactory::get_instance();
-	HSignalService::HHandlerGeneric::ptr_t handler( new HSignalService::HHandlerExternal( this, &HApplicationServer::on_sigchild ) );
-	ss.register_handler( SIGCHLD, handler );
+	ss.register_handler( SIGCHLD, bound_call( &HApplicationServer::on_sigchild, this, _1 ) );
 	_dispatcher.register_file_descriptor_handler( f_oSigChildEvent.get_reader_fd(), bound_call( &HApplicationServer::process_sigchild, this, _1 ) );
 
 	static char const* const CONFIGURATION_FILE = "/hector.xml";
