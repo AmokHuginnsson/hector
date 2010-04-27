@@ -37,7 +37,7 @@ Copyright:
 namespace hector
 {
 
-class HApplicationServer : public HServer
+class HApplicationServer : public HServer, public yaal::tools::HSignalHandlerInterface
 	{
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
@@ -51,7 +51,6 @@ public:
 	virtual ~HApplicationServer( void );
 	void start( void );
 	void stop( void );
-	void run( void );
 	int on_sigchild( int );
 	void process_sigchild( int );
 protected:

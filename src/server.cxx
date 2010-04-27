@@ -54,8 +54,10 @@ int const HServer::IPC_CHANNEL::CONTROL = 0;
 int const HServer::IPC_CHANNEL::REQUEST = 1;
 
 HServer::HServer( int a_iConnections )
-	: HProcess( a_iConnections ), f_iMaxConnections( a_iConnections ),
-	f_oSocket(), f_oRequests(), f_oHandlers(), f_oWorker( setup.f_iMaxWorkingThreads )
+	: f_iMaxConnections( a_iConnections ),
+	f_oSocket(), f_oRequests(), f_oHandlers(),
+	f_oWorker( setup.f_iMaxWorkingThreads ),
+	_dispatcher( a_iConnections, 3600 )
 	{
 	M_PROLOG
 	f_oSocket[ IPC_CHANNEL::CONTROL ] = HSocket::ptr_t(
@@ -83,9 +85,12 @@ int HServer::init_server( void )
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::GET ] = &HServer::handler_get;
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::POST ] = &HServer::handler_post;
 	f_oHandlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::DONE ] = &HServer::handler_done;
-	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor(), bound_call( &HServer::handler_connection, this, _1 ) );
-	register_file_descriptor_handler( f_oSocket[ IPC_CHANNEL::REQUEST ]->get_file_descriptor(), bound_call( &HServer::handler_connection, this, _1 ) );
-	HProcess::init ( 3600 );
+	_dispatcher.register_file_descriptor_handler(
+			f_oSocket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor(),
+			bound_call( &HServer::handler_connection, this, _1 ) );
+	_dispatcher.register_file_descriptor_handler(
+			f_oSocket[ IPC_CHANNEL::REQUEST ]->get_file_descriptor(),
+			bound_call( &HServer::handler_connection, this, _1 ) );
 	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );
 	M_EPILOG
@@ -126,7 +131,7 @@ void HServer::handler_connection( int msgFd )
 		{
 		if ( channel == IPC_CHANNEL::REQUEST )
 			f_oRequests[ fd ] = ORequest( l_oClient );
-		register_file_descriptor_handler( fd, bound_call( &HServer::handler_message, this, _1 ) );
+		_dispatcher.register_file_descriptor_handler( fd, bound_call( &HServer::handler_message, this, _1 ) );
 		}
 	out << green << "new connection" << lightgray << endl;
 	return;
@@ -182,7 +187,7 @@ void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t const& channel,
 	M_PROLOG
 	M_ASSERT( !! a_oClient );
 	int l_iFileDescriptor = a_oClient->get_file_descriptor();
-	unregister_file_descriptor_handler( l_iFileDescriptor );
+	_dispatcher.unregister_file_descriptor_handler( l_iFileDescriptor );
 	if ( channel == IPC_CHANNEL::REQUEST )
 		f_oRequests.remove( l_iFileDescriptor );
 	f_oSocket[ channel ]->shutdown_client( l_iFileDescriptor );
@@ -256,7 +261,10 @@ void HServer::handler_done( HSocket::ptr_t& sock, yaal::hcore::HString const& )
 
 void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& )
 	{
-	f_bLoop = false;
+	M_PROLOG
+	_dispatcher.stop();
+	return;
+	M_EPILOG
 	}
 
 void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app )
@@ -277,6 +285,13 @@ void HServer::service_request( ORequest& a_roRequest )
 	{
 	M_PROLOG
 	do_service_request( a_roRequest );
+	M_EPILOG
+	}
+
+void HServer::run( void )
+	{
+	M_PROLOG
+	_dispatcher.run();
 	M_EPILOG
 	}
 

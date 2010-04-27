@@ -35,7 +35,7 @@ Copyright:
 namespace hector
 {
 
-class HServer : public yaal::tools::HProcess
+class HServer
 	{
 public:
 	typedef void ( HServer::* handler_t )( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
@@ -70,13 +70,14 @@ protected:
 	requests_t f_oRequests;
 	handlers_t f_oHandlers[ IPC_CHANNEL::COUNT ];
 	yaal::tools::HWorkFlow f_oWorker;
+	yaal::tools::HProcess _dispatcher;
 	/*}*/
 public:
 	/*{*/
 	HServer( int );
 	virtual ~HServer( void );
 	int init_server( void );
-	using yaal::tools::HProcess::run;
+	void run( void );
 	/*}*/
 protected:
 	/*{*/

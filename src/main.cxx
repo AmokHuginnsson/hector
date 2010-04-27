@@ -34,7 +34,6 @@ M_VCSID( "$Id: "__ID__" $" )
 #include "options.hxx"
 #include "applicationserver.hxx"
 
-using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::hconsole;
@@ -80,7 +79,7 @@ int main( int a_iArgc, char* a_ppcArgv[] )
 			cons.leave_curses(); /* ending ncurses sesion */
 		throw;
 		}
-	::fprintf( stderr, "Done.\n" );
+	cerr << _( "Done" ) << endl;
 	return ( 0 );
 	M_FINAL
 	}
