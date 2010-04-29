@@ -189,7 +189,7 @@ void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t const& channel,
 	int l_iFileDescriptor = a_oClient->get_file_descriptor();
 	_dispatcher.unregister_file_descriptor_handler( l_iFileDescriptor );
 	if ( channel == IPC_CHANNEL::REQUEST )
-		f_oRequests.remove( l_iFileDescriptor );
+		f_oRequests.erase( l_iFileDescriptor );
 	f_oSocket[ channel ]->shutdown_client( l_iFileDescriptor );
 	out << "client closed connection";
 	if ( a_pcReason )
