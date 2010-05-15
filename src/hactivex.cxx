@@ -43,24 +43,24 @@ HActiveX HActiveX::get_instance( HString const& name, HString const& path )
 	static char const* const SYMBOL_FACTORY = "factory";
 	static char const* const ATTRIBUTE_ACTIVEX = "activex";
 	HStringStream activex( path );
-	HPlugin::ptr_t l_oActiveX( new HPlugin() );
+	HPlugin::ptr_t activeX( new HPlugin() );
 	activex << "/" << name << "/" << ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
 	out << "Trying path: `" << activex.raw() << "' for activex: `" << name << "'" << endl;
-	l_oActiveX->load( activex.raw() );
-	M_ASSERT( l_oActiveX->is_loaded() );
+	activeX->load( activex.raw() );
+	M_ASSERT( activeX->is_loaded() );
 	out << "activex nest for `" << name << "' loaded" << endl;
 	typedef HApplication::ptr_t ( *factory_t )( void );
 	factory_t factory;
-	l_oActiveX->resolve( SYMBOL_FACTORY, factory );
+	activeX->resolve( SYMBOL_FACTORY, factory );
 	M_ASSERT( factory );
 	out << "activex factory for `" << name << "' connected" << endl;
 	app = factory();
 	if ( ! app )
 		throw HApplicationException( "invalid activex" );
 	HActiveX proc( activex.raw() );
-	proc.f_oApplication = app;
-	proc.f_oActiveX = l_oActiveX;
+	proc._application = app;
+	proc._activeX = activeX;
 	app->load( name, path );
 	return ( proc );
 	M_EPILOG
@@ -69,8 +69,8 @@ HActiveX HActiveX::get_instance( HString const& name, HString const& path )
 void HActiveX::reload_binary( void )
 	{
 	M_PROLOG
-	f_oActiveX->unload();
-	f_oActiveX->load( f_oBinaryPath );
+	_activeX->unload();
+	_activeX->load( _binaryPath );
 	return;
 	M_EPILOG
 	}
@@ -78,7 +78,7 @@ void HActiveX::reload_binary( void )
 void HActiveX::handle_logic( ORequest& req_ )
 	{
 	M_PROLOG
-	f_oApplication->handle_logic( req_ );
+	_application->handle_logic( req_ );
 	return;
 	M_EPILOG
 	}
@@ -86,7 +86,7 @@ void HActiveX::handle_logic( ORequest& req_ )
 void HActiveX::generate_page( ORequest const& req_ )
 	{
 	M_PROLOG
-	f_oApplication->generate_page( req_ );
+	_application->generate_page( req_ );
 	return;
 	M_EPILOG
 	}

@@ -38,8 +38,8 @@ class HApplication
 	{
 	typedef HApplication self_t;
 private:
-	yaal::tools::HXml f_oDOM;
-	yaal::hcore::HString f_oName;
+	yaal::tools::HXml _dOM;
+	yaal::hcore::HString _name;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication( void );

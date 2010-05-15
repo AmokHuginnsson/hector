@@ -49,20 +49,20 @@ OSetup setup;
 
 void query( void );
 
-int main( int a_iArgc, char* a_ppcArgv[] )
+int main( int argc_, char* argv_[] )
 	{
 	M_PROLOG
 /* variables declarations for main loop: */
-	int l_iOpt = 0;
+	int opt = 0;
 /* end. */
 	try
 		{
 /* TO-DO: enter main loop code here */
 		HSignalServiceFactory::get_instance();
-		setup.f_pcProgramName = a_ppcArgv[ 0 ];
-		l_iOpt = handle_program_options( a_iArgc, a_ppcArgv );
-		setup.f_oLogPath.replace( "hectord", "hectoradmin" );
-		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
+		setup._programName = argv_[ 0 ];
+		opt = handle_program_options( argc_, argv_ );
+		setup._logPath.replace( "hectord", "hectoradmin" );
+		hcore::log.rehash( setup._logPath, setup._programName );
 		setup.test_setup();
 /*		if ( ! cons.is_enabled() )
 			enter_curses(); */ /* enabling ncurses ablilities */
@@ -101,7 +101,7 @@ void show_answer( HSocket& sock )
 void query_status( void )
 	{
 	M_PROLOG
-	HString sockPath( setup.f_oSocketRoot );
+	HString sockPath( setup._socketRoot );
 	sockPath += "/control.sock";
 	HSocket sock( HSocket::TYPE::FILE );
 	sock.connect( sockPath );
@@ -114,7 +114,7 @@ void query_status( void )
 void query_shutdown( void )
 	{
 	M_PROLOG
-	HString sockPath( setup.f_oSocketRoot );
+	HString sockPath( setup._socketRoot );
 	sockPath += "/control.sock";
 	HSocket sock( HSocket::TYPE::FILE );
 	sock.connect( sockPath );
@@ -127,7 +127,7 @@ void query_shutdown( void )
 void query_restart_reload( char const* const action_, HString const& object_ )
 	{
 	M_PROLOG
-	HString sockPath( setup.f_oSocketRoot );
+	HString sockPath( setup._socketRoot );
 	sockPath += "/control.sock";
 	HSocket sock( HSocket::TYPE::FILE );
 	sock.connect( sockPath );
@@ -142,13 +142,13 @@ void query( void )
 	M_PROLOG
 	try
 		{
-		if ( ! setup.f_oReload.is_empty() )
-			query_restart_reload( "reload:", setup.f_oReload );
-		if ( ! setup.f_oRestart.is_empty() )
-			query_restart_reload( "restart:", setup.f_oRestart );
-		if ( setup.f_bStatus )
+		if ( ! setup._reload.is_empty() )
+			query_restart_reload( "reload:", setup._reload );
+		if ( ! setup._restart.is_empty() )
+			query_restart_reload( "restart:", setup._restart );
+		if ( setup._status )
 			query_status();
-		if ( setup.f_bShutdown )
+		if ( setup._shutdown )
 			query_shutdown();
 		}
 	catch ( HSocketException& e )

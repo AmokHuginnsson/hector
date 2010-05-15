@@ -47,30 +47,30 @@ struct OSetup
 	static int const DEFAULT_MAX_WORKING_THREADS = 2;
 	static int const DEFAULT_SOCKET_WRITE_TIMEOUT = 5; /* seconds */
 	static char const* const DEFAULT_SOCKET_ROOT;
-	bool f_bQuiet;			/* --quiet, --silent */
-	bool f_bVerbose;		/* --verbose */
-	bool f_bShutdown;
-	bool f_bStatus;
-	char* f_pcProgramName;
-	int f_iMaxConnections;
-	int f_iMaxWorkingThreads;
-	int f_iSocketWriteTimeout;
-	yaal::hcore::HString f_oLogPath;
-	yaal::hcore::HString f_oDataDir;
-	yaal::hcore::HString f_oSocketRoot;
-	yaal::hcore::HString f_oReload;
-	yaal::hcore::HString f_oRestart;
+	bool _quiet;			/* --quiet, --silent */
+	bool _verbose;		/* --verbose */
+	bool _shutdown;
+	bool _status;
+	char* _programName;
+	int _maxConnections;
+	int _maxWorkingThreads;
+	int _socketWriteTimeout;
+	yaal::hcore::HString _logPath;
+	yaal::hcore::HString _dataDir;
+	yaal::hcore::HString _socketRoot;
+	yaal::hcore::HString _reload;
+	yaal::hcore::HString _restart;
 	/* self-sufficient */
 	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.hxx" );
 	OSetup( void )
-		: f_bQuiet( false ), f_bVerbose( false ),
-		f_bShutdown( false ),
-		f_bStatus( false ), f_pcProgramName( NULL ),
-		f_iMaxConnections( DEFAULT_MAX_CONNECTIONS ),
-		f_iMaxWorkingThreads( DEFAULT_MAX_WORKING_THREADS ),
-		f_iSocketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT ),
-		f_oLogPath(), f_oDataDir(), f_oSocketRoot( DEFAULT_SOCKET_ROOT ),
-		f_oReload(), f_oRestart() {}
+		: _quiet( false ), _verbose( false ),
+		_shutdown( false ),
+		_status( false ), _programName( NULL ),
+		_maxConnections( DEFAULT_MAX_CONNECTIONS ),
+		_maxWorkingThreads( DEFAULT_MAX_WORKING_THREADS ),
+		_socketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT ),
+		_logPath(), _dataDir(), _socketRoot( DEFAULT_SOCKET_ROOT ),
+		_reload(), _restart() {}
 	void test_setup( void );
 private:
 	OSetup ( OSetup const & );

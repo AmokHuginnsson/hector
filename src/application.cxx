@@ -40,13 +40,13 @@ namespace hector
 {
 
 HApplication::HApplication( void )
-	: f_oDOM(), f_oName()
+	: _dOM(), _name()
 	{
 	}
 
 HApplication::~HApplication( void )
 	{
-	out << "Application `" << f_oName << "' unloaded." << endl;
+	out << "Application `" << _name << "' unloaded." << endl;
 	}
 
 void HApplication::load( HString const& name, HString const& path )
@@ -54,17 +54,17 @@ void HApplication::load( HString const& name, HString const& path )
 	M_PROLOG
 	static char const* const INTERFACE_FILE = "interface.xml";
 	static char const* const TOOLKIT_FILE = "toolkit.xml";
-	f_oName = name;
+	_name = name;
 	HStringStream interface( path );
 	HStringStream toolkit( path );
-	hcore::log( LOG_TYPE::INFO ) << "Loading application `" << f_oName << "'." << endl;
-	interface << "/" << f_oName << "/" << INTERFACE_FILE;
-	toolkit << "/" << f_oName << "/" << TOOLKIT_FILE;
+	hcore::log( LOG_TYPE::INFO ) << "Loading application `" << _name << "'." << endl;
+	interface << "/" << _name << "/" << INTERFACE_FILE;
+	toolkit << "/" << _name << "/" << TOOLKIT_FILE;
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
-	f_oDOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ) );
+	_dOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ) );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
-	f_oDOM.apply_style( toolkit.raw() );
-	f_oDOM.parse();
+	_dOM.apply_style( toolkit.raw() );
+	_dOM.parse();
 	do_load();
 	return;	
 	M_EPILOG
@@ -80,7 +80,7 @@ void HApplication::do_handle_logic( ORequest& req )
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	static char const LOGIC_PATH[] = "/html/logic/";
-	HXml::HNodeProxy logic = f_oDOM.get_element_by_path( LOGIC_PATH );
+	HXml::HNodeProxy logic = _dOM.get_element_by_path( LOGIC_PATH );
 	if ( !! logic )
 		cgi::make_cookies( logic, req );
 	return;
@@ -105,7 +105,7 @@ void HApplication::generate_page( ORequest const& req )
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req );
-	f_oDOM.save( req.socket() );
+	_dOM.save( req.socket() );
 	return;
 	M_EPILOG
 	}
@@ -121,7 +121,7 @@ void HApplication::handle_logic( ORequest& req )
 
 HXml& HApplication::dom( void )
 	{
-	return ( f_oDOM );
+	return ( _dOM );
 	}
 
 }

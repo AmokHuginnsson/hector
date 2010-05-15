@@ -50,25 +50,25 @@ OSetup setup;
 
 void query( int, char** );
 
-int main( int a_iArgc, char* a_ppcArgv[] )
+int main( int argc_, char* argv_[] )
 	{
 	M_PROLOG
 /* variables declarations for main loop: */
-	int l_iOpt = 0;
+	int opt = 0;
 /* end. */
 	try
 		{
 /* TO-DO: enter main loop code here */
 		HSignalServiceFactory::get_instance();
-		setup.f_pcProgramName = a_ppcArgv[ 0 ];
-		l_iOpt = handle_program_options( a_iArgc, a_ppcArgv );
-		setup.f_oLogPath.replace( "hectord", "hector.cgi" );
-		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
+		setup._programName = argv_[ 0 ];
+		opt = handle_program_options( argc_, argv_ );
+		setup._logPath.replace( "hectord", "hector.cgi" );
+		hcore::log.rehash( setup._logPath, setup._programName );
 		setup.test_setup();
 /*		if ( ! cons.is_enabled() )
 			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */
-		query( a_iArgc, a_ppcArgv );
+		query( argc_, argv_ );
 /* ... there is the place main loop ends. :OD-OT */
 		}
 	catch ( ... )
@@ -104,7 +104,7 @@ void push_query( HSocket& sock, HString const& query, char const* const mode, ch
 void query( int argc, char** argv )
 	{
 	M_PROLOG
-	HString sockPath( setup.f_oSocketRoot );
+	HString sockPath( setup._socketRoot );
 	sockPath += "/request.sock";
 	try
 		{

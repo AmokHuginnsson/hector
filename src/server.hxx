@@ -65,11 +65,11 @@ public:
 		};
 protected:
 	/*{*/
-	int f_iMaxConnections;
-	yaal::hcore::HSocket::ptr_t f_oSocket[ IPC_CHANNEL::COUNT ];
-	requests_t f_oRequests;
-	handlers_t f_oHandlers[ IPC_CHANNEL::COUNT ];
-	yaal::tools::HWorkFlow f_oWorker;
+	int _maxConnections;
+	yaal::hcore::HSocket::ptr_t _socket[ IPC_CHANNEL::COUNT ];
+	requests_t _requests;
+	handlers_t _handlers[ IPC_CHANNEL::COUNT ];
+	yaal::tools::HWorkFlow _worker;
 	yaal::tools::HProcess _dispatcher;
 	/*}*/
 public:

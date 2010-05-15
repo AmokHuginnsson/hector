@@ -34,11 +34,11 @@ namespace hector
 
 class HActiveX
 	{
-	yaal::hcore::HString f_oBinaryPath;
-	yaal::tools::HPlugin::ptr_t f_oActiveX;
-	HApplication::ptr_t f_oApplication;
+	yaal::hcore::HString _binaryPath;
+	yaal::tools::HPlugin::ptr_t _activeX;
+	HApplication::ptr_t _application;
 public:
-	HActiveX( yaal::hcore::HString const& path = yaal::hcore::HString() ) : f_oBinaryPath( path ), f_oActiveX(), f_oApplication() {}
+	HActiveX( yaal::hcore::HString const& path = yaal::hcore::HString() ) : _binaryPath( path ), _activeX(), _application() {}
 	static HActiveX get_instance( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void reload_binary( void );
 	void handle_logic( ORequest& );

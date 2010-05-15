@@ -48,20 +48,20 @@ OSetup setup;
 
 }
 
-int main( int a_iArgc, char* a_ppcArgv[] )
+int main( int argc_, char* argv_[] )
 	{
 	M_PROLOG
 /* variables declarations for main loop: */
-	int l_iOpt = 0;
+	int opt = 0;
 	HConsole& cons = HCons::get_instance();
 /* end. */
 	try
 		{
 /* TO-DO: enter main loop code here */
 		HSignalServiceFactory::get_instance();
-		setup.f_pcProgramName = a_ppcArgv[ 0 ];
-		l_iOpt = handle_program_options( a_iArgc, a_ppcArgv );
-		hcore::log.rehash( setup.f_oLogPath, setup.f_pcProgramName );
+		setup._programName = argv_[ 0 ];
+		opt = handle_program_options( argc_, argv_ );
+		hcore::log.rehash( setup._logPath, setup._programName );
 		setup.test_setup();
 		HApplicationServer appServ;
 		appServ.start();

@@ -41,11 +41,11 @@ class HApplicationServer : public HServer
 	{
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
-	applications_t f_oApplications;
-	pending_t f_oPending;
-	yaal::tools::HXml f_oConfiguration;
-	yaal::hcore::HString f_oDefaultApplication;
-	yaal::hcore::HPipe f_oSigChildEvent;
+	applications_t _applications;
+	pending_t _pending;
+	yaal::tools::HXml _configuration;
+	yaal::hcore::HString _defaultApplication;
+	yaal::hcore::HPipe _sigChildEvent;
 public:
 	HApplicationServer( void );
 	virtual ~HApplicationServer( void );

@@ -53,12 +53,12 @@ public:
 	class HConstIterator;
 	typedef HConstIterator const_iterator;
 private:
-	yaal::hcore::HSocket::ptr_t f_oSocket;
-	dictionary_ptr_t f_oEnvironment;
-	dictionary_ptr_t f_oGET;
-	dictionary_ptr_t f_oPOST;
-	dictionary_ptr_t f_oCookies;
-	dictionary_ptr_t f_oJar;
+	yaal::hcore::HSocket::ptr_t _socket;
+	dictionary_ptr_t _environment;
+	dictionary_ptr_t _gET;
+	dictionary_ptr_t _pOST;
+	dictionary_ptr_t _cookies;
+	dictionary_ptr_t _jar;
 public:
 	ORequest( yaal::hcore::HSocket::ptr_t = yaal::hcore::HSocket::ptr_t() );
 	ORequest( ORequest const& );
@@ -78,9 +78,9 @@ typedef yaal::hcore::HExceptionT<ORequest> ORequestException;
 
 class ORequest::HConstIterator
 	{
-	ORequest const* f_poOwner;
-	ORequest::origin_t f_eOrigin;
-	dictionary_t::const_iterator f_oIt;
+	ORequest const* _owner;
+	ORequest::origin_t _origin;
+	dictionary_t::const_iterator _it;
 public:
 	HConstIterator( HConstIterator const& );
 	bool operator != ( HConstIterator const& ) const;
