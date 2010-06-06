@@ -87,10 +87,10 @@ int HServer::init_server( void )
 	_handlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::DONE ] = &HServer::handler_done;
 	_dispatcher.register_file_descriptor_handler(
 			_socket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor(),
-			bound_call( &HServer::handler_connection, this, _1 ) );
+			call( &HServer::handler_connection, this, _1 ) );
 	_dispatcher.register_file_descriptor_handler(
 			_socket[ IPC_CHANNEL::REQUEST ]->get_file_descriptor(),
-			bound_call( &HServer::handler_connection, this, _1 ) );
+			call( &HServer::handler_connection, this, _1 ) );
 	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );
 	M_EPILOG
@@ -131,7 +131,7 @@ void HServer::handler_connection( int msgFd )
 		{
 		if ( channel == IPC_CHANNEL::REQUEST )
 			_requests[ fd ] = ORequest( client );
-		_dispatcher.register_file_descriptor_handler( fd, bound_call( &HServer::handler_message, this, _1 ) );
+		_dispatcher.register_file_descriptor_handler( fd, call( &HServer::handler_message, this, _1 ) );
 		}
 	out << green << "new connection" << lightgray << endl;
 	return;
@@ -270,7 +270,7 @@ void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& )
 void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app )
 	{
 	M_PROLOG
-	_worker.push_task( bound_call( &HServer::do_restart, this, sock, app ) );
+	_worker.push_task( call( &HServer::do_restart, this, sock, app ) );
 	M_EPILOG
 	}
 
