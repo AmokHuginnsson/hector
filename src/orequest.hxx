@@ -32,7 +32,7 @@ namespace hector
 
 class ORequest
 	{
-	typedef ORequest self_t;
+	typedef ORequest this_type;
 public:
 	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
 	typedef yaal::hcore::HPointer<dictionary_t> dictionary_ptr_t;

@@ -36,7 +36,7 @@ namespace hector
 
 class HApplication
 	{
-	typedef HApplication self_t;
+	typedef HApplication this_type;
 private:
 	yaal::tools::HXml _dOM;
 	yaal::hcore::HString _name;
