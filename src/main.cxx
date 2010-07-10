@@ -50,15 +50,16 @@ OSetup setup;
 
 int main( int argc_, char* argv_[] )
 	{
+	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
 	M_PROLOG
 /* variables declarations for main loop: */
 	int opt = 0;
-	HConsole& cons = HCons::get_instance();
+	HConsole& cons = HConsole::get_instance();
 /* end. */
 	try
 		{
 /* TO-DO: enter main loop code here */
-		HSignalServiceFactory::get_instance();
+		HSignalService::get_instance();
 		setup._programName = argv_[ 0 ];
 		opt = handle_program_options( argc_, argv_ );
 		hcore::log.rehash( setup._logPath, setup._programName );

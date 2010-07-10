@@ -55,7 +55,7 @@ HApplicationServer::~HApplicationServer( void )
 void HApplicationServer::start( void )
 	{
 	M_PROLOG
-	HSignalService& ss = HSignalServiceFactory::get_instance();
+	HSignalService& ss = HSignalService::get_instance();
 	ss.register_handler( SIGCHLD, call( &HApplicationServer::on_sigchild, this, _1 ) );
 	_dispatcher.register_file_descriptor_handler( _sigChildEvent.get_reader_fd(), call( &HApplicationServer::process_sigchild, this, _1 ) );
 
