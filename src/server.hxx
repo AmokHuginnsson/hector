@@ -27,7 +27,7 @@ Copyright:
 #ifndef SERVER_HXX_INCLUDED
 #define SERVER_HXX_INCLUDED
 
-#include <yaal/tools/hprocess.hxx>
+#include <yaal/tools/hiodispatcher.hxx>
 #include <yaal/tools/hworkflow.hxx>
 
 #include "orequest.hxx"
@@ -70,7 +70,7 @@ protected:
 	requests_t _requests;
 	handlers_t _handlers[ IPC_CHANNEL::COUNT ];
 	yaal::tools::HWorkFlow _worker;
-	yaal::tools::HProcess _dispatcher;
+	yaal::tools::HIODispatcher _dispatcher;
 	/*}*/
 public:
 	/*{*/

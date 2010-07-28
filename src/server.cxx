@@ -57,7 +57,7 @@ HServer::HServer( int connections_ )
 	: _maxConnections( connections_ ),
 	_socket(), _requests(), _handlers(),
 	_worker( setup._maxWorkingThreads ),
-	_dispatcher( connections_, 3600 )
+	_dispatcher( connections_, 3600 * 1000 )
 	{
 	M_PROLOG
 	_socket[ IPC_CHANNEL::CONTROL ] = HSocket::ptr_t(
