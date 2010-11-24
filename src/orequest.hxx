@@ -83,6 +83,7 @@ class ORequest::HConstIterator
 	dictionary_t::const_iterator _it;
 public:
 	HConstIterator( HConstIterator const& );
+	HConstIterator& operator = ( HConstIterator const& );
 	bool operator != ( HConstIterator const& ) const;
 	HConstIterator& operator ++ ( void );
 	ORequest::dictionary_t::value_type const& operator* ( void ) const;

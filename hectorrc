@@ -4,6 +4,9 @@
 log_path "x_hectord.log"
 application "app"
 data_dir "./${NEST}/app/"
+database_name "system"
+database_login "system"
+# database_password "pass"
 max_connections 128
 max_working_threads 5
 timeout_write 5
