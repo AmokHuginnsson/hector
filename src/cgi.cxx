@@ -481,6 +481,15 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	M_EPILOG
 	}
 
+void apply_acl( yaal::tools::HXml::HNodeProxy,
+		ORequest const&, default_t&,
+		HXml::HNodeProxy* )
+	{
+	M_PROLOG
+	return;
+	M_EPILOG
+	}
+
 }
 
 }

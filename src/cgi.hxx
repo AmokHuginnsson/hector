@@ -48,6 +48,8 @@ bool is_kind_of( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString cons
 bool has_attribute( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString const& );
 void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
+void apply_acl( yaal::tools::HXml::HNodeProxy, ORequest const&,
+		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t const&, yaal::tools::HXml& );
 void expand_autobutton( yaal::tools::HXml::HNodeProxy, ORequest const& );
