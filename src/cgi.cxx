@@ -121,7 +121,7 @@ HString const& get_owner_user( HXml::HConstNodeProxy const& node )
 	M_EPILOG
 	}
 
-HString const& get_owner_group( HXml::HNodeProxy const& node )
+HString const& get_owner_group( HXml::HConstNodeProxy const& node )
 	{
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
@@ -135,13 +135,33 @@ HString const& get_owner_group( HXml::HNodeProxy const& node )
 	M_EPILOG
 	}
 
-int get_permissions( HXml::HNodeProxy const& node )
+int get_permissions( HXml::HConstNodeProxy const& node )
 	{
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	char const ATTRIBUTE_MODE[] = "mode";
 	char const* val( xml::attr_val( node, ATTRIBUTE_MODE ) );
 	return ( val ? lexical_cast<int>( val ) : -1 );
+	M_EPILOG
+	}
+
+void update_security_context( OSecurityContext& securityContext_, HXml::HConstNodeProxy const& node_ )
+	{
+	M_PROLOG
+	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::NODE );
+	char const ATTRIBUTE_USER[] = "user";
+	char const* user( xml::attr_val( node_, ATTRIBUTE_USER ) );
+	char const ATTRIBUTE_GROUP[] = "group";
+	char const* group( xml::attr_val( node_, ATTRIBUTE_GROUP ) );
+	char const ATTRIBUTE_MODE[] = "mode";
+	char const* mode( xml::attr_val( node_, ATTRIBUTE_MODE ) );
+	if ( user )
+		securityContext_._user = user;
+	if ( group )
+		securityContext_._group = group;
+	if ( mode )
+		securityContext_._mode = lexical_cast<int>( mode );
+	return;
 	M_EPILOG
 	}
 
@@ -476,7 +496,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	static char const* const ATTRIBUTE_TYPE_VALUE = "hidden";
 	static char const* const ATTRIBUTE_NAME = "name";
 	static char const* const ATTRIBUTE_VALUE = "value";
-	for ( HXml::HIterator it = node.begin(); it != node.end(); ++ it )
+	for ( HXml::HIterator it( node.begin() ), end( node.end() ); it != end; ++ it )
 		{
 		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
 			{
@@ -522,28 +542,29 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 /* We descend into node children only if 'executable' bit is set for user.
  * We keep node only if 'read' bit is set for user.
  */
-void apply_acl( yaal::tools::HXml::HNodeProxy node,
-		ORequest const& req, OSecurityContext const& securityContext_,
-		HXml::HNodeProxy* selfwaste )
+void apply_acl( yaal::tools::HXml::HNodeProxy node_,
+		ORequest const& req_, OSecurityContext const& securityContext_,
+		HXml::HNodeProxy* selfwaste_ )
 	{
 	M_PROLOG
 	static HXml waste;
 	static HXml::HNodeProxy root;
 	OSecurityContext securityContext( securityContext_ );
-	if ( ! selfwaste )
+	update_security_context( securityContext, node_ );
+	if ( ! selfwaste_ )
 		{
 		waste.create_root( "x" );
 		root = waste.get_root();
-		selfwaste = &root;
+		selfwaste_ = &root;
 		}
-	for ( HXml::HIterator it = node.begin(); it != node.end(); )
+	for ( HXml::HIterator it( node_.begin() ), end( node_.end() ); it != end; )
 		{
 		HXml::HIterator del = it;
 		++ it;
 		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			selfwaste->move_node( *del );
-			apply_acl( *del, req, securityContext, selfwaste );
+			selfwaste_->move_node( *del );
+			apply_acl( *del, req_, securityContext, selfwaste_ );
 			}
 		}
 	return;
