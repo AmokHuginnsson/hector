@@ -24,13 +24,14 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef CGI_HXX_INCLUDED
-#define CGI_HXX_INCLUDED
+#ifndef HECTOR_CGI_HXX_INCLUDED
+#define HECTOR_CGI_HXX_INCLUDED 1
 
 #include <yaal/tools/hxml.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>
 
 #include "orequest.hxx"
+#include "securitycontext.hxx"
 
 namespace	hector
 {
@@ -43,13 +44,13 @@ typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> default_t;
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
 bool is_kind_of( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
 bool has_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
-bool is_in_attribute( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
-bool is_kind_of( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString const& );
-bool has_attribute( yaal::tools::HXml::HNodeProxy const&, yaal::hcore::HString const& );
+bool is_in_attribute( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
+bool is_kind_of( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HString const& );
+bool has_attribute( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HString const& );
 void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
 void apply_acl( yaal::tools::HXml::HNodeProxy, ORequest const&,
-		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
+		OSecurityContext const&, yaal::tools::HXml::HNodeProxy* = NULL );
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t const&, yaal::tools::HXml& );
 void expand_autobutton( yaal::tools::HXml::HNodeProxy, ORequest const& );
@@ -64,5 +65,5 @@ void make_cookies( yaal::tools::HXml::HNodeProxy, ORequest& );
 
 }
 
-#endif /* not CGI_HXX_INCLUDED */
+#endif /* not HECTOR_CGI_HXX_INCLUDED */
 

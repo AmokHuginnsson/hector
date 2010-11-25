@@ -98,12 +98,50 @@ bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, HString const& kind 
 	M_EPILOG
 	}
 
-bool has_attribute( yaal::tools::HXml::HNodeProxy const& node, HString const& attribute )
+bool has_attribute( yaal::tools::HXml::HConstNodeProxy const& node, HString const& attribute )
 	{
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	HXml::HNode::properties_t const& props = node.properties();
 	return ( has_attribute( props, attribute ) );
+	M_EPILOG
+	}
+
+HString const& get_owner_user( HXml::HConstNodeProxy const& node )
+	{
+	M_PROLOG
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
+	char const ATTRIBUTE_USER[] = "user";
+	char const* val( xml::attr_val( node, ATTRIBUTE_USER ) );
+	static HString name;
+	name.clear();
+	if ( val )
+		name = val;
+	return ( name );
+	M_EPILOG
+	}
+
+HString const& get_owner_group( HXml::HNodeProxy const& node )
+	{
+	M_PROLOG
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
+	char const ATTRIBUTE_GROUP[] = "group";
+	char const* val( xml::attr_val( node, ATTRIBUTE_GROUP ) );
+	static HString group;
+	group.clear();
+	if ( val )
+		group = val;
+	return ( group );
+	M_EPILOG
+	}
+
+int get_permissions( HXml::HNodeProxy const& node )
+	{
+	M_PROLOG
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
+	char const ATTRIBUTE_MODE[] = "mode";
+	char const* val( xml::attr_val( node, ATTRIBUTE_MODE ) );
+	return ( val ? lexical_cast<int>( val ) : -1 );
 	M_EPILOG
 	}
 
@@ -481,11 +519,33 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	M_EPILOG
 	}
 
-void apply_acl( yaal::tools::HXml::HNodeProxy,
-		ORequest const&, default_t&,
-		HXml::HNodeProxy* )
+/* We descend into node children only if 'executable' bit is set for user.
+ * We keep node only if 'read' bit is set for user.
+ */
+void apply_acl( yaal::tools::HXml::HNodeProxy node,
+		ORequest const& req, OSecurityContext const& securityContext_,
+		HXml::HNodeProxy* selfwaste )
 	{
 	M_PROLOG
+	static HXml waste;
+	static HXml::HNodeProxy root;
+	OSecurityContext securityContext( securityContext_ );
+	if ( ! selfwaste )
+		{
+		waste.create_root( "x" );
+		root = waste.get_root();
+		selfwaste = &root;
+		}
+	for ( HXml::HIterator it = node.begin(); it != node.end(); )
+		{
+		HXml::HIterator del = it;
+		++ it;
+		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
+			{
+			selfwaste->move_node( *del );
+			apply_acl( *del, req, securityContext, selfwaste );
+			}
+		}
 	return;
 	M_EPILOG
 	}

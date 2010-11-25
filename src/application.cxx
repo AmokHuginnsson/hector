@@ -93,7 +93,7 @@ void HApplication::do_generate_page( ORequest const& req )
 	out << __PRETTY_FUNCTION__ << endl;
 	cgi::default_t defaults;
 	cgi::waste_children( dom().get_root(), req, defaults );
-	cgi::apply_acl( dom().get_root(), req, defaults );
+	cgi::apply_acl( dom().get_root(), req, OSecurityContext() );
 	cgi::mark_children( dom().get_root(), req, defaults, dom() );
 	cgi::move_children( dom().get_root(), req, dom() );
 	cgi::expand_autobutton( dom().get_root(), req );
