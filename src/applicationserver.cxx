@@ -42,8 +42,8 @@ namespace hector
 
 HApplicationServer::HApplicationServer( void )
 	: HServer( setup._maxConnections ),
-	_applications(), _pending(), _configuration(),
-	_defaultApplication(), _sigChildEvent()
+	_applications(), _pending(), _sessions(),
+	_configuration(), _defaultApplication(), _sigChildEvent()
 	{
 	}
 

@@ -88,25 +88,34 @@ void ORequest::update( HString const& key, HString const& value, origin_t const&
 	M_EPILOG
 	}
 
-bool ORequest::lookup( HString const& key, HString& value, origin_t const& origin ) const
+bool ORequest::lookup( HString const& key_, HString& value_, origin_t const& origin_ ) const
 	{
 	M_PROLOG
-	dictionary_t::const_iterator it = _environment->find( key );
-	bool bFound = false;
-	( ! bFound ) && ( !!( origin & ORIGIN::ENV ) )
-		&& ( bFound = ( ( it = _environment->find( key ) ) != _environment->end() ) )
-		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( !!( origin & ORIGIN::POST ) )
-		&& ( bFound = ( ( it = _pOST->find( key ) )        != _pOST->end() ) )
-		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( !!( origin & ORIGIN::GET ) )
-		&& ( bFound = ( ( it = _gET->find( key ) )         != _gET->end() ) )
-		&& ( !! ( value = it->second ) );
-	( ! bFound ) && ( !!( origin & ORIGIN::COOKIE ) )
-		&& ( bFound = ( ( it = _cookies->find( key ) )     != _cookies->end() ) )
-		&& ( !! ( value = it->second ) );
-	return ( ! bFound );
+	ORequest::value_t value( lookup( key_, origin_ ) );
+	if ( value )
+		value_ = *value;
+	return ( value );
 	M_EPILOG
+	}
+
+ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t const& origin_ ) const
+	{
+	dictionary_t::const_iterator it = _environment->find( key_ );
+	bool bFound( false );
+	ORequest::value_t value;
+	( ! bFound ) && ( !!( origin_ & ORIGIN::ENV ) )
+		&& ( bFound = ( ( it = _environment->find( key_ ) ) != _environment->end() ) )
+		&& ( !! ( value = it->second ) );
+	( ! bFound ) && ( !!( origin_ & ORIGIN::POST ) )
+		&& ( bFound = ( ( it = _pOST->find( key_ ) )        != _pOST->end() ) )
+		&& ( !! ( value = it->second ) );
+	( ! bFound ) && ( !!( origin_ & ORIGIN::GET ) )
+		&& ( bFound = ( ( it = _gET->find( key_ ) )         != _gET->end() ) )
+		&& ( !! ( value = it->second ) );
+	( ! bFound ) && ( !!( origin_ & ORIGIN::COOKIE ) )
+		&& ( bFound = ( ( it = _cookies->find( key_ ) )     != _cookies->end() ) )
+		&& ( !! ( value = it->second ) );
+	return ( value );
 	}
 
 void ORequest::decompress_jar( yaal::hcore::HString const& app )

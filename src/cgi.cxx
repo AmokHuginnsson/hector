@@ -539,8 +539,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	M_EPILOG
 	}
 
-/* We descend into node children only if 'executable' bit is set for user.
- * We keep node only if 'read' bit is set for user.
+/* We keep node only if 'read' bit is set for user.
  */
 void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 		ORequest const& req_, OSecurityContext const& securityContext_,

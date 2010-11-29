@@ -24,8 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef OREQUEST_HXX_INCLUDED
-#define OREQUEST_HXX_INCLUDED
+#ifndef HECTOR_OREQUEST_HXX_INCLUDED
+#define HECTOR_OREQUEST_HXX_INCLUDED 1
 
 namespace hector
 {
@@ -52,6 +52,7 @@ public:
 	typedef yaal::hcore::HStrongEnum<ORIGIN> origin_t;
 	class HConstIterator;
 	typedef HConstIterator const_iterator;
+	typedef yaal::tools::HOptional<yaal::hcore::HString const&> value_t;
 private:
 	yaal::hcore::HSocket::ptr_t _socket;
 	dictionary_ptr_t _environment;
@@ -65,6 +66,7 @@ public:
 	ORequest& operator = ( ORequest const& );
 	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, origin_t const& );
 	bool lookup( yaal::hcore::HString const&, yaal::hcore::HString&, origin_t const& = ORIGIN::ANY ) const;
+	value_t lookup( yaal::hcore::HString const&, origin_t const& = ORIGIN::ANY ) const;
 	void decompress_jar( yaal::hcore::HString const& );
 	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
 	yaal::hcore::HSocket::ptr_t socket( void );
@@ -94,5 +96,5 @@ private:
 
 }
 
-#endif /* not OREQUEST_HXX_INCLUDED */
+#endif /* not HECTOR_OREQUEST_HXX_INCLUDED */
 

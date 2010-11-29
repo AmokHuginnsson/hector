@@ -33,6 +33,7 @@ Copyright:
 #include <yaal/tools/signals.hxx>
 #include "server.hxx"
 #include "hactivex.hxx"
+#include "session.hxx"
 
 namespace hector
 {
@@ -41,8 +42,10 @@ class HApplicationServer : public HServer
 	{
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
+	typedef yaal::hcore::HMap<yaal::hcore::HString, OSession> sessions_t;
 	applications_t _applications;
 	pending_t _pending;
+	sessions_t _sessions;
 	yaal::tools::HXml _configuration;
 	yaal::hcore::HString _defaultApplication;
 	yaal::hcore::HPipe _sigChildEvent;
