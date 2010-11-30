@@ -75,18 +75,18 @@ void HActiveX::reload_binary( void )
 	M_EPILOG
 	}
 
-void HActiveX::handle_logic( ORequest& req_ )
+void HActiveX::handle_logic( ORequest& req_, OSession& session_ )
 	{
 	M_PROLOG
-	_application->handle_logic( req_ );
+	_application->handle_logic( req_, session_ );
 	return;
 	M_EPILOG
 	}
 
-void HActiveX::generate_page( ORequest const& req_ )
+void HActiveX::generate_page( ORequest const& req_, OSession const& session_ )
 	{
 	M_PROLOG
-	_application->generate_page( req_ );
+	_application->generate_page( req_, session_ );
 	return;
 	M_EPILOG
 	}

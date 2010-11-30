@@ -75,7 +75,7 @@ void HApplication::do_load( void )
 	out << __PRETTY_FUNCTION__ << endl;
 	}
 
-void HApplication::do_handle_logic( ORequest& req )
+void HApplication::do_handle_logic( ORequest& req, OSession& )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
@@ -87,13 +87,13 @@ void HApplication::do_handle_logic( ORequest& req )
 	M_EPILOG
 	}
 
-void HApplication::do_generate_page( ORequest const& req )
+void HApplication::do_generate_page( ORequest const& req, OSession const& session_ )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	cgi::default_t defaults;
 	cgi::waste_children( dom().get_root(), req, defaults );
-	cgi::apply_acl( dom().get_root(), req, OSecurityContext() );
+	cgi::apply_acl( dom().get_root(), req, OSecurityContext(), session_ );
 	cgi::mark_children( dom().get_root(), req, defaults, dom() );
 	cgi::move_children( dom().get_root(), req, dom() );
 	cgi::expand_autobutton( dom().get_root(), req );
@@ -101,21 +101,21 @@ void HApplication::do_generate_page( ORequest const& req )
 	M_EPILOG
 	}
 
-void HApplication::generate_page( ORequest const& req )
+void HApplication::generate_page( ORequest const& req, OSession const& session_ )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
-	do_generate_page( req );
+	do_generate_page( req, session_ );
 	_dOM.save( req.socket() );
 	return;
 	M_EPILOG
 	}
 
-void HApplication::handle_logic( ORequest& req )
+void HApplication::handle_logic( ORequest& req, OSession& session_ )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
-	do_handle_logic( req );
+	do_handle_logic( req, session_ );
 	return;
 	M_EPILOG
 	}

@@ -32,6 +32,8 @@ Copyright:
 namespace hector
 {
 
+struct OSession;
+
 class HActiveX
 	{
 	yaal::hcore::HString _binaryPath;
@@ -41,8 +43,8 @@ public:
 	HActiveX( yaal::hcore::HString const& path = yaal::hcore::HString() ) : _binaryPath( path ), _activeX(), _application() {}
 	static HActiveX get_instance( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void reload_binary( void );
-	void handle_logic( ORequest& );
-	void generate_page( ORequest const& );
+	void handle_logic( ORequest&, OSession& );
+	void generate_page( ORequest const&, OSession const& );
 	};
 
 }

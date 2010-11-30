@@ -32,6 +32,7 @@ Copyright:
 
 #include "orequest.hxx"
 #include "securitycontext.hxx"
+#include "session.hxx"
 
 namespace	hector
 {
@@ -50,7 +51,7 @@ bool has_attribute( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HStr
 void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
 void apply_acl( yaal::tools::HXml::HNodeProxy, ORequest const&,
-		OSecurityContext const&, yaal::tools::HXml::HNodeProxy* = NULL );
+		OSecurityContext const&, OSession const&, yaal::tools::HXml::HNodeProxy* = NULL );
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t const&, yaal::tools::HXml& );
 void expand_autobutton( yaal::tools::HXml::HNodeProxy, ORequest const& );

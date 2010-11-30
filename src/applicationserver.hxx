@@ -43,6 +43,7 @@ class HApplicationServer : public HServer
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, OSession> sessions_t;
+	typedef yaal::tools::HOptional<OSession&> session_t;
 	applications_t _applications;
 	pending_t _pending;
 	sessions_t _sessions;
@@ -60,6 +61,7 @@ protected:
 	virtual void do_service_request( ORequest& );
 	virtual void do_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	virtual void do_status( yaal::hcore::HSocket::ptr_t& );
+	session_t handle_session( ORequest& );
 	void clean_request( int );
 private:
 	void read_configuration( yaal::tools::HXml::HConstNodeProxy const& );

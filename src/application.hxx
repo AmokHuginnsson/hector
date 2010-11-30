@@ -34,6 +34,8 @@ Copyright:
 namespace hector
 {
 
+struct OSession;
+
 class HApplication
 	{
 	typedef HApplication this_type;
@@ -45,12 +47,12 @@ public:
 	HApplication( void );
 	virtual ~HApplication( void );
 	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
-	void handle_logic( ORequest& );
-	void generate_page( ORequest const& );
+	void handle_logic( ORequest&, OSession& );
+	void generate_page( ORequest const&, OSession const& );
 protected:
 	virtual void do_load( void );
-	virtual void do_handle_logic( ORequest& ) = 0;
-	virtual void do_generate_page( ORequest const& ) = 0;
+	virtual void do_handle_logic( ORequest&, OSession& ) = 0;
+	virtual void do_generate_page( ORequest const&, OSession const& ) = 0;
 	yaal::tools::HXml& dom( void );
 private:
 	HApplication( HApplication const& );

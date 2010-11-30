@@ -29,7 +29,6 @@ M_VCSID( "$Id: "__ID__" $" )
 #include "orequest.hxx"
 #include "setup.hxx"
 
-using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
@@ -157,6 +156,9 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 		M_ENSURE( ! name.is_empty() );
 		(*_cookies)[ name ] = (*it).mid( sepIdx + 1 ); /* + 1 for '=' char */
 		}
+	clog << "decompress_jar: ";
+	copy( _cookies->begin(), _cookies->end(), stream_iterator( clog, " " ) );
+	clog << endl;
 	return;
 	M_EPILOG
 	}
@@ -171,7 +173,10 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, true );
 	jar = "";
 	int cookieNo = 0;
-	for ( dictionary_t::iterator it = _cookies->begin(); it != _cookies->end(); ++ it, ++ cookieNo )
+	clog << "compress_jar: ";
+	copy( _cookies->begin(), _cookies->end(), stream_iterator( clog, " " ) );
+	clog << endl;
+	for ( dictionary_t::const_iterator it = _cookies->begin(), endIt( _cookies->end() ); it != endIt; ++ it, ++ cookieNo )
 		{
 		if ( cookieNo )
 			jar += "\001";

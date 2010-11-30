@@ -112,12 +112,7 @@ HString const& get_owner_user( HXml::HConstNodeProxy const& node )
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	char const ATTRIBUTE_USER[] = "user";
-	char const* val( xml::attr_val( node, ATTRIBUTE_USER ) );
-	static HString name;
-	name.clear();
-	if ( val )
-		name = val;
-	return ( name );
+	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_USER ), HString() ) );
 	M_EPILOG
 	}
 
@@ -126,12 +121,7 @@ HString const& get_owner_group( HXml::HConstNodeProxy const& node )
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	char const ATTRIBUTE_GROUP[] = "group";
-	char const* val( xml::attr_val( node, ATTRIBUTE_GROUP ) );
-	static HString group;
-	group.clear();
-	if ( val )
-		group = val;
-	return ( group );
+	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_GROUP ), HString() ) );
 	M_EPILOG
 	}
 
@@ -140,8 +130,8 @@ int get_permissions( HXml::HConstNodeProxy const& node )
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	char const ATTRIBUTE_MODE[] = "mode";
-	char const* val( xml::attr_val( node, ATTRIBUTE_MODE ) );
-	return ( val ? lexical_cast<int>( val ) : -1 );
+	xml::value_t val( xml::try_attr_val( node, ATTRIBUTE_MODE ) );
+	return ( val ? lexical_cast<int>( *val ) : -1 );
 	M_EPILOG
 	}
 
@@ -150,17 +140,17 @@ void update_security_context( OSecurityContext& securityContext_, HXml::HConstNo
 	M_PROLOG
 	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::NODE );
 	char const ATTRIBUTE_USER[] = "user";
-	char const* user( xml::attr_val( node_, ATTRIBUTE_USER ) );
+	xml::value_t user( xml::try_attr_val( node_, ATTRIBUTE_USER ) );
 	char const ATTRIBUTE_GROUP[] = "group";
-	char const* group( xml::attr_val( node_, ATTRIBUTE_GROUP ) );
+	xml::value_t group( xml::try_attr_val( node_, ATTRIBUTE_GROUP ) );
 	char const ATTRIBUTE_MODE[] = "mode";
-	char const* mode( xml::attr_val( node_, ATTRIBUTE_MODE ) );
+	xml::value_t mode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	if ( user )
-		securityContext_._user = user;
+		securityContext_._user = *user;
 	if ( group )
-		securityContext_._group = group;
+		securityContext_._group = *group;
 	if ( mode )
-		securityContext_._mode = lexical_cast<int>( mode );
+		securityContext_._mode = lexical_cast<int>( *mode );
 	return;
 	M_EPILOG
 	}
@@ -543,13 +533,15 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
  */
 void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 		ORequest const& req_, OSecurityContext const& securityContext_,
+		OSession const& session_,
 		HXml::HNodeProxy* selfwaste_ )
 	{
 	M_PROLOG
 	static HXml waste;
 	static HXml::HNodeProxy root;
 	OSecurityContext securityContext( securityContext_ );
-	update_security_context( securityContext, node_ );
+	if ( node_.get_type() == HXml::HNode::TYPE::NODE )
+		update_security_context( securityContext, node_ );
 	if ( ! selfwaste_ )
 		{
 		waste.create_root( "x" );
@@ -563,7 +555,8 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
 			{
 			selfwaste_->move_node( *del );
-			apply_acl( *del, req_, securityContext, selfwaste_ );
+			if ( ! selfwaste_ )
+				apply_acl( *del, req_, securityContext, session_, selfwaste_ );
 			}
 		}
 	return;

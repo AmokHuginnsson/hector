@@ -9,7 +9,7 @@ database_login "system"
 # database_password "pass"
 max_connections 128
 max_working_threads 5
-timeout_write 5
+timeout_write 5000
 socket_root "/tmp/hector"
 
 # End of configuration file.

@@ -130,50 +130,108 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 	M_EPILOG
 	}
 
+HApplicationServer::session_t HApplicationServer::handle_session( ORequest& request_ )
+	{
+	M_PROLOG
+	static char const REMOTE_ADDR[] = "REMOTE_ADDR";
+	static char const HTTP_USER_AGENT[] = "HTTP_USER_AGENT";
+	ORequest::value_t sid( request_.lookup( "sid", ORequest::ORIGIN::COOKIE ) );
+	ORequest::value_t remoteAddress( request_.lookup( REMOTE_ADDR, ORequest::ORIGIN::ENV ) );
+	ORequest::value_t httpUserAgent( request_.lookup( HTTP_USER_AGENT, ORequest::ORIGIN::ENV ) );
+	session_t session;
+	if ( remoteAddress && httpUserAgent )
+		{
+		if ( sid )
+			{
+			sessions_t::iterator sessionIt( _sessions.find( *sid ) );
+			if ( sessionIt != _sessions.end() )
+				{
+				if ( ( *remoteAddress == sessionIt->second._remoteAddr ) && ( *httpUserAgent == sessionIt->second._httpUserAgent ) )
+					{
+					out << "got valid session ID: " << *sid << endl;
+					session = sessionIt->second;
+					}
+				else
+					{
+					out << "WARNING! forged/spoofed session ID: " << *sid << "( " << *remoteAddress << " ?= " << sessionIt->second._remoteAddr << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second._httpUserAgent << " )" << endl;
+					_sessions.erase( sessionIt );
+					}
+				}
+			else
+				{
+				clog << "current SIDs: ";
+				transform( _sessions.begin(), _sessions.end(), stream_iterator( clog, " " ), select1st<sessions_t::value_type>() );
+				clog << endl;
+				out << "invalid session ID: " << *sid << endl;
+				}
+			}
+		else
+			out << "sid not set" << endl;
+		if ( ! session )
+			{
+			OSession newSession;
+			newSession._remoteAddr = *remoteAddress;
+			newSession._httpUserAgent = *httpUserAgent;
+			HString newSid( hash::sha1( newSession._remoteAddr + newSession._httpUserAgent + HTime().string() + randomizer_helper::make_randomizer()() ) );
+			session = _sessions.insert( make_pair( newSid, newSession ) ).first->second;
+			request_.update( "sid", newSid, ORequest::ORIGIN::COOKIE );
+			out << "setting new SID: " << newSid << endl;
+			}
+		}
+	else
+		out << "WARNING! missing: " << ( remoteAddress ? "" : REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP_USER_AGENT ) << endl;
+	return ( session );
+	M_EPILOG
+	}
+
 void HApplicationServer::do_service_request( ORequest& request_ )
 	{
 	M_PROLOG
-	int pid = fork();
 	HSocket::ptr_t sock = request_.socket();
-	if ( ! pid )
+	HStringStream msg;
+	HString application( _defaultApplication );
+	if ( request_.lookup( "application", application ) && _defaultApplication.is_empty() )
+		msg = "no default application set nor application selected!\n";
+	else
 		{
-		HStringStream msg;
-		HString application( _defaultApplication );
-		if ( request_.lookup( "application", application ) && _defaultApplication.is_empty() )
-			msg = "no default application set nor application selected!\n";
-		else
+		applications_t::iterator it = _applications.find( application );
+		if ( it != _applications.end() )
 			{
-			applications_t::iterator it = _applications.find( application );
-			if ( it != _applications.end() )
+			out << "using application: " << application << endl;
+			try
 				{
-				out << "using application: " << application << endl;
-				try
-					{
-					request_.decompress_jar( application );
-					}
-				catch ( HBase64Exception& e )
-					{
-					hcore::log << e.what() << endl;
-					}
-				catch ( ORequestException& e )
-					{
-					hcore::log << e.what() << endl;
-					}
-				it->second.handle_logic( request_ );
+				request_.decompress_jar( application );
+				}
+			catch ( HBase64Exception& e )
+				{
+				hcore::log << e.what() << endl;
+				}
+			catch ( ORequestException& e )
+				{
+				hcore::log << e.what() << endl;
+				}
+			session_t session( handle_session( request_ ) );
+			if ( session )
+				it->second.handle_logic( request_, *session );
+			int pid = fork();
+			if ( ! pid )
+				{
 				ORequest::dictionary_ptr_t jar = request_.compress_jar( application );
 				for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
 					*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
 				*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
-				it->second.generate_page( request_ );
+				if ( session )
+					it->second.generate_page( request_, *session );
+				*sock << msg.consume();
+				_exit( 0 );
 				}
 			else
-				msg << "\n\nno such application: " << application << endl;
+				_pending.insert( hcore::make_pair( pid, sock ) );
 			}
-		*sock << msg.consume();
-		_exit( 0 );
+		else
+			msg << "\n\nno such application: " << application << endl;
 		}
-	else
-		_pending.insert( hcore::make_pair( pid, sock ) );
+	return;
 	M_EPILOG
 	}
 

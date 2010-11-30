@@ -38,8 +38,10 @@ struct OSession
 	yaal::hcore::HString _user;
 	typedef yaal::hcore::HArray<yaal::hcore::HString> groups_t;
 	groups_t _groups;
+	yaal::hcore::HString _remoteAddr;
+	yaal::hcore::HString _httpUserAgent;
 	yaal::hcore::HTime _lastSeen;
-	OSession( void ) : _user(), _groups(), _lastSeen() {}
+	OSession( void ) : _user(), _groups(), _remoteAddr(), _httpUserAgent(), _lastSeen() {}
 	};
 
 }
