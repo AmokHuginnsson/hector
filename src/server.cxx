@@ -143,12 +143,15 @@ void HServer::handler_message( int fileDescriptor_ )
 	M_PROLOG
 	HString message;
 	IPC_CHANNEL::ipc_channel_t channel = IPC_CHANNEL::REQUEST;
-	HSocket::ptr_t client = _socket[ channel ]->get_client( fileDescriptor_ );
-	if ( ! client )
+	HSocket::iterator clientIt( _socket[ channel ]->find( fileDescriptor_ ) );
+	HSocket::ptr_t client;
+	if ( clientIt == _socket[ channel ]->end() )
 		{
 		channel = IPC_CHANNEL::CONTROL;
-		client = _socket[ channel ]->get_client( fileDescriptor_ );
+		clientIt = _socket[ channel ]->find( fileDescriptor_ );
 		}
+	if ( clientIt != _socket[ channel ]->end() )
+		client = clientIt->second;
 	if ( !! client )
 		{
 		int long nRead( 0 );

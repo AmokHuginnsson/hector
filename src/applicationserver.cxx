@@ -268,7 +268,8 @@ void HApplicationServer::clean_request( int opts )
 			cout << "\tby signal: " << WTERMSIG( status ) << endl;
 		else
 			cout << "\tnormally: " << WEXITSTATUS( status ) << endl;
-		disconnect_client( IPC_CHANNEL::REQUEST, it->second, _( "request serviced" ) );
+		if ( _requests.find( it->second->get_file_descriptor() ) != _requests.end() )
+			disconnect_client( IPC_CHANNEL::REQUEST, it->second, _( "request serviced" ) );
 		_pending.erase( it );
 		}
 	return;
