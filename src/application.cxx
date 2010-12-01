@@ -40,7 +40,7 @@ namespace hector
 {
 
 HApplication::HApplication( void )
-	: _dOM(), _name()
+	: _dOM(), _name(), _sessions()
 	{
 	}
 
@@ -123,6 +123,11 @@ void HApplication::handle_logic( ORequest& req, OSession& session_ )
 HXml& HApplication::dom( void )
 	{
 	return ( _dOM );
+	}
+
+HApplication::sessions_t& HApplication::sessions( void )
+	{
+	return ( _sessions );
 	}
 
 }

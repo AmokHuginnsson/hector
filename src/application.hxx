@@ -38,10 +38,13 @@ struct OSession;
 
 class HApplication
 	{
+public:
 	typedef HApplication this_type;
+	typedef yaal::hcore::HMap<yaal::hcore::HString, OSession> sessions_t;
 private:
 	yaal::tools::HXml _dOM;
 	yaal::hcore::HString _name;
+	sessions_t _sessions;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication( void );
@@ -49,6 +52,7 @@ public:
 	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void handle_logic( ORequest&, OSession& );
 	void generate_page( ORequest const&, OSession const& );
+	sessions_t& sessions( void );
 protected:
 	virtual void do_load( void );
 	virtual void do_handle_logic( ORequest&, OSession& ) = 0;

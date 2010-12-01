@@ -91,5 +91,10 @@ void HActiveX::generate_page( ORequest const& req_, OSession const& session_ )
 	M_EPILOG
 	}
 
+HApplication::sessions_t& HActiveX::sessions( void )
+	{
+	return ( _application->sessions() );
+	}
+
 }
 

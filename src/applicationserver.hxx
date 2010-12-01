@@ -25,7 +25,7 @@ Copyright:
 */
 
 #ifndef APPLICATIONSERVER_HXX_INCLUDED
-#define APPLICATIONSERVER_HXX_INCLUDED
+#define APPLICATIONSERVER_HXX_INCLUDED 1
 
 #include <yaal/hcore/hstring.hxx>
 #include <yaal/hcore/hmap.hxx>
@@ -42,11 +42,9 @@ class HApplicationServer : public HServer
 	{
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
-	typedef yaal::hcore::HMap<yaal::hcore::HString, OSession> sessions_t;
 	typedef yaal::tools::HOptional<OSession&> session_t;
 	applications_t _applications;
 	pending_t _pending;
-	sessions_t _sessions;
 	yaal::tools::HXml _configuration;
 	yaal::hcore::HString _defaultApplication;
 	yaal::hcore::HPipe _sigChildEvent;
@@ -61,7 +59,7 @@ protected:
 	virtual void do_service_request( ORequest& );
 	virtual void do_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	virtual void do_status( yaal::hcore::HSocket::ptr_t& );
-	session_t handle_session( ORequest& );
+	session_t handle_session( ORequest&, HApplication::sessions_t& );
 	void clean_request( int );
 private:
 	void read_configuration( yaal::tools::HXml::HConstNodeProxy const& );
@@ -70,5 +68,5 @@ private:
 
 }
 
-#endif /* not APPLICATIONSERVER_HXX_INCLUDED */
+#endif /* #ifndef APPLICATIONSERVER_HXX_INCLUDED */
 

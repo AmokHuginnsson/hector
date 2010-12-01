@@ -42,7 +42,7 @@ namespace hector
 
 HApplicationServer::HApplicationServer( void )
 	: HServer( setup._maxConnections ),
-	_applications(), _pending(), _sessions(),
+	_applications(), _pending(),
 	_configuration(), _defaultApplication(), _sigChildEvent()
 	{
 	}
@@ -130,7 +130,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 	M_EPILOG
 	}
 
-HApplicationServer::session_t HApplicationServer::handle_session( ORequest& request_ )
+HApplicationServer::session_t HApplicationServer::handle_session( ORequest& request_, HApplication::sessions_t& sessions_ )
 	{
 	M_PROLOG
 	static char const REMOTE_ADDR[] = "REMOTE_ADDR";
@@ -143,8 +143,8 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 		{
 		if ( sid )
 			{
-			sessions_t::iterator sessionIt( _sessions.find( *sid ) );
-			if ( sessionIt != _sessions.end() )
+			HApplication::sessions_t::iterator sessionIt( sessions_.find( *sid ) );
+			if ( sessionIt != sessions_.end() )
 				{
 				if ( ( *remoteAddress == sessionIt->second._remoteAddr ) && ( *httpUserAgent == sessionIt->second._httpUserAgent ) )
 					{
@@ -154,13 +154,13 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 				else
 					{
 					out << "WARNING! forged/spoofed session ID: " << *sid << "( " << *remoteAddress << " ?= " << sessionIt->second._remoteAddr << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second._httpUserAgent << " )" << endl;
-					_sessions.erase( sessionIt );
+					sessions_.erase( sessionIt );
 					}
 				}
 			else
 				{
 				clog << "current SIDs: ";
-				transform( _sessions.begin(), _sessions.end(), stream_iterator( clog, " " ), select1st<sessions_t::value_type>() );
+				transform( sessions_.begin(), sessions_.end(), stream_iterator( clog, " " ), select1st<HApplication::sessions_t::value_type>() );
 				clog << endl;
 				out << "invalid session ID: " << *sid << endl;
 				}
@@ -173,7 +173,7 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 			newSession._remoteAddr = *remoteAddress;
 			newSession._httpUserAgent = *httpUserAgent;
 			HString newSid( hash::sha1( newSession._remoteAddr + newSession._httpUserAgent + HTime().string() + randomizer_helper::make_randomizer()() ) );
-			session = _sessions.insert( make_pair( newSid, newSession ) ).first->second;
+			session = sessions_.insert( make_pair( newSid, newSession ) ).first->second;
 			request_.update( "sid", newSid, ORequest::ORIGIN::COOKIE );
 			out << "setting new SID: " << newSid << endl;
 			}
@@ -210,7 +210,7 @@ void HApplicationServer::do_service_request( ORequest& request_ )
 				{
 				hcore::log << e.what() << endl;
 				}
-			session_t session( handle_session( request_ ) );
+			session_t session( handle_session( request_, it->second.sessions() ) );
 			if ( session )
 				it->second.handle_logic( request_, *session );
 			int pid = fork();
