@@ -265,9 +265,9 @@ void HApplicationServer::clean_request( int opts )
 		M_ENSURE( it != _pending.end() );
 		out << "activex finished with: " << status << "\n";
 		if ( WIFSIGNALED( status ) )
-			cout << "\tby signal: " << WTERMSIG( status ) << endl;
+			clog << "\tby signal: " << WTERMSIG( status ) << endl;
 		else
-			cout << "\tnormally: " << WEXITSTATUS( status ) << endl;
+			clog << "\tnormally: " << WEXITSTATUS( status ) << endl;
 		if ( _requests.find( it->second->get_file_descriptor() ) != _requests.end() )
 			disconnect_client( IPC_CHANNEL::REQUEST, it->second, _( "request serviced" ) );
 		_pending.erase( it );

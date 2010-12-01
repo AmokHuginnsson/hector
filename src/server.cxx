@@ -196,8 +196,8 @@ void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t const& channel,
 	_socket[ channel ]->shutdown_client( fileDescriptor );
 	out << "client closed connection";
 	if ( reason_ )
-		cout << " " << reason_;
-	cout << endl;
+		clog << " " << reason_;
+	clog << endl;
 	return;
 	M_EPILOG
 	}

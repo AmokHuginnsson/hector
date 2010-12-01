@@ -93,7 +93,7 @@ bool ORequest::lookup( HString const& key_, HString& value_, origin_t const& ori
 	ORequest::value_t value( lookup( key_, origin_ ) );
 	if ( value )
 		value_ = *value;
-	return ( value );
+	return ( ! value );
 	M_EPILOG
 	}
 
@@ -104,16 +104,17 @@ ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t c
 	ORequest::value_t value;
 	( ! bFound ) && ( !!( origin_ & ORIGIN::ENV ) )
 		&& ( bFound = ( ( it = _environment->find( key_ ) ) != _environment->end() ) )
-		&& ( !! ( value = it->second ) );
+		&& ( !! *( value = it->second ) );
 	( ! bFound ) && ( !!( origin_ & ORIGIN::POST ) )
 		&& ( bFound = ( ( it = _pOST->find( key_ ) )        != _pOST->end() ) )
-		&& ( !! ( value = it->second ) );
+		&& ( !! *( value = it->second ) );
 	( ! bFound ) && ( !!( origin_ & ORIGIN::GET ) )
 		&& ( bFound = ( ( it = _gET->find( key_ ) )         != _gET->end() ) )
-		&& ( !! ( value = it->second ) );
+		&& ( !! *( value = it->second ) );
 	( ! bFound ) && ( !!( origin_ & ORIGIN::COOKIE ) )
 		&& ( bFound = ( ( it = _cookies->find( key_ ) )     != _cookies->end() ) )
-		&& ( !! ( value = it->second ) );
+		&& ( !! *( value = it->second ) );
+	out << "key: " << key_ << ", value: " << ( value ? *value : HString( "(nil)" ) ) << endl;
 	return ( value );
 	}
 

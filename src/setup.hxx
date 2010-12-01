@@ -33,7 +33,7 @@ Copyright:
 
 #include "config.hxx"
 
-#define out ( cout << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
+#define out ( clog << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
 
 namespace hector
 {

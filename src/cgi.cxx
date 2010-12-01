@@ -457,7 +457,7 @@ void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req )
 	static char const NODE_COOKIE[] = "cookie";
 	static char const ATTRIBUTE_NAME[] = "name";
 	HString value;
-	for ( HXml::HIterator child = logic.begin(); child != logic.end(); ++ child )
+	for ( HXml::HIterator child( logic.begin() ), endChild( logic.end() ); child != endChild; ++ child )
 		{
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE )
 			{
@@ -486,7 +486,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	static char const* const ATTRIBUTE_TYPE_VALUE = "hidden";
 	static char const* const ATTRIBUTE_NAME = "name";
 	static char const* const ATTRIBUTE_VALUE = "value";
-	for ( HXml::HIterator it( node.begin() ), end( node.end() ); it != end; ++ it )
+	for ( HXml::HIterator it( node.begin() ); it != node.end(); ++ it )
 		{
 		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
 			{
@@ -548,7 +548,7 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 		root = waste.get_root();
 		selfwaste_ = &root;
 		}
-	for ( HXml::HIterator it( node_.begin() ), end( node_.end() ); it != end; )
+	for ( HXml::HIterator it( node_.begin() ); it != node_.end(); )
 		{
 		HXml::HIterator del = it;
 		++ it;
