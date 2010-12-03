@@ -130,7 +130,7 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 	int cookieNo = 0;
 	int size = 0;
 	jar = "";
-	for ( dictionary_t::iterator it = _jar->begin(); it != _jar->end(); ++ it )
+	for ( dictionary_t::const_iterator it( _jar->begin() ), endIt( _jar->end() ); it != endIt; ++ it )
 		{ 
 		properName.format( "%s%02d", app.raw(), cookieNo );
 		if ( it->first != properName )
@@ -150,7 +150,7 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 	cookieNo = 0;
 	HString name;
 	HTokenizer t( jar, "\001", HTokenizer::SKIP_EMPTY );
-	for ( HTokenizer::HIterator it = t.begin(), endIt = t.end(); it != endIt; ++ it )
+	for ( HTokenizer::HIterator it( t.begin() ), endIt( t.end() ); it != endIt; ++ it )
 		{
 		int long sepIdx = (*it).find( "=" );
 		name = (*it).left( sepIdx >= 0 ? sepIdx : meta::max_signed<int long>::value );

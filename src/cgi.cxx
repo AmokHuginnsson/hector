@@ -166,7 +166,7 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 	/*
 	 * Look thru all <rule />'s.
 	 */
-	for ( HXml::HIterator it = keep.begin(); it != keep.end(); ++ it )
+	for ( HXml::HIterator it( keep.begin() ), end( keep.end() ); it != end; ++ it )
 		{
 		M_ENSURE( (*it).get_type() == HXml::HNode::TYPE::NODE );
 		M_ENSURE( (*it).get_name() == NODE_KEEP_RULE );
@@ -281,7 +281,7 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 	static char const* const CLASS_MARKABLE = "markable";
 	static char const* const CLASS_CURRENT = " current";
 	static char const* const ATTRIBUTE_ID = "id";
-	for ( HXml::HIterator it = node.begin(); it != node.end(); ++ it )
+	for ( HXml::HIterator it( node.begin() ), end( node.end() ); it != end; ++ it )
 		{
 		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
 			{
@@ -498,7 +498,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 				M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::NODE )
 						&& ( fieldset.get_name() == NODE_FIELDSET ) );
 				keep_t keep;
-				for ( HXml::HIterator fieldIt = fieldset.begin(); fieldIt != fieldset.end(); ++ fieldIt )
+				for ( HXml::HIterator fieldIt( fieldset.begin() ), end( fieldset.end() ); fieldIt != end; ++ fieldIt )
 					{
 					if ( (*fieldIt).get_type() == HXml::HNode::TYPE::NODE )
 						{
@@ -508,7 +508,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 							keep.insert( nameIt->second );
 						}
 					}
-				for ( ORequest::const_iterator reqIt = req.begin(); reqIt != req.end(); ++ reqIt )
+				for ( ORequest::const_iterator reqIt( req.begin() ), end( req.end() ); reqIt != end; ++ reqIt )
 					{
 					if ( keep.find( (*reqIt).first ) == keep.end() )
 						{
@@ -561,6 +561,25 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 		}
 	return;
 	M_EPILOG
+	}
+
+void consistency_check( yaal::tools::HXml::HConstNodeProxy node_ )
+	{
+	static char const ATTRIBUTE_MODE[] = "mode";
+	for ( HXml::HConstIterator it( node_.begin() ), end( node_.end() ); it != end; ++ it )
+		{
+		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
+			{
+			ORequest::value_t optMode( xml::try_attr_val( it, ATTRIBUTE_MODE ) );
+			if ( optMode )
+				{
+				int mode( lexical_cast<int>( *optMode ) );
+				M_ENSURE_EX( ( is_octal( *optMode ) && ( mode >= 0 ) && ( mode <= 0777 ) ), *optMode );
+				}
+			consistency_check( *it );
+			}
+		}
+	return;
 	}
 
 }

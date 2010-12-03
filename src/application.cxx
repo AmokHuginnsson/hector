@@ -66,6 +66,7 @@ void HApplication::load( HString const& name, HString const& path )
 	_dOM.apply_style( toolkit.raw() );
 	_dOM.parse();
 	do_load();
+	cgi::consistency_check( _dOM.get_root() );
 	return;	
 	M_EPILOG
 	}
