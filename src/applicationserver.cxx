@@ -234,8 +234,10 @@ void HApplicationServer::do_service_request( ORequest& request_ )
 						}
 					_exit( 0 );
 					}
-				else
+				else if ( pid > 0 )
 					_pending.insert( hcore::make_pair( pid, sock ) );
+				else
+					out << "fork failed!" << endl;
 				}
 			catch ( ... )
 				{
