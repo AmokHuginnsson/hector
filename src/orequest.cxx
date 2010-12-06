@@ -99,6 +99,7 @@ bool ORequest::lookup( HString const& key_, HString& value_, origin_t const& ori
 
 ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t const& origin_ ) const
 	{
+	M_PROLOG
 	dictionary_t::const_iterator it = _environment->find( key_ );
 	bool bFound( false );
 	ORequest::value_t value;
@@ -116,6 +117,7 @@ ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t c
 		&& ( !! *( value = it->second ) );
 	out << "key: " << key_ << ", value: " << ( value ? *value : HString( "(nil)" ) ) << endl;
 	return ( value );
+	M_EPILOG
 	}
 
 void ORequest::decompress_jar( yaal::hcore::HString const& app )
@@ -137,14 +139,14 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app )
 			continue;
 		if ( ! cookieNo )
 			{
-			size = lexical_cast<int>( it->second.left( SIZE_SIZE ) );
+			size = lexical_cast<int>( it->second.left( SIZE_SIZE ).trim_left( "0" ) );
 			jar += it->second.mid( SIZE_SIZE );
 			}
 		else
 			jar += it->second;
 		++ cookieNo;
 		}
-	M_ENSURE( jar.get_length() == size );
+	M_ENSURE_EX( jar.get_length() == size, lexical_cast<HString>( HFormat( "%ld != %d" ) % jar.get_length() % size ) );
 	jar = base64::decode( jar );
 	_jar->clear();
 	cookieNo = 0;

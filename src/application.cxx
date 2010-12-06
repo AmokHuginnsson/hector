@@ -93,11 +93,16 @@ void HApplication::do_generate_page( ORequest const& req, OSession const& sessio
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	cgi::default_t defaults;
-	cgi::waste_children( dom().get_root(), req, defaults );
-	cgi::apply_acl( dom().get_root(), req, OSecurityContext(), session_ );
-	cgi::mark_children( dom().get_root(), req, defaults, dom() );
-	cgi::move_children( dom().get_root(), req, dom() );
-	cgi::expand_autobutton( dom().get_root(), req );
+	if ( !! dom().get_root() )
+		cgi::waste_children( dom().get_root(), req, defaults );
+	if ( !! dom().get_root() )
+		cgi::apply_acl( dom().get_root(), req, OSecurityContext(), session_ );
+	if ( !! dom().get_root() )
+		cgi::mark_children( dom().get_root(), req, defaults, dom() );
+	if ( !! dom().get_root() )
+		cgi::move_children( dom().get_root(), req, dom() );
+	if ( !! dom().get_root() )
+		cgi::expand_autobutton( dom().get_root(), req );
 	return;
 	M_EPILOG
 	}
@@ -107,7 +112,8 @@ void HApplication::generate_page( ORequest const& req, OSession const& session_ 
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req, session_ );
-	_dOM.save( req.socket() );
+	if ( !! dom().get_root() )
+		_dOM.save( req.socket() );
 	return;
 	M_EPILOG
 	}

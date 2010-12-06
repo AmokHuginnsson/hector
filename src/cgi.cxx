@@ -150,7 +150,7 @@ void update_security_context( OSecurityContext& securityContext_, HXml::HConstNo
 	if ( group )
 		securityContext_._group = *group;
 	if ( mode )
-		securityContext_._mode = lexical_cast<int>( *mode );
+		securityContext_._mode = static_cast<ACCESS::enum_t>( lexical_cast<int>( *mode ) );
 	return;
 	M_EPILOG
 	}
@@ -540,23 +540,27 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 	static HXml waste;
 	static HXml::HNodeProxy root;
 	OSecurityContext securityContext( securityContext_ );
-	if ( node_.get_type() == HXml::HNode::TYPE::NODE )
-		update_security_context( securityContext, node_ );
 	if ( ! selfwaste_ )
 		{
 		waste.create_root( "x" );
 		root = waste.get_root();
 		selfwaste_ = &root;
 		}
-	for ( HXml::HIterator it( node_.begin() ); it != node_.end(); )
+	update_security_context( securityContext, node_ );
+	if ( ! has_access( ACCESS::READ, session_, securityContext ) )
+		selfwaste_->move_node( node_ );
+	else
 		{
-		HXml::HIterator del = it;
-		++ it;
-		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
+		for ( HXml::HIterator it( node_.begin() ); it != node_.end(); )
 			{
-			selfwaste_->move_node( *del );
-			if ( ! selfwaste_ )
-				apply_acl( *del, req_, securityContext, session_, selfwaste_ );
+			if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
+				{
+				HXml::HIterator probe( it );
+				++ it;
+				apply_acl( *probe, req_, securityContext, session_, selfwaste_ );
+				}
+			else
+				++ it;
 			}
 		}
 	return;
@@ -565,6 +569,7 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 
 void consistency_check( yaal::tools::HXml::HConstNodeProxy node_ )
 	{
+	M_PROLOG
 	static char const ATTRIBUTE_MODE[] = "mode";
 	for ( HXml::HConstIterator it( node_.begin() ), end( node_.end() ); it != end; ++ it )
 		{
@@ -580,6 +585,14 @@ void consistency_check( yaal::tools::HXml::HConstNodeProxy node_ )
 			}
 		}
 	return;
+	M_EPILOG
+	}
+
+bool has_access( ACCESS::type_t, OSession const&, OSecurityContext const& )
+	{
+	M_PROLOG
+	return ( true );
+	M_EPILOG
 	}
 
 }

@@ -210,23 +210,37 @@ void HApplicationServer::do_service_request( ORequest& request_ )
 				{
 				hcore::log << e.what() << endl;
 				}
-			session_t session( handle_session( request_, it->second.sessions() ) );
-			if ( session )
-				it->second.handle_logic( request_, *session );
-			int pid = fork();
-			if ( ! pid )
+			try
 				{
-				ORequest::dictionary_ptr_t jar = request_.compress_jar( application );
-				for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
-					*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
-				*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
+				session_t session( handle_session( request_, it->second.sessions() ) );
 				if ( session )
-					it->second.generate_page( request_, *session );
-				*sock << msg.consume();
-				_exit( 0 );
+					it->second.handle_logic( request_, *session );
+				int pid = fork();
+				if ( ! pid )
+					{
+					try
+						{
+						ORequest::dictionary_ptr_t jar = request_.compress_jar( application );
+						for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
+							*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
+						*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
+						if ( session )
+							it->second.generate_page( request_, *session );
+						*sock << msg.consume();
+						}
+					catch ( ... )
+						{
+						/* Graceful shutdown, frist draft. */
+						}
+					_exit( 0 );
+					}
+				else
+					_pending.insert( hcore::make_pair( pid, sock ) );
 				}
-			else
-				_pending.insert( hcore::make_pair( pid, sock ) );
+			catch ( ... )
+				{
+				/* Completly failed to fulfill request. */
+				}
 			}
 		else
 			msg << "\n\nno such application: " << application << endl;
