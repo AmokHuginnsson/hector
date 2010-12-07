@@ -96,5 +96,10 @@ HApplication::sessions_t& HActiveX::sessions( void )
 	return ( _application->sessions() );
 	}
 
+HApplication::sessions_t const& HActiveX::sessions( void ) const
+	{
+	return ( _application->sessions() );
+	}
+
 }
 

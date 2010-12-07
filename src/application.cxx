@@ -40,7 +40,7 @@ namespace hector
 {
 
 HApplication::HApplication( void )
-	: _dOM(), _name(), _sessions()
+	: _dOM(), _name(), _defaultSecurityContext(), _sessions()
 	{
 	}
 
@@ -60,10 +60,14 @@ void HApplication::load( HString const& name, HString const& path )
 	hcore::log( LOG_TYPE::INFO ) << "Loading application `" << _name << "'." << endl;
 	interface << "/" << _name << "/" << INTERFACE_FILE;
 	toolkit << "/" << _name << "/" << TOOLKIT_FILE;
-	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.raw() << "' as application template." << endl;
+	HFSItem app( interface.string() );
+	_defaultSecurityContext._user = app.get_user();
+	_defaultSecurityContext._group = app.get_group();
+	_defaultSecurityContext._mode = static_cast<ACCESS::enum_t>( app.get_permissions() );
+	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
 	_dOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ) );
-	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.raw() << "' as a toolkit library." << endl;
-	_dOM.apply_style( toolkit.raw() );
+	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
+	_dOM.apply_style( toolkit.string() );
 	_dOM.parse();
 	do_load();
 	cgi::consistency_check( _dOM.get_root() );
@@ -96,7 +100,7 @@ void HApplication::do_generate_page( ORequest const& req, OSession const& sessio
 	if ( !! dom().get_root() )
 		cgi::waste_children( dom().get_root(), req, defaults );
 	if ( !! dom().get_root() )
-		cgi::apply_acl( dom().get_root(), req, OSecurityContext(), session_ );
+		cgi::apply_acl( dom().get_root(), req, _defaultSecurityContext, session_ );
 	if ( !! dom().get_root() )
 		cgi::mark_children( dom().get_root(), req, defaults, dom() );
 	if ( !! dom().get_root() )
@@ -130,6 +134,11 @@ void HApplication::handle_logic( ORequest& req, OSession& session_ )
 HXml& HApplication::dom( void )
 	{
 	return ( _dOM );
+	}
+
+HApplication::sessions_t const& HApplication::sessions( void ) const
+	{
+	return ( _sessions );
 	}
 
 HApplication::sessions_t& HApplication::sessions( void )

@@ -571,27 +571,32 @@ void consistency_check( yaal::tools::HXml::HConstNodeProxy node_ )
 	{
 	M_PROLOG
 	static char const ATTRIBUTE_MODE[] = "mode";
+	ORequest::value_t optMode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
+	if ( optMode )
+		{
+		int mode( lexical_cast<int>( *optMode ) );
+		M_ENSURE_EX( ( is_octal( *optMode ) && ( mode >= 0 ) && ( mode <= 0777 ) ), *optMode );
+		}
 	for ( HXml::HConstIterator it( node_.begin() ), end( node_.end() ); it != end; ++ it )
 		{
 		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
-			{
-			ORequest::value_t optMode( xml::try_attr_val( it, ATTRIBUTE_MODE ) );
-			if ( optMode )
-				{
-				int mode( lexical_cast<int>( *optMode ) );
-				M_ENSURE_EX( ( is_octal( *optMode ) && ( mode >= 0 ) && ( mode <= 0777 ) ), *optMode );
-				}
 			consistency_check( *it );
-			}
 		}
 	return;
 	M_EPILOG
 	}
 
-bool has_access( ACCESS::type_t, OSession const&, OSecurityContext const& )
+bool has_access( ACCESS::type_t accessType_, OSession const& session_, OSecurityContext const& securityContext_ )
 	{
 	M_PROLOG
-	return ( true );
+	bool access( false );
+	if ( session_._user == securityContext_._user )
+		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::USER ) ) != ACCESS::NONE );
+	else if ( session_._groups.count( securityContext_._group ) > 0 )
+		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::GROUP ) ) != ACCESS::NONE );
+	else
+		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );
+	return ( access );
 	M_EPILOG
 	}
 

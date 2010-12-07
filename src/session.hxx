@@ -36,7 +36,7 @@ namespace hector
 struct OSession
 	{
 	yaal::hcore::HString _user;
-	typedef yaal::hcore::HArray<yaal::hcore::HString> groups_t;
+	typedef yaal::hcore::HSet<yaal::hcore::HString> groups_t;
 	groups_t _groups;
 	yaal::hcore::HString _remoteAddr;
 	yaal::hcore::HString _httpUserAgent;

@@ -42,6 +42,12 @@ struct ACCESS
 		} type_t;
 	typedef enum
 		{
+		USER = 8,
+		GROUP = 4,
+		OTHER = 0
+		} context_t;
+	typedef enum
+		{
 		USER_READ = READ << 8,
 		USER_WRITE = WRITE << 8,
 		USER_EXECUTE = EXECUTE << 8,

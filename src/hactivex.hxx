@@ -46,6 +46,7 @@ public:
 	void handle_logic( ORequest&, OSession& );
 	void generate_page( ORequest const&, OSession const& );
 	HApplication::sessions_t& sessions( void );
+	HApplication::sessions_t const& sessions( void ) const;
 	};
 
 }

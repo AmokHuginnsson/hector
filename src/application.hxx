@@ -30,6 +30,7 @@ Copyright:
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/hplugin.hxx>
 #include "server.hxx"
+#include "securitycontext.hxx"
 
 namespace hector
 {
@@ -44,6 +45,7 @@ public:
 private:
 	yaal::tools::HXml _dOM;
 	yaal::hcore::HString _name;
+	OSecurityContext _defaultSecurityContext;
 	sessions_t _sessions;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
@@ -53,6 +55,7 @@ public:
 	void handle_logic( ORequest&, OSession& );
 	void generate_page( ORequest const&, OSession const& );
 	sessions_t& sessions( void );
+	sessions_t const& sessions( void ) const;
 protected:
 	virtual void do_load( void );
 	virtual void do_handle_logic( ORequest&, OSession& ) = 0;

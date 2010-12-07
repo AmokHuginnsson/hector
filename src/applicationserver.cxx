@@ -324,6 +324,9 @@ void HApplicationServer::do_status( HSocket::ptr_t& sock )
 	*sock << "apps: " << _applications.size() << endl;
 	*sock << "new: " << _requests.size() << endl;
 	*sock << "pending: " << _pending.size() << endl;
+	*sock << "application statistics:" << endl;
+	for ( applications_t::const_iterator it( _applications.begin() ), end( _applications.end() ); it != end; ++ it )
+		*sock << "  " << it->first << ": " << it->second.sessions().get_size() << endl;
 	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
 	M_EPILOG
 	}
