@@ -65,10 +65,10 @@ void HApplication::load( HString const& name, HString const& path )
 	_defaultSecurityContext._group = app.get_group();
 	_defaultSecurityContext._mode = static_cast<ACCESS::enum_t>( app.get_permissions() );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
-	_dOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ) );
+	_dOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ), HXml::PARSER::RESOLVE_ENTITIES );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
 	_dOM.apply_style( toolkit.string() );
-	_dOM.parse();
+	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
 	cgi::consistency_check( _dOM.get_root() );
 	return;	
