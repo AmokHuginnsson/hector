@@ -324,6 +324,8 @@ void HApplicationServer::do_status( HSocket::ptr_t& sock )
 	*sock << "apps: " << _applications.size() << endl;
 	*sock << "new: " << _requests.size() << endl;
 	*sock << "pending: " << _pending.size() << endl;
+	*sock << "clients[control]: " << _socket[IPC_CHANNEL::CONTROL]->get_client_count() << endl;
+	*sock << "clients[request]: " << _socket[IPC_CHANNEL::REQUEST]->get_client_count() << endl;
 	*sock << "application statistics:" << endl;
 	for ( applications_t::const_iterator it( _applications.begin() ), end( _applications.end() ); it != end; ++ it )
 		*sock << "  " << it->first << ": " << it->second.sessions().get_size() << endl;
