@@ -7,6 +7,10 @@ data_dir "./${NEST}/app/"
 database_name "system"
 database_login "system"
 # database_password "pass"
+table_user "tbl_user"
+column_login "login"
+column_password "password"
+# auth_query "SELECT id FROM tbl_user WHERE login = '%s' AND password = '%s';"
 max_connections 128
 max_working_threads 5
 timeout_write 5000

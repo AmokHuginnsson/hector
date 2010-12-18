@@ -32,7 +32,6 @@ M_VCSID( "$Id: "__ID__" $" )
 #include "cgi.hxx"
 #include "setup.hxx"
 
-using namespace std;
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;

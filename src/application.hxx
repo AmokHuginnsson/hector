@@ -29,6 +29,7 @@ Copyright:
 
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/hplugin.hxx>
+#include <yaal/dbwrapper/hdatabase.hxx>
 #include "server.hxx"
 #include "securitycontext.hxx"
 
@@ -47,6 +48,7 @@ private:
 	yaal::hcore::HString _name;
 	OSecurityContext _defaultSecurityContext;
 	sessions_t _sessions;
+	yaal::dbwrapper::HDataBase::ptr_t _db;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication( void );
@@ -60,7 +62,9 @@ protected:
 	virtual void do_load( void );
 	virtual void do_handle_logic( ORequest&, OSession& ) = 0;
 	virtual void do_generate_page( ORequest const&, OSession const& ) = 0;
+	void handle_auth( ORequest&, OSession& );
 	yaal::tools::HXml& dom( void );
+	yaal::dbwrapper::HDataBase::ptr_t db();
 private:
 	HApplication( HApplication const& );
 	HApplication& operator = ( HApplication const& );
