@@ -31,6 +31,7 @@ Copyright:
 #include <yaal/hcore/hmap.hxx>
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/signals.hxx>
+#include <yaal/dbwrapper/hdatabase.hxx>
 
 #include "server.hxx"
 #include "hactivex.hxx"
@@ -49,6 +50,7 @@ class HApplicationServer : public HServer
 	yaal::tools::HXml _configuration;
 	yaal::hcore::HString _defaultApplication;
 	yaal::hcore::HPipe _sigChildEvent;
+	yaal::dbwrapper::HDataBase::ptr_t _db;
 public:
 	HApplicationServer( void );
 	virtual ~HApplicationServer( void );

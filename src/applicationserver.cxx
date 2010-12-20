@@ -36,6 +36,7 @@ using namespace yaal::hcore;
 using namespace yaal::hconsole;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
+using namespace yaal::dbwrapper;
 
 namespace hector
 {
@@ -43,7 +44,8 @@ namespace hector
 HApplicationServer::HApplicationServer( void )
 	: HServer( setup._maxConnections ),
 	_applications(), _pending(),
-	_configuration(), _defaultApplication(), _sigChildEvent()
+	_configuration(), _defaultApplication(), _sigChildEvent(),
+	_db( HDataBase::get_connector() )
 	{
 	}
 
@@ -78,6 +80,7 @@ void HApplicationServer::start( void )
 	init_server();
 	_socket[ IPC_CHANNEL::CONTROL ]->set_timeout( setup._socketWriteTimeout );
 	_socket[ IPC_CHANNEL::REQUEST ]->set_timeout( setup._socketWriteTimeout );
+	_db->connect( setup._databaseName, setup._databaseName, setup._databasePassword );
 	M_EPILOG
 	}
 
@@ -118,7 +121,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
 			try
 				{
-				_applications[ symbol->second ] = HActiveX::get_instance( symbol->second, setup._dataDir );
+				_applications[ symbol->second ] = HActiveX::get_instance( symbol->second, setup._dataDir, _db );
 				}
 			catch ( HException& e )
 				{
@@ -188,10 +191,13 @@ void HApplicationServer::do_service_request( ORequest& request_ )
 	{
 	M_PROLOG
 	HSocket::ptr_t sock = request_.socket();
-	HStringStream msg;
 	HString application( _defaultApplication );
 	if ( request_.lookup( "application", application ) && _defaultApplication.is_empty() )
-		msg = "no default application set nor application selected!\n";
+		{
+		static HString const err( "\n\nno default application set nor application selected!\n" );
+		*sock << err << endl;
+		out << err << endl;
+		}
 	else
 		{
 		applications_t::iterator it = _applications.find( application );
@@ -226,7 +232,6 @@ void HApplicationServer::do_service_request( ORequest& request_ )
 						*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
 						if ( session )
 							it->second.generate_page( request_, *session );
-						*sock << msg.consume();
 						}
 					catch ( ... )
 						{
@@ -237,7 +242,10 @@ void HApplicationServer::do_service_request( ORequest& request_ )
 				else if ( pid > 0 )
 					_pending.insert( hcore::make_pair( pid, sock ) );
 				else
+					{
 					out << "fork failed!" << endl;
+					disconnect_client( IPC_CHANNEL::REQUEST, sock, _( "request dropped - fork failed" ) );
+					}
 				}
 			catch ( ... )
 				{
@@ -245,7 +253,12 @@ void HApplicationServer::do_service_request( ORequest& request_ )
 				}
 			}
 		else
-			msg << "\n\nno such application: " << application << endl;
+			{
+			static HString const err( "no such application: " );
+			*sock << "\n\n" << err << application << endl;
+			out << err << application << endl;
+			disconnect_client( IPC_CHANNEL::REQUEST, sock, _( "error message generated" ) );
+			}
 		}
 	return;
 	M_EPILOG
@@ -300,7 +313,7 @@ void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appNam
 		{
 		try
 			{
-			HActiveX& newX = _applications[ appName ] = HActiveX::get_instance( appName, setup._dataDir );
+			HActiveX& newX = _applications[ appName ] = HActiveX::get_instance( appName, setup._dataDir, _db );
 			newX.reload_binary();
 			*sock << "application `" << appName << "' reloaded successfully" << endl;
 			}

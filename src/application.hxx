@@ -51,20 +51,22 @@ private:
 	yaal::dbwrapper::HDataBase::ptr_t _db;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
-	HApplication( void );
+	HApplication( yaal::dbwrapper::HDataBase::ptr_t );
 	virtual ~HApplication( void );
 	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void handle_logic( ORequest&, OSession& );
 	void generate_page( ORequest const&, OSession const& );
 	sessions_t& sessions( void );
 	sessions_t const& sessions( void ) const;
+	yaal::dbwrapper::HDataBase::ptr_t db( void );
 protected:
 	virtual void do_load( void );
 	virtual void do_handle_logic( ORequest&, OSession& ) = 0;
 	virtual void do_generate_page( ORequest const&, OSession const& ) = 0;
+	virtual yaal::dbwrapper::HDataBase::ptr_t do_db( void );
 	void handle_auth( ORequest&, OSession& );
+	virtual void do_handle_auth( ORequest&, OSession& );
 	yaal::tools::HXml& dom( void );
-	yaal::dbwrapper::HDataBase::ptr_t db();
 private:
 	HApplication( HApplication const& );
 	HApplication& operator = ( HApplication const& );

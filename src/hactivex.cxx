@@ -33,11 +33,12 @@ using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
+using namespace yaal::dbwrapper;
 
 namespace hector
 {
 
-HActiveX HActiveX::get_instance( HString const& name, HString const& path )
+HActiveX HActiveX::get_instance( HString const& name, HString const& path, HDataBase::ptr_t db_ )
 	{
 	M_PROLOG
 	static char const* const SYMBOL_FACTORY = "factory";
@@ -50,12 +51,12 @@ HActiveX HActiveX::get_instance( HString const& name, HString const& path )
 	activeX->load( activex.raw() );
 	M_ASSERT( activeX->is_loaded() );
 	out << "activex nest for `" << name << "' loaded" << endl;
-	typedef HApplication::ptr_t ( *factory_t )( void );
+	typedef HApplication::ptr_t ( *factory_t )( HDataBase::ptr_t );
 	factory_t factory;
 	activeX->resolve( SYMBOL_FACTORY, factory );
 	M_ASSERT( factory );
 	out << "activex factory for `" << name << "' connected" << endl;
-	app = factory();
+	app = factory( db_ );
 	if ( ! app )
 		throw HApplicationException( "invalid activex" );
 	HActiveX proc( activex.raw() );

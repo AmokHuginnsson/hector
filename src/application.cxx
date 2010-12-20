@@ -40,9 +40,9 @@ using namespace yaal::dbwrapper;
 namespace hector
 {
 
-HApplication::HApplication( void )
+HApplication::HApplication( HDataBase::ptr_t db_ )
 	: _dOM(), _name(), _defaultSecurityContext(), _sessions(),
-	_db( HDataBase::get_connector() )
+	_db( db_ )
 	{
 	}
 
@@ -73,7 +73,6 @@ void HApplication::load( HString const& name, HString const& path )
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
 	cgi::consistency_check( _dOM.get_root() );
-	_db->connect( setup._databaseName, setup._databaseName, setup._databasePassword );
 	return;	
 	M_EPILOG
 	}
@@ -84,6 +83,14 @@ void HApplication::do_load( void )
 	}
 
 void HApplication::handle_auth( ORequest& req_, OSession& session_ )
+	{
+	M_PROLOG
+	do_handle_auth( req_, session_ );	
+	return;
+	M_EPILOG
+	}
+
+void HApplication::do_handle_auth( ORequest& req_, OSession& session_ )
 	{
 	M_PROLOG
 	static char const HACTION[] = "h-action";
@@ -202,6 +209,11 @@ HXml& HApplication::dom( void )
 	}
 
 yaal::dbwrapper::HDataBase::ptr_t HApplication::db( void )
+	{
+	return ( do_db() );
+	}
+
+yaal::dbwrapper::HDataBase::ptr_t HApplication::do_db( void )
 	{
 	return ( _db );
 	}

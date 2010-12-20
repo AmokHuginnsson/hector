@@ -41,7 +41,7 @@ class HActiveX
 	HApplication::ptr_t _application;
 public:
 	HActiveX( yaal::hcore::HString const& path = yaal::hcore::HString() ) : _binaryPath( path ), _activeX(), _application() {}
-	static HActiveX get_instance( yaal::hcore::HString const&, yaal::hcore::HString const& );
+	static HActiveX get_instance( yaal::hcore::HString const&, yaal::hcore::HString const&, yaal::dbwrapper::HDataBase::ptr_t );
 	void reload_binary( void );
 	void handle_logic( ORequest&, OSession& );
 	void generate_page( ORequest const&, OSession const& );
