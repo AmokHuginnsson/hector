@@ -37,6 +37,8 @@ Copyright:
 namespace	hector
 {
 
+class HApplication;
+
 namespace cgi
 {
 
@@ -60,7 +62,7 @@ void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 void make_cookies( yaal::tools::HXml::HNodeProxy, ORequest& );
-void consistency_check( yaal::tools::HXml::HConstNodeProxy );
+void consistency_check( HApplication*, yaal::tools::HXml::HNodeProxy );
 bool has_access( ACCESS::type_t, OSession const&, OSecurityContext const& );
 
 }

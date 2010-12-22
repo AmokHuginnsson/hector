@@ -43,12 +43,14 @@ class HApplication
 public:
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, OSession> sessions_t;
+	typedef yaal::hcore::HHashSet<yaal::hcore::HString> verificators_t;
 private:
 	yaal::tools::HXml _dOM;
 	yaal::hcore::HString _name;
 	OSecurityContext _defaultSecurityContext;
 	sessions_t _sessions;
 	yaal::dbwrapper::HDataBase::ptr_t _db;
+	verificators_t _verificators;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication( yaal::dbwrapper::HDataBase::ptr_t );
@@ -59,6 +61,7 @@ public:
 	sessions_t& sessions( void );
 	sessions_t const& sessions( void ) const;
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
+	void add_verificator( yaal::hcore::HString const& );
 protected:
 	virtual void do_load( void );
 	virtual void do_handle_logic( ORequest&, OSession& ) = 0;

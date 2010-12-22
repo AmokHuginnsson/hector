@@ -42,7 +42,7 @@ namespace hector
 
 HApplication::HApplication( HDataBase::ptr_t db_ )
 	: _dOM(), _name(), _defaultSecurityContext(), _sessions(),
-	_db( db_ )
+	_db( db_ ), _verificators()
 	{
 	}
 
@@ -72,7 +72,7 @@ void HApplication::load( HString const& name, HString const& path )
 	_dOM.apply_style( toolkit.string() );
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
-	cgi::consistency_check( _dOM.get_root() );
+	cgi::consistency_check( this, _dOM.get_root() );
 	return;	
 	M_EPILOG
 	}
@@ -226,6 +226,11 @@ HApplication::sessions_t const& HApplication::sessions( void ) const
 HApplication::sessions_t& HApplication::sessions( void )
 	{
 	return ( _sessions );
+	}
+
+void HApplication::add_verificator( yaal::hcore::HString const& verificator_ )
+	{
+	_verificators.insert( verificator_ );
 	}
 
 }

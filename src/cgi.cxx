@@ -30,6 +30,7 @@ Copyright:
 #include <yaal/yaal.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "cgi.hxx"
+#include "application.hxx"
 #include "setup.hxx"
 
 using namespace yaal;
@@ -240,7 +241,7 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 	keep_t keep;
 	for ( HXml::HIterator it = node.begin(); it != node.end(); )
 		{
-		HXml::HIterator del = it;
+		HXml::HIterator del( it );
 		++ it;
 		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
 			{
@@ -566,9 +567,10 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 	M_EPILOG
 	}
 
-void consistency_check( yaal::tools::HXml::HConstNodeProxy node_ )
+void consistency_check( HApplication* app_, yaal::tools::HXml::HNodeProxy node_ )
 	{
 	M_PROLOG
+	static char const NODE_VERIFY[] = "verify";
 	static char const ATTRIBUTE_MODE[] = "mode";
 	ORequest::value_t optMode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	if ( optMode )
@@ -576,10 +578,22 @@ void consistency_check( yaal::tools::HXml::HConstNodeProxy node_ )
 		int mode( lexical_cast<int>( *optMode ) );
 		M_ENSURE_EX( ( is_octal( *optMode ) && ( mode >= 0 ) && ( mode <= 0777 ) ), *optMode );
 		}
-	for ( HXml::HConstIterator it( node_.begin() ), end( node_.end() ); it != end; ++ it )
+	for ( HXml::HIterator it( node_.begin() ); it != node_.end(); )
 		{
-		if ( (*it).get_type() == HXml::HNode::TYPE::NODE )
-			consistency_check( *it );
+		HXml::HIterator del( it );
+		++ it;
+		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
+			{
+			HString const name( (*del).get_name() );
+			if ( name == NODE_VERIFY )
+				{
+				app_->add_verificator( name );
+				node_.remove_node( del );
+				out << "verify" << endl;
+				}
+			else
+				consistency_check( app_, *del );
+			}
 		}
 	return;
 	M_EPILOG
