@@ -382,7 +382,7 @@ void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::to
 				HXml::HNode::properties_t::iterator idxIt = props.find( ATTRIBUTE_INDEX );
 				if ( idxIt != props.end() )
 					{
-					HString val = it[ lexical_cast<int>( idxIt->second ) ];
+					HString val( *it[ lexical_cast<int>( idxIt->second ) ] );
 					if ( child == node.end() )
 						child = node.add_node( HXml::HNode::TYPE::CONTENT, val );
 					else

@@ -127,7 +127,7 @@ void HApplication::do_handle_auth( ORequest& req_, OSession& session_ )
 					out << _db->get_error() << endl;
 					M_ENSURE( ! "database query error" );
 					}
-				int result( lexical_cast<int>( row[0] ) );
+				int result( lexical_cast<int>( *row[0] ) );
 				if ( result == 2 )
 					{
 					session_._user = *login;
