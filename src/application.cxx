@@ -69,6 +69,8 @@ void HApplication::load( HString const& name, HString const& path )
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
 	_dOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ), HXml::PARSER::RESOLVE_ENTITIES );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
+	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
+	cgi::consistency_check( this, _dOM.get_root() );
 	_dOM.apply_style( toolkit.string() );
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
