@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	session.hxx - this file is integral part of `hector' project.
+	form.cxx - this file is integral part of `hector' project.
 
 	i.  You may not make any changes in Copyright information.
 	ii. You must attach Copyright information to any part of every copy
@@ -24,29 +24,18 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#ifndef HECTOR_SESSION_HXX_INCLUDED
-#define HECTOR_SESSION_HXX_INCLUDED 1
-
-#include <yaal/hcore/hstring.hxx>
-#include <yaal/hcore/htime.hxx>
+#include <yaal/yaal.hxx>
+M_VCSID( "$Id: "__ID__" $" )
+#include "form.hxx"
 
 namespace hector
 {
 
-struct OSession
+HForm::HForm( void ) : _inputs()
 	{
-	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
-	yaal::hcore::HString _user;
-	typedef yaal::hcore::HSet<yaal::hcore::HString> groups_t;
-	groups_t _groups;
-	yaal::hcore::HString _remoteAddr;
-	yaal::hcore::HString _httpUserAgent;
-	yaal::hcore::HTime _lastSeen;
-	dictionary_t _persistance;
-	OSession( void ) : _user(), _groups(), _remoteAddr(), _httpUserAgent(), _lastSeen(), _persistance() {}
-	};
+	return;
+	}
+
 
 }
-
-#endif /* #ifndef HECTOR_SESSION_HXX_INCLUDED */
 

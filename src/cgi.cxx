@@ -451,31 +451,6 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 	M_EPILOG
 	}
 
-void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req )
-	{
-	M_PROLOG
-	static char const NODE_COOKIE[] = "cookie";
-	static char const ATTRIBUTE_NAME[] = "name";
-	HString value;
-	for ( HXml::HIterator child( logic.begin() ), endChild( logic.end() ); child != endChild; ++ child )
-		{
-		if ( (*child).get_type() == HXml::HNode::TYPE::NODE )
-			{
-			if ( (*child).get_name() == NODE_COOKIE )
-				{
-				HXml::HNode::properties_t& props = (*child).properties();
-				HXml::HNode::properties_t::iterator nameIt = props.find( ATTRIBUTE_NAME );
-				M_ENSURE( nameIt != props.end() );
-				M_ENSURE( ! nameIt->second.is_empty() );
-				if ( ! req.lookup( nameIt->second, value, ORequest::origin_t( ORequest::ORIGIN::POST ) | ORequest::ORIGIN::GET ) )
-					req.update( nameIt->second, value, ORequest::ORIGIN::COOKIE );
-				}
-			}
-		}
-	return;
-	M_EPILOG
-	}
-
 void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req )
 	{
 	M_PROLOG
@@ -567,10 +542,9 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 	M_EPILOG
 	}
 
-void consistency_check( HApplication* app_, yaal::tools::HXml::HNodeProxy node_ )
+void consistency_check( yaal::tools::HXml::HNodeProxy node_ )
 	{
 	M_PROLOG
-	static char const NODE_VERIFY[] = "verify";
 	static char const ATTRIBUTE_MODE[] = "mode";
 	ORequest::value_t optMode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	if ( optMode )
@@ -578,21 +552,56 @@ void consistency_check( HApplication* app_, yaal::tools::HXml::HNodeProxy node_ 
 		int mode( lexical_cast<int>( *optMode ) );
 		M_ENSURE_EX( ( is_octal( *optMode ) && ( mode >= 0 ) && ( mode <= 0777 ) ), *optMode );
 		}
-	for ( HXml::HIterator it( node_.begin() ); it != node_.end(); )
+	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child )
 		{
-		HXml::HIterator del( it );
-		++ it;
-		if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
+		if ( (*child).get_type() == HXml::HNode::TYPE::NODE )
+			consistency_check( *child );
+		}
+	return;
+	M_EPILOG
+	}
+
+void handle_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ )
+	{
+	M_PROLOG
+	static char const NODE_FORM[] = "h-form";
+	static char const NODE_INPUT[] = "h-input";
+	static char const NODE_VERIFY[] = "verify";
+	static char const ATTRIBUTE_ID[] = "id";
+	HString name;
+	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child )
+		{
+		if ( (*child).get_type() == HXml::HNode::TYPE::NODE )
 			{
-			HString const name( (*del).get_name() );
-			if ( name == NODE_VERIFY )
+			name = (*child).get_name();
+			if ( name == NODE_FORM )
 				{
-				app_->add_verificator( name );
-				node_.remove_node( del );
-				out << "verify" << endl;
+				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
+				HForm form;
+				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); )
+					{
+					HXml::HIterator del( it );
+					++ it;
+					if ( (*del).get_type() == HXml::HNode::TYPE::NODE )
+						{
+						name = (*del).get_name();
+						if ( name == NODE_INPUT )
+							{
+							out << "input" << endl;
+							}
+						else if ( name == NODE_VERIFY )
+							{
+							app_->add_verificator( name );
+							(*child).remove_node( del );
+							out << "verify" << endl;
+							}
+						}
+					}
+				out << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
+				app_->add_form( make_pair( get_optional_value_or<HString>( optId, "(nuil)" ), form ) );
 				}
 			else
-				consistency_check( app_, *del );
+				handle_logic( app_, *child );
 			}
 		}
 	return;

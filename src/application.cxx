@@ -42,7 +42,7 @@ namespace hector
 
 HApplication::HApplication( HDataBase::ptr_t db_ )
 	: _dOM(), _name(), _defaultSecurityContext(), _sessions(),
-	_db( db_ ), _verificators()
+	_db( db_ ), _forms(), _verificators()
 	{
 	}
 
@@ -70,11 +70,11 @@ void HApplication::load( HString const& name, HString const& path )
 	_dOM.init( HStreamInterface::ptr_t( new HFile( interface.string(), HFile::OPEN::READING ) ), HXml::PARSER::RESOLVE_ENTITIES );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
-	cgi::consistency_check( this, _dOM.get_root() );
+	cgi::handle_logic( this, _dOM.get_root() );
 	_dOM.apply_style( toolkit.string() );
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
-	cgi::consistency_check( this, _dOM.get_root() );
+	cgi::consistency_check( _dOM.get_root() );
 	return;	
 	M_EPILOG
 	}
@@ -158,10 +158,6 @@ void HApplication::do_handle_logic( ORequest& req_, OSession& session_ )
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	handle_auth( req_, session_ );
-	static char const LOGIC_PATH[] = "/html/logic/";
-	HXml::HNodeProxy logic = _dOM.get_element_by_path( LOGIC_PATH );
-	if ( !! logic )
-		cgi::make_cookies( logic, req_ );
 	return;
 	M_EPILOG
 	}
@@ -232,7 +228,17 @@ HApplication::sessions_t& HApplication::sessions( void )
 
 void HApplication::add_verificator( yaal::hcore::HString const& verificator_ )
 	{
+	M_PROLOG
 	_verificators.insert( verificator_ );
+	M_EPILOG
+	}
+
+void HApplication::add_form( forms_t::value_type const& form_ )
+	{
+	M_PROLOG
+	_forms.insert( form_ );
+	return;
+	M_EPILOG
 	}
 
 }
