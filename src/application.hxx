@@ -37,13 +37,13 @@ Copyright:
 namespace hector
 {
 
-struct OSession;
+struct HSession;
 
 class HApplication
 	{
 public:
 	typedef HApplication this_type;
-	typedef yaal::hcore::HMap<yaal::hcore::HString, OSession> sessions_t;
+	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm> forms_t;
 	typedef yaal::hcore::HHashSet<yaal::hcore::HString> verificators_t;
 private:
@@ -59,8 +59,8 @@ public:
 	HApplication( yaal::dbwrapper::HDataBase::ptr_t );
 	virtual ~HApplication( void );
 	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
-	void handle_logic( ORequest&, OSession& );
-	void generate_page( ORequest const&, OSession const& );
+	void handle_logic( ORequest&, HSession& );
+	void generate_page( ORequest const&, HSession const& );
 	sessions_t& sessions( void );
 	sessions_t const& sessions( void ) const;
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
@@ -68,11 +68,11 @@ public:
 	void add_form( forms_t::value_type const& );
 protected:
 	virtual void do_load( void );
-	virtual void do_handle_logic( ORequest&, OSession& ) = 0;
-	virtual void do_generate_page( ORequest const&, OSession const& ) = 0;
+	virtual void do_handle_logic( ORequest&, HSession& ) = 0;
+	virtual void do_generate_page( ORequest const&, HSession const& ) = 0;
 	virtual yaal::dbwrapper::HDataBase::ptr_t do_db( void );
-	void handle_auth( ORequest&, OSession& );
-	virtual void do_handle_auth( ORequest&, OSession& );
+	void handle_auth( ORequest&, HSession& );
+	virtual void do_handle_auth( ORequest&, HSession& );
 	yaal::tools::HXml& dom( void );
 private:
 	HApplication( HApplication const& );

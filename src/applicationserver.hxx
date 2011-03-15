@@ -44,7 +44,7 @@ class HApplicationServer : public HServer
 	{
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
-	typedef yaal::tools::HOptional<OSession&> session_t;
+	typedef yaal::tools::HOptional<HSession&> session_t;
 	applications_t _applications;
 	pending_t _pending;
 	yaal::tools::HXml _configuration;

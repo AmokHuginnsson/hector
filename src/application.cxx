@@ -84,7 +84,7 @@ void HApplication::do_load( void )
 	out << __PRETTY_FUNCTION__ << endl;
 	}
 
-void HApplication::handle_auth( ORequest& req_, OSession& session_ )
+void HApplication::handle_auth( ORequest& req_, HSession& session_ )
 	{
 	M_PROLOG
 	do_handle_auth( req_, session_ );	
@@ -92,7 +92,7 @@ void HApplication::handle_auth( ORequest& req_, OSession& session_ )
 	M_EPILOG
 	}
 
-void HApplication::do_handle_auth( ORequest& req_, OSession& session_ )
+void HApplication::do_handle_auth( ORequest& req_, HSession& session_ )
 	{
 	M_PROLOG
 	static char const HACTION[] = "h-action";
@@ -132,8 +132,8 @@ void HApplication::do_handle_auth( ORequest& req_, OSession& session_ )
 				int result( lexical_cast<int>( *row[0] ) );
 				if ( result == 2 )
 					{
-					session_._user = *login;
-					session_._groups.insert( USERS );
+					session_.set_user( *login );
+					session_.add_group( USERS );
 					out << "authenticated user: " << *login << endl;
 					}
 				else if ( result == 1 )
@@ -144,16 +144,15 @@ void HApplication::do_handle_auth( ORequest& req_, OSession& session_ )
 			}
 		else if ( *action == LOGOUT )
 			{
-			out << "user: " << session_._user << "logged out" << endl;
-			session_._user.clear();
-			session_._groups.clear();
+			out << "user: " << session_.get_user() << "logged out" << endl;
+			sessions().erase( session_.get_id() );
 			}
 		}
 	return;
 	M_EPILOG
 	}
 
-void HApplication::do_handle_logic( ORequest& req_, OSession& session_ )
+void HApplication::do_handle_logic( ORequest& req_, HSession& session_ )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
@@ -162,7 +161,7 @@ void HApplication::do_handle_logic( ORequest& req_, OSession& session_ )
 	M_EPILOG
 	}
 
-void HApplication::do_generate_page( ORequest const& req, OSession const& session_ )
+void HApplication::do_generate_page( ORequest const& req, HSession const& session_ )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
@@ -181,7 +180,7 @@ void HApplication::do_generate_page( ORequest const& req, OSession const& sessio
 	M_EPILOG
 	}
 
-void HApplication::generate_page( ORequest const& req, OSession const& session_ )
+void HApplication::generate_page( ORequest const& req, HSession const& session_ )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
@@ -192,7 +191,7 @@ void HApplication::generate_page( ORequest const& req, OSession const& session_ 
 	M_EPILOG
 	}
 
-void HApplication::handle_logic( ORequest& req, OSession& session_ )
+void HApplication::handle_logic( ORequest& req, HSession& session_ )
 	{
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;

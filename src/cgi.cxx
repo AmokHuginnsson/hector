@@ -508,7 +508,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
  */
 void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 		ORequest const& req_, OSecurityContext const& securityContext_,
-		OSession const& session_,
+		HSession const& session_,
 		HXml::HNodeProxy* selfwaste_ )
 	{
 	M_PROLOG
@@ -608,13 +608,13 @@ void handle_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ )
 	M_EPILOG
 	}
 
-bool has_access( ACCESS::type_t accessType_, OSession const& session_, OSecurityContext const& securityContext_ )
+bool has_access( ACCESS::type_t accessType_, HSession const& session_, OSecurityContext const& securityContext_ )
 	{
 	M_PROLOG
 	bool access( false );
-	if ( session_._user == securityContext_._user )
+	if ( session_.get_user() == securityContext_._user )
 		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::USER ) ) != ACCESS::NONE );
-	else if ( session_._groups.count( securityContext_._group ) > 0 )
+	else if ( session_.get_groups().count( securityContext_._group ) > 0 )
 		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::GROUP ) ) != ACCESS::NONE );
 	else
 		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );

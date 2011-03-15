@@ -149,14 +149,14 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 			HApplication::sessions_t::iterator sessionIt( sessions_.find( *sid ) );
 			if ( sessionIt != sessions_.end() )
 				{
-				if ( ( *remoteAddress == sessionIt->second._remoteAddr ) && ( *httpUserAgent == sessionIt->second._httpUserAgent ) )
+				if ( ( *remoteAddress == sessionIt->second.get_remote_addr() ) && ( *httpUserAgent == sessionIt->second.get_http_user_agent() ) )
 					{
 					out << "got valid session ID: " << *sid << endl;
 					session = sessionIt->second;
 					}
 				else
 					{
-					out << "WARNING! forged/spoofed session ID: " << *sid << "( " << *remoteAddress << " ?= " << sessionIt->second._remoteAddr << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second._httpUserAgent << " )" << endl;
+					out << "WARNING! forged/spoofed session ID: " << *sid << "( " << *remoteAddress << " ?= " << sessionIt->second.get_remote_addr() << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second.get_http_user_agent() << " )" << endl;
 					sessions_.erase( sessionIt );
 					}
 				}
@@ -172,13 +172,10 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 			out << "sid not set" << endl;
 		if ( ! session )
 			{
-			OSession newSession;
-			newSession._remoteAddr = *remoteAddress;
-			newSession._httpUserAgent = *httpUserAgent;
-			HString newSid( hash::sha1( newSession._remoteAddr + newSession._httpUserAgent + HTime().string() + randomizer_helper::make_randomizer()() ) );
-			session = sessions_.insert( make_pair( newSid, newSession ) ).first->second;
-			request_.update( "sid", newSid, ORequest::ORIGIN::COOKIE );
-			out << "setting new SID: " << newSid << endl;
+			HSession newSession( *remoteAddress, *httpUserAgent );
+			session = sessions_.insert( make_pair( newSession.get_id(), newSession ) ).first->second;
+			request_.update( "sid", newSession.get_id(), ORequest::ORIGIN::COOKIE );
+			out << "setting new SID: " << newSession.get_id() << endl;
 			}
 		}
 	else

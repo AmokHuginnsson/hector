@@ -53,7 +53,7 @@ bool has_attribute( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HStr
 void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
 void apply_acl( yaal::tools::HXml::HNodeProxy, ORequest const&,
-		OSecurityContext const&, OSession const&, yaal::tools::HXml::HNodeProxy* = NULL );
+		OSecurityContext const&, HSession const&, yaal::tools::HXml::HNodeProxy* = NULL );
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t const&, yaal::tools::HXml& );
 void expand_autobutton( yaal::tools::HXml::HNodeProxy, ORequest const& );
@@ -63,7 +63,7 @@ void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 void handle_logic( HApplication*, yaal::tools::HXml::HNodeProxy );
 void consistency_check( yaal::tools::HXml::HNodeProxy );
-bool has_access( ACCESS::type_t, OSession const&, OSecurityContext const& );
+bool has_access( ACCESS::type_t, HSession const&, OSecurityContext const& );
 
 }
 
