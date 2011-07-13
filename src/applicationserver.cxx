@@ -66,7 +66,7 @@ void HApplicationServer::start( void )
 	static char const* const NODE_APPLICATIONS = "applications";
 	HStringStream confPath( setup._dataDir );
 	confPath << CONFIGURATION_FILE;
-	_configuration.load( HStreamInterface::ptr_t( new HFile( confPath.string(), HFile::OPEN::READING ) ) );
+	_configuration.load( make_pointer<HFile>( confPath.string(), HFile::OPEN::READING ) );
 	HXml::HConstNodeProxy hector = _configuration.get_root();
 	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it )
 		{

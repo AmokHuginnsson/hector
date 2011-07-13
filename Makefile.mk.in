@@ -38,7 +38,7 @@ NO_UNDEFINED=$(call quotecoma,$(filter -Wl$(COMA)--no-undefined,@EXTRA_LXXFLAGS@
 $(eval $(call NEW_TARGET,hectord,src,-DTARGET_HECTOR_DAEMON,@RDYNAMIC@ $(NO_UNDEFINED)))
 $(eval $(call NEW_TARGET,hector.cgi,cgi,-DTARGET_HECTOR_CGI,$(NO_UNDEFINED)))
 $(eval $(call NEW_TARGET,hectoradmin,admin,-DTARGET_HECTOR_ADMIN,$(NO_UNDEFINED)))
-$(eval $(call NEW_TARGET,codestation,app/codestation,,-fPIC -shared --allow-shlib-undefined))
+$(eval $(call NEW_TARGET,codestation,app/codestation,,-fPIC -shared))
 DO_@DO_TARGET@=1
 EXEC_NAME    = 1exec
 CTAGS        = @CTAGS@

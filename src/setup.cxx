@@ -46,7 +46,7 @@ void OSetup::test_setup( void )
 		yaal::tools::util::failure( failNo,
 				_( "quiet and verbose options are exclusive\n" ) );
 	if ( _verbose )
-		clog.reset( HStreamInterface::ptr_t( new HFile( stdout ) ) );
+		clog.reset( make_pointer<HFile>( stdout ) );
 	else
 		std::clog.rdbuf( NULL );
 	if ( _quiet )

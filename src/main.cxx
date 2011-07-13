@@ -52,32 +52,22 @@ int main( int argc_, char* argv_[] )
 	{
 	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
 	M_PROLOG
-/* variables declarations for main loop: */
-	int opt = 0;
-	HConsole& cons = HConsole::get_instance();
-/* end. */
 	try
 		{
 /* TO-DO: enter main loop code here */
 		HSignalService::get_instance();
 		setup._programName = argv_[ 0 ];
-		opt = handle_program_options( argc_, argv_ );
+		handle_program_options( argc_, argv_ );
 		hcore::log.rehash( setup._logPath, setup._programName );
 		setup.test_setup();
 		HApplicationServer appServ;
 		appServ.start();
-		appServ.run();
-/*		if ( ! cons.is_enabled() )
-			enter_curses(); */ /* enabling ncurses ablilities */
 /* *BOOM* */
-		if ( cons.is_enabled() )
-			cons.leave_curses(); /* ending ncurses sesion */
+		appServ.run();
 /* ... there is the place main loop ends. :OD-OT */
 		}
 	catch ( ... )
 		{
-		if ( cons.is_enabled() )
-			cons.leave_curses(); /* ending ncurses sesion */
 		throw;
 		}
 	cerr << _( "Done" ) << endl;

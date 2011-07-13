@@ -44,7 +44,7 @@ HActiveX HActiveX::get_instance( HString const& name, HString const& path, HData
 	static char const* const SYMBOL_FACTORY = "factory";
 	static char const* const ATTRIBUTE_ACTIVEX = "activex";
 	HStringStream activex( path );
-	HPlugin::ptr_t activeX( new HPlugin() );
+	HPlugin::ptr_t activeX( make_pointer<HPlugin>() );
 	activex << "/" << name << "/" << ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
 	out << "Trying path: `" << activex.raw() << "' for activex: `" << name << "'" << endl;

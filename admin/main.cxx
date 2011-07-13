@@ -53,15 +53,12 @@ int main( int argc_, char* argv_[] )
 	{
 	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
 	M_PROLOG
-/* variables declarations for main loop: */
-	int opt = 0;
-/* end. */
 	try
 		{
 /* TO-DO: enter main loop code here */
 		HSignalService::get_instance();
 		setup._programName = argv_[ 0 ];
-		opt = handle_program_options( argc_, argv_ );
+		handle_program_options( argc_, argv_ );
 		setup._logPath.replace( "hectord", "hectoradmin" );
 		hcore::log.rehash( setup._logPath, setup._programName );
 		setup.test_setup();
