@@ -30,6 +30,10 @@ SCRIPTNAME="${0}"
 # Load the VERBOSE setting and other rcS variables
 . /lib/init/vars.sh
 
+PHYS_MEM=`free -m | awk '/^Mem:/{print $2}'`
+PHYS_MEM=`expr "${PHYS_MEM}" \* 1024`
+ulimit -v ${PHYS_MEM}
+
 VERBOSE="yes"
 
 # Define LSB log_* functions.
@@ -46,7 +50,7 @@ is_running() {
 
 do_start() {
 # Read configuration variable file if it is present
-	is_running && echo "already running ... " && return
+	is_running && echo " already running ... " && return
 	launchtool -C ${HECTOR_SRC}/_deploy/launch-hectord.conf
 	sleep 1
 	chmod 755 ${SOCKDIR}
@@ -56,7 +60,7 @@ do_start() {
 # Function that stops the daemon/service
 #
 do_stop() {
-	is_running || echo "not running ... "
+	is_running || echo " not running ... "
 	is_running || return
 	is_running && launchtool -k 2 -t hector
 	is_running && sleep 1 && is_running &&	launchtool -k 15 -t hector > /dev/null 2>&1
