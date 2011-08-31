@@ -29,15 +29,20 @@ Copyright:
 #include <cstdlib>
 #include <unistd.h> /* the `char** environ;' variable */
 
-#include <yaal/yaal.hxx> /* all hAPI headers */
+#include <yaal/hcore/hstring.hxx> /* all hAPI headers */
 M_VCSID ( "$Id$" )
+#include <yaal/hcore/hsocket.hxx>
+#include <yaal/hcore/hlog.hxx>
+#include <yaal/hcore/htokenizer.hxx>
+#include <yaal/tools/signals.hxx>
+#include <yaal/tools/hstringstream.hxx>
+#include <yaal/tools/util.hxx>
 
 #include "setup.hxx"
 #include "options.hxx"
 
 using namespace yaal;
 using namespace yaal::hcore;
-using namespace yaal::hconsole;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
 using namespace hector;

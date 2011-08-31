@@ -28,8 +28,10 @@ Copyright:
 #include <cstring>
 #include <cstdio>
 
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/base.hxx>
 M_VCSID( "$Id: "__ID__" $" )
+#include <yaal/hcore/hprogramoptionshandler.hxx>
+#include <yaal/tools/util.hxx>
 
 #include "options.hxx"
 #include "config.hxx"

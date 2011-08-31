@@ -28,7 +28,7 @@ Copyright:
 #define SETUP_HXX_INCLUDED
 
 #include <libintl.h>
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/hstring.hxx>
 #include <iostream>
 
 #include "config.hxx"
