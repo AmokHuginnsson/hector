@@ -55,6 +55,12 @@ END_GROUP    = @END_GROUP@
 include $(DIR_ROOT)/_aux/inc-helper-post.mk
 
 cgi-exe:
-	g++ $(wildcard $(DIR_ROOT)/build/debug/hector.cgi/*.o) ${PREFIX}/lib/libtools-d.a ${PREFIX}/lib/libhcore-d.a -lpthread -lssl -lrt -o exec
+	cd $(DIR_ROOT)/build/release ; \
+	g++ $(wildcard $(DIR_ROOT)/build/release/hector.cgi/*.o) ${PREFIX}/lib/libtools.a ${PREFIX}/lib/libhcore.a -lpthread -lssl -lrt -o exec ; \
+	strip exec
+
+cgi-exe-debug:
+	cd $(DIR_ROOT)/build/debug ; \
+	g++ $(wildcard $(DIR_ROOT)/build/debug/hector.cgi/*.o) ${PREFIX}/lib/libtools-d.a ${PREFIX}/lib/libhcore-d.a -lpthread -lssl -lrt -o exec ; \
 	strip exec
 
