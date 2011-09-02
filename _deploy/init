@@ -23,8 +23,10 @@ PATH=/sbin:/usr/sbin:/bin:/usr/bin
 NAME="hector"
 DESC="web application server"
 HECTOR_SRC="/home/amok/src/${NAME}/"
+PREFIX="/home/amok/usr/"
 SOCKDIR="/home/${NAME}/tmp/${NAME}/"
-HECTORADMIN="${HECTOR_SRC}/build/hectoradmin/1exec"
+HECTORADMIN="${HECTOR_SRC}/build/debug/hectoradmin/1exec"
+HECTORADMIN_HARD_ARGS="--log_path /tmp/x_hectoradmin.log -R /home/hector/tmp/hector"
 SCRIPTNAME="${0}"
 
 # Load the VERBOSE setting and other rcS variables
@@ -56,12 +58,22 @@ do_start() {
 	chmod 755 ${SOCKDIR}
 }
 
+prep_hectoradmin() {
+	chmod o+x ${HECTOR_SRC} ${HECTOR_SRC}/.. ${HECTOR_SRC}/../.. ${HECTOR_SRC}/../../.. ${HECTOR_SRC}/../../../.. \
+		${HECTOR_SRC}/build ${HECTOR_SRC}/build/debug \
+		${HECTOR_SRC}/build/debug/hectoradmin ${HECTORADMIN} \
+		${PREFIX} ${PREFIX}/lib
+	chmod o+r ${PREFIX}/lib/libhcore* ${PREFIX}/lib/libtools*
+}
+
 #
 # Function that stops the daemon/service
 #
 do_stop() {
 	is_running || echo " not running ... "
 	is_running || return
+	prep_hectoradmin
+	is_running && launchtool -C ${HECTOR_SRC}/_deploy/launch-hectoradmin.conf "env LD_LIBRARY_PATH=${PREFIX}/lib HOME=/home/amok ${HECTORADMIN} ${HECTORADMIN_HARD_ARGS} --shutdown"
 	is_running && launchtool -k 2 -t hector
 	is_running && sleep 1 && is_running &&	launchtool -k 15 -t hector > /dev/null 2>&1
 	is_running && sleep 1 && is_running &&	launchtool -k 9 -t hector  > /dev/null 2>&1
@@ -71,13 +83,13 @@ do_stop() {
 # Function that sends a SIGHUP to the daemon/service
 #
 do_reload() {
-	test "`${HECTORADMIN} -R ${SOCKDIR} -r codestation 2>&1`" = "" &&
-	test "`${HECTORADMIN} -R ${SOCKDIR} -r archigrama 2>&1`" = ""
+	prep_hectoradmin
+	launchtool -C ${HECTOR_SRC}/_deploy/launch-hectoradmin.conf "env LD_LIBRARY_PATH=${PREFIX}/lib HOME=/home/amok ${HECTORADMIN} ${HECTORADMIN_HARD_ARGS} --reload codestation"
 }
 
 do_restart() {
-	test "`${HECTORADMIN} -R ${SOCKDIR} -A codestation 2>&1`" = "" &&
-	test "`${HECTORADMIN} -R ${SOCKDIR} -A archigrama 2>&1`" = ""
+	prep_hectoradmin
+	launchtool -C ${HECTOR_SRC}/_deploy/launch-hectoradmin.conf "env LD_LIBRARY_PATH=${PREFIX}/lib HOME=/home/amok ${HECTORADMIN} ${HECTORADMIN_HARD_ARGS} --restart codestation"
 }
 
 case "$1" in

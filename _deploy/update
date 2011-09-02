@@ -1,0 +1,29 @@
+#! /bin/sh
+
+SRC="${HOME}/src/cellar/web"
+DST="/home/hector/nest/app"
+
+invoke() {
+	echo "`pwd`: ${@}"
+	eval "${@}"
+}
+
+invoke chattr -i ${DST}
+invoke /bin/rm -r ${DST}
+invoke mkdir -p ${DST}
+invoke cp -a ${SRC}/codestation ${DST}/codestation
+invoke cp -a ${SRC}/hector.xml ${DST}/
+invoke /bin/rm -f ${DST}/codestation/activex
+invoke cp -a /home/amok/src/hector/build/debug/codestation/1exec ${DST}/codestation/activex
+invoke chown -R root:root ${DST}
+invoke chmod -R a+rX ${DST}
+invoke chattr +i ${DST}
+
+cd ~/src/hector
+
+. ${HOME}/src/yaal/_aux/set-limits.sh
+
+invoke ulimit -a
+
+/etc/init.d/hector restart
+
