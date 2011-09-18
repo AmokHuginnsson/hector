@@ -27,8 +27,7 @@ Copyright:
 #ifndef OPTIONS_HXX_INCLUDED
 #define OPTIONS_HXX_INCLUDED
 
-namespace hector
-{
+namespace hector {
 
 int handle_program_options( int, char** );
 

@@ -36,13 +36,11 @@ M_VCSID( "$Id: "__ID__" $" )
 using namespace yaal::hcore;
 using namespace yaal::tools;
 
-namespace hector
-{
+namespace hector {
 
 char const* const OSetup::DEFAULT_SOCKET_ROOT = "/tmp/hector/";
 
-void OSetup::test_setup( void )
-	{
+void OSetup::test_setup( void ) {
 	M_PROLOG
 	int failNo( 0 );
 	++ failNo;
@@ -53,11 +51,10 @@ void OSetup::test_setup( void )
 		clog.reset( make_pointer<HFile>( stdout ) );
 	else
 		std::clog.rdbuf( NULL );
-	if ( _quiet )
-		{
+	if ( _quiet ) {
 		cout.reset();
 		std::cout.rdbuf( NULL );
-		}
+	}
 #if defined ( TARGET_HECTOR_DAEMON )
 	++ failNo;
 	if ( _dataDir.is_empty() )
@@ -91,12 +88,11 @@ void OSetup::test_setup( void )
 #if defined ( TARGET_HECTOR_DAEMON )
 	HFSItem data( _dataDir );
 	++ failNo;
-	if ( ! ( !! data && data.is_directory() ) )
-		{
+	if ( ! ( !! data && data.is_directory() ) ) {
 		HString err( ! _dataDir.is_empty() ? _dataDir : "(nil)" );
 		err += _( ": applications database path is invalid\n" );
 		yaal::tools::util::failure( failNo, err.raw() );
-		}
+	}
 #elif defined ( TARGET_HECTOR_ADMIN )
 	++ failNo;
 	if ( ! ( _status || _shutdown || ! _reload.is_empty() || ! _restart.is_empty() ) )
@@ -104,7 +100,7 @@ void OSetup::test_setup( void )
 #endif
 	return;
 	M_EPILOG
-	}
+}
 
 }
 

@@ -32,37 +32,32 @@ Copyright:
 
 #include "orequest.hxx"
 
-namespace hector
-{
+namespace hector {
 
-class HServer
-	{
+class HServer {
 public:
 	typedef void ( HServer::* handler_t )( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	typedef yaal::hcore::HMap<yaal::hcore::HString, handler_t> handlers_t;
 	typedef yaal::hcore::HMap<int, ORequest> requests_t;
-	struct REQUEST_PROTO
-		{
+	struct REQUEST_PROTO {
 		static char const* const ENV;
 		static char const* const COOKIE;
 		static char const* const GET;
 		static char const* const POST;
 		static char const* const DONE;
-		};
-	struct CONTROL_PROTO
-		{
+	};
+	struct CONTROL_PROTO {
 		static char const* const SHUTDOWN;
 		static char const* const RELOAD;
 		static char const* const RESTART;
 		static char const* const STATUS;
-		};
-	struct IPC_CHANNEL
-		{
+	};
+	struct IPC_CHANNEL {
 		typedef int ipc_channel_t;
 		static int const CONTROL;
 		static int const REQUEST;
 		static int const COUNT = 2;
-		};
+	};
 protected:
 	/*{*/
 	int _maxConnections;
@@ -99,7 +94,7 @@ protected:
 	virtual void do_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& ) = 0;
 	virtual void do_status( yaal::hcore::HSocket::ptr_t& ) = 0;
 	/*}*/
-	};
+};
 
 int main_server( void );
 

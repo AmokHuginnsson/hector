@@ -29,25 +29,20 @@ Copyright:
 
 #include <yaal/hcore/hstring.hxx>
 
-namespace hector
-{
+namespace hector {
 
-struct ACCESS
-	{
-	typedef enum
-		{
+struct ACCESS {
+	typedef enum {
 		READ = 04,
 		WRITE = 02,
 		EXECUTE = 01
-		} type_t;
-	typedef enum
-		{
+	} type_t;
+	typedef enum {
 		USER = 6,
 		GROUP = 3,
 		OTHER = 0
-		} context_t;
-	typedef enum
-		{
+	} context_t;
+	typedef enum {
 		USER_READ = READ << 6,
 		USER_WRITE = WRITE << 6,
 		USER_EXECUTE = EXECUTE << 6,
@@ -58,18 +53,17 @@ struct ACCESS
 		OTHER_WRITE = WRITE,
 		OTHER_EXECUTE = EXECUTE,
 		NONE = 0
-		} enum_t;
-	};
+	} enum_t;
+};
 
 typedef yaal::hcore::HStrongEnum<ACCESS> access_type_t;
 
-struct OSecurityContext
-	{
+struct OSecurityContext {
 	yaal::hcore::HString _user;
 	yaal::hcore::HString _group;
 	access_type_t _mode;
 	OSecurityContext( void ) : _user(), _group(), _mode( ACCESS::NONE ) {}
-	};
+};
 
 }
 

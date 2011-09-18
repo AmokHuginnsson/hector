@@ -35,14 +35,12 @@ Copyright:
 
 #define out ( clog << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
 
-namespace hector
-{
+namespace hector {
 
 inline std::ostream& operator << ( std::ostream& o, yaal::hcore::HString const& s )
 	{ return ( o << s.raw() ); }
 
-struct OSetup
-	{
+struct OSetup {
 	static int const DEFAULT_MAX_CONNECTIONS = 2;
 	static int const DEFAULT_MAX_WORKING_THREADS = 2;
 	static int const DEFAULT_SOCKET_WRITE_TIMEOUT = 5; /* seconds */
@@ -84,7 +82,7 @@ struct OSetup
 private:
 	OSetup ( OSetup const & );
 	OSetup & operator = ( OSetup const & );
-	};
+};
 
 extern OSetup setup;
 

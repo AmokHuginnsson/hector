@@ -37,22 +37,18 @@ using namespace yaal::tools;
 using namespace yaal::tools::util;
 using namespace yaal::dbwrapper;
 
-namespace hector
-{
+namespace hector {
 
 HApplication::HApplication( HDataBase::ptr_t db_ )
 	: _dOM(), _name(), _defaultSecurityContext(), _sessions(),
-	_db( db_ ), _forms(), _verificators()
-	{
-	}
+	_db( db_ ), _forms(), _verificators() {
+}
 
-HApplication::~HApplication( void )
-	{
+HApplication::~HApplication( void ) {
 	out << "Application `" << _name << "' unloaded." << endl;
-	}
+}
 
-void HApplication::load( HString const& name, HString const& path )
-	{
+void HApplication::load( HString const& name, HString const& path ) {
 	M_PROLOG
 	static char const* const INTERFACE_FILE = "interface.xml";
 	static char const* const TOOLKIT_FILE = "toolkit.xml";
@@ -77,23 +73,20 @@ void HApplication::load( HString const& name, HString const& path )
 	cgi::consistency_check( _dOM.get_root() );
 	return;	
 	M_EPILOG
-	}
+}
 
-void HApplication::do_load( void )
-	{
+void HApplication::do_load( void ) {
 	out << __PRETTY_FUNCTION__ << endl;
-	}
+}
 
-void HApplication::handle_auth( ORequest& req_, HSession& session_ )
-	{
+void HApplication::handle_auth( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
 	do_handle_auth( req_, session_ );	
 	return;
 	M_EPILOG
-	}
+}
 
-void HApplication::do_handle_auth( ORequest& req_, HSession& session_ )
-	{
+void HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
 	static char const HACTION[] = "h-action";
 	static char const AUTH[] = "auth";
@@ -102,67 +95,54 @@ void HApplication::do_handle_auth( ORequest& req_, HSession& session_ )
 	static char const PASSWORD[] = "password";
 	static char const USERS[] = "users";
 	ORequest::value_t action( req_.lookup( HACTION, ORequest::ORIGIN::POST ) );
-	if ( action )
-		{
-		if ( *action == AUTH )
-			{
+	if ( action ) {
+		if ( *action == AUTH ) {
 			ORequest::value_t login( req_.lookup( LOGIN, ORequest::ORIGIN::POST ) );
 			ORequest::value_t password( req_.lookup( PASSWORD, ORequest::ORIGIN::POST ) );
-			if ( login && password )
-				{
+			if ( login && password ) {
 				HString query;
-				try
-					{
+				try {
 					query = str( HFormat( "SELECT ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER('%4$s') AND %3$s = LOWER('%5$s') )"
 									" + ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER('%4$s') );" ) % setup._tableUser % setup._columnLogin % setup._columnPassword % *login % *password );
 					out << "query: " << query << endl;
-					}
-				catch ( HFormatException const& e )
-					{
+				} catch ( HFormatException const& e ) {
 					out << e.what() << endl;
-					}
+				}
 				HRecordSet::ptr_t rs( _db->query( query ) );
 				M_ENSURE( !! rs );
 				HRecordSet::iterator row = rs->begin();
-				if ( row == rs->end() )
-					{
+				if ( row == rs->end() ) {
 					out << _db->get_error() << endl;
 					M_ENSURE( ! "database query error" );
-					}
+				}
 				int result( lexical_cast<int>( *row[0] ) );
-				if ( result == 2 )
-					{
+				if ( result == 2 ) {
 					session_.set_user( *login );
 					session_.add_group( USERS );
 					out << "authenticated user: " << *login << endl;
-					}
-				else if ( result == 1 )
+				} else if ( result == 1 )
 					out << "invalid password" << endl;
 				else
 					out << "invalid user" << endl;
-				}
 			}
-		else if ( *action == LOGOUT )
-			{
+		} else if ( *action == LOGOUT ) {
 			out << "user: " << session_.get_user() << "logged out" << endl;
 			sessions().erase( session_.get_id() );
-			}
 		}
+	}
 	return;
 	M_EPILOG
-	}
+}
 
-void HApplication::do_handle_logic( ORequest& req_, HSession& session_ )
-	{
+void HApplication::do_handle_logic( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	handle_auth( req_, session_ );
 	return;
 	M_EPILOG
-	}
+}
 
-void HApplication::do_generate_page( ORequest const& req, HSession const& session_ )
-	{
+void HApplication::do_generate_page( ORequest const& req, HSession const& session_ ) {
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	cgi::default_t defaults;
@@ -178,10 +158,9 @@ void HApplication::do_generate_page( ORequest const& req, HSession const& sessio
 		cgi::expand_autobutton( dom().get_root(), req );
 	return;
 	M_EPILOG
-	}
+}
 
-void HApplication::generate_page( ORequest const& req, HSession const& session_ )
-	{
+void HApplication::generate_page( ORequest const& req, HSession const& session_ ) {
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req, session_ );
@@ -189,56 +168,48 @@ void HApplication::generate_page( ORequest const& req, HSession const& session_ 
 		_dOM.save( req.socket() );
 	return;
 	M_EPILOG
-	}
+}
 
-void HApplication::handle_logic( ORequest& req, HSession& session_ )
-	{
+void HApplication::handle_logic( ORequest& req, HSession& session_ ) {
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
 	do_handle_logic( req, session_ );
 	return;
 	M_EPILOG
-	}
+}
 
-HXml& HApplication::dom( void )
-	{
+HXml& HApplication::dom( void ) {
 	return ( _dOM );
-	}
+}
 
-yaal::dbwrapper::HDataBase::ptr_t HApplication::db( void )
-	{
+yaal::dbwrapper::HDataBase::ptr_t HApplication::db( void ) {
 	return ( do_db() );
-	}
+}
 
-yaal::dbwrapper::HDataBase::ptr_t HApplication::do_db( void )
-	{
+yaal::dbwrapper::HDataBase::ptr_t HApplication::do_db( void ) {
 	return ( _db );
-	}
+}
 
-HApplication::sessions_t const& HApplication::sessions( void ) const
-	{
+HApplication::sessions_t const& HApplication::sessions( void ) const {
 	return ( _sessions );
-	}
+}
 
-HApplication::sessions_t& HApplication::sessions( void )
-	{
+HApplication::sessions_t& HApplication::sessions( void ) {
 	return ( _sessions );
-	}
+}
 
-void HApplication::add_verificator( yaal::hcore::HString const& verificator_ )
-	{
+void HApplication::add_verificator( yaal::hcore::HString const& verificator_ ) {
 	M_PROLOG
 	_verificators.insert( verificator_ );
 	M_EPILOG
-	}
+}
 
-void HApplication::add_form( forms_t::value_type const& form_ )
-	{
+void HApplication::add_form( forms_t::value_type const& form_ ) {
 	M_PROLOG
 	_forms.insert( form_ );
 	return;
 	M_EPILOG
-	}
+}
 
 }
 

@@ -27,19 +27,15 @@ Copyright:
 #ifndef HECTOR_OREQUEST_HXX_INCLUDED
 #define HECTOR_OREQUEST_HXX_INCLUDED 1
 
-namespace hector
-{
+namespace hector {
 
-class ORequest
-	{
+class ORequest {
 	typedef ORequest this_type;
 public:
 	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
 	typedef yaal::hcore::HPointer<dictionary_t> dictionary_ptr_t;
-	struct ORIGIN
-		{
-		typedef enum
-			{
+	struct ORIGIN {
+		typedef enum {
 			NONE = 0,
 			ENV = 1,
 			COOKIE = 2,
@@ -47,8 +43,8 @@ public:
 			POST = 8,
 			JAR = 16,
 			ANY = 31
-			} enum_t;
-		};
+		} enum_t;
+	};
 	typedef yaal::hcore::HStrongEnum<ORIGIN> origin_t;
 	class HConstIterator;
 	typedef HConstIterator const_iterator;
@@ -74,12 +70,11 @@ public:
 	const_iterator begin( void ) const;
 	const_iterator end( void ) const;
 	friend class HConstIterator;
-	};
+};
 
 typedef yaal::hcore::HExceptionT<ORequest> ORequestException;
 
-class ORequest::HConstIterator
-	{
+class ORequest::HConstIterator {
 	ORequest const* _owner;
 	ORequest::origin_t _origin;
 	dictionary_t::const_iterator _it;
@@ -92,7 +87,7 @@ public:
 private:
 	HConstIterator( ORequest const*, ORequest::origin_t const&, ORequest::dictionary_t::const_iterator );
 	friend class ORequest;
-	};
+};
 
 }
 

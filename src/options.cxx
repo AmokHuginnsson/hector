@@ -42,27 +42,23 @@ using namespace yaal::hcore;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
 
-namespace hector
-{
+namespace hector {
 
-bool set_variables( HString& option_, HString& value_ )
-	{
+bool set_variables( HString& option_, HString& value_ ) {
 	fprintf ( stdout, "option: [%s], value: [%s]\n",
 			option_.raw(), value_.raw() );
 	return ( false );
-	}
+}
 
 void version( void* ) __attribute__(( __noreturn__ ));
-void version( void* )
-	{
+void version( void* ) {
 	cout << PACKAGE_STRING << endl;
 	throw ( 0 );
-	}
+}
 
 /* Set all the option flags according to the switches specified.
    Return the index of the first non-option argument.                    */
-int handle_program_options( int argc_, char** argv_ )
-	{
+int handle_program_options( int argc_, char** argv_ ) {
 	M_PROLOG
 	HProgramOptionsHandler po;
 	OOptionInfo info( po, setup._programName, "XML based Web Application Server.", NULL );
@@ -98,16 +94,15 @@ int handle_program_options( int argc_, char** argv_ )
 		setup._logPath = "hectord.log";
 	int unknown = 0, nonOption = 0;
 	nonOption = po.process_command_line( argc_, argv_, &unknown );
-	if ( unknown > 0 )
-		{
+	if ( unknown > 0 ) {
 		util::show_help( &info );
 		throw unknown;
-		}
+	}
 	if ( stop )
 		throw 0;
 	return ( nonOption );
 	M_EPILOG
-	}
+}
 
 }
 

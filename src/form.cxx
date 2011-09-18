@@ -28,13 +28,11 @@ Copyright:
 M_VCSID( "$Id: "__ID__" $" )
 #include "form.hxx"
 
-namespace hector
-{
+namespace hector {
 
-HForm::HForm( void ) : _inputs()
-	{
+HForm::HForm( void ) : _inputs() {
 	return;
-	}
+}
 
 
 }

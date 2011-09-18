@@ -34,13 +34,11 @@ Copyright:
 #include "securitycontext.hxx"
 #include "session.hxx"
 
-namespace	hector
-{
+namespace	hector {
 
 class HApplication;
 
-namespace cgi
-{
+namespace cgi {
 
 typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
 typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> default_t;

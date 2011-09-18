@@ -35,11 +35,9 @@ using namespace yaal::tools;
 using namespace yaal::tools::util;
 using namespace yaal::dbwrapper;
 
-namespace hector
-{
+namespace hector {
 
-HActiveX HActiveX::get_instance( HString const& name, HString const& path, HDataBase::ptr_t db_ )
-	{
+HActiveX HActiveX::get_instance( HString const& name, HString const& path, HDataBase::ptr_t db_ ) {
 	M_PROLOG
 	static char const* const SYMBOL_FACTORY = "factory";
 	static char const* const ATTRIBUTE_ACTIVEX = "activex";
@@ -65,42 +63,37 @@ HActiveX HActiveX::get_instance( HString const& name, HString const& path, HData
 	app->load( name, path );
 	return ( proc );
 	M_EPILOG
-	}
+}
 
-void HActiveX::reload_binary( void )
-	{
+void HActiveX::reload_binary( void ) {
 	M_PROLOG
 	_activeX->unload();
 	_activeX->load( _binaryPath );
 	return;
 	M_EPILOG
-	}
+}
 
-void HActiveX::handle_logic( ORequest& req_, HSession& session_ )
-	{
+void HActiveX::handle_logic( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
 	_application->handle_logic( req_, session_ );
 	return;
 	M_EPILOG
-	}
+}
 
-void HActiveX::generate_page( ORequest const& req_, HSession const& session_ )
-	{
+void HActiveX::generate_page( ORequest const& req_, HSession const& session_ ) {
 	M_PROLOG
 	_application->generate_page( req_, session_ );
 	return;
 	M_EPILOG
-	}
+}
 
-HApplication::sessions_t& HActiveX::sessions( void )
-	{
+HApplication::sessions_t& HActiveX::sessions( void ) {
 	return ( _application->sessions() );
-	}
+}
 
-HApplication::sessions_t const& HActiveX::sessions( void ) const
-	{
+HApplication::sessions_t const& HActiveX::sessions( void ) const {
 	return ( _application->sessions() );
-	}
+}
 
 }
 

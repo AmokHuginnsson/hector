@@ -38,24 +38,20 @@ using namespace yaal::tools;
 using namespace yaal::tools::util;
 using namespace yaal::dbwrapper;
 
-namespace hector
-{
+namespace hector {
 
 HApplicationServer::HApplicationServer( void )
 	: HServer( setup._maxConnections ),
 	_applications(), _pending(),
 	_configuration(), _defaultApplication(), _sigChildEvent(),
-	_db( HDataBase::get_connector() )
-	{
-	}
+	_db( HDataBase::get_connector() ) {
+}
 
-HApplicationServer::~HApplicationServer( void )
-	{
+HApplicationServer::~HApplicationServer( void ) {
 	clean_request( 0 );
-	}
+}
 
-void HApplicationServer::start( void )
-	{
+void HApplicationServer::start( void ) {
 	M_PROLOG
 	HSignalService& ss = HSignalService::get_instance();
 	ss.register_handler( SIGCHLD, call( &HApplicationServer::on_sigchild, this, _1 ) );
@@ -68,73 +64,62 @@ void HApplicationServer::start( void )
 	confPath << CONFIGURATION_FILE;
 	_configuration.load( make_pointer<HFile>( confPath.string(), HFile::OPEN::READING ) );
 	HXml::HConstNodeProxy hector = _configuration.get_root();
-	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it )
-		{
+	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it ) {
 		HString const& name = (*it).get_name();
 		if ( name == NODE_CONFIGURATION )
 			read_configuration( *it );
 		else if ( name == NODE_APPLICATIONS )
 			read_applications( *it );
-		}
+	}
 	hcore::log( LOG_TYPE::INFO ) << "Statring application server." << endl;
 	init_server();
 	_socket[ IPC_CHANNEL::CONTROL ]->set_timeout( setup._socketWriteTimeout );
 	_socket[ IPC_CHANNEL::REQUEST ]->set_timeout( setup._socketWriteTimeout );
 	_db->connect( setup._databaseName, setup._databaseName, setup._databasePassword );
 	M_EPILOG
-	}
+}
 
-void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& configuration )
-	{
+void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& configuration ) {
 	M_PROLOG
 	static char const* const NODE_DEFAULT_APPLICATION = "default_application";
 	static char const* const PROP_NAME = "name";
-	for ( HXml::HConstIterator it = configuration.begin(); it != configuration.end(); ++ it )
-		{
+	for ( HXml::HConstIterator it = configuration.begin(); it != configuration.end(); ++ it ) {
 		HString const& name = (*it).get_name();
-		if ( name == NODE_DEFAULT_APPLICATION )
-			{
+		if ( name == NODE_DEFAULT_APPLICATION ) {
 			HXml::HNode::properties_t const& props = (*it).properties();
 			HXml::HNode::properties_t::const_iterator nameAttr = props.find( PROP_NAME );
 			if ( nameAttr != props.end() )
 				_defaultApplication = nameAttr->second;
-			}
 		}
-	M_EPILOG
 	}
+	M_EPILOG
+}
 
-void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applications )
-	{
+void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applications ) {
 	M_PROLOG
 	static char const* const APP_NODE_NAME = "application";
 	static char const* const APP_PROP_NAME_SYMBOL = "symbol";
 	static char const* const APP_PROP_NAME_LOAD = "load";
-	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it )
-		{
+	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it ) {
 		HXml::HConstNodeProxy application = *it;
 		M_ENSURE( application.get_name() == APP_NODE_NAME );
 		HXml::HNode::properties_t const& props = application.properties();
 		HXml::HNode::properties_t::const_iterator load = props.find( APP_PROP_NAME_LOAD );
-		if ( ( load != props.end() ) && ( lexical_cast<bool>( load->second ) ) )
-			{
+		if ( ( load != props.end() ) && ( lexical_cast<bool>( load->second ) ) ) {
 			HXml::HNode::properties_t::const_iterator symbol = props.find( APP_PROP_NAME_SYMBOL );
 			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
-			try
-				{
+			try {
 				_applications[ symbol->second ] = HActiveX::get_instance( symbol->second, setup._dataDir, _db );
-				}
-			catch ( HException& e )
-				{
+			} catch ( HException& e ) {
 				out << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
 				hcore::log( LOG_TYPE::WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
-				}
 			}
 		}
-	M_EPILOG
 	}
+	M_EPILOG
+}
 
-HApplicationServer::session_t HApplicationServer::handle_session( ORequest& request_, HApplication::sessions_t& sessions_ )
-	{
+HApplicationServer::session_t HApplicationServer::handle_session( ORequest& request_, HApplication::sessions_t& sessions_ ) {
 	M_PROLOG
 	static char const REMOTE_ADDR[] = "REMOTE_ADDR";
 	static char const HTTP_USER_AGENT[] = "HTTP_USER_AGENT";
@@ -142,135 +127,101 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 	ORequest::value_t remoteAddress( request_.lookup( REMOTE_ADDR, ORequest::ORIGIN::ENV ) );
 	ORequest::value_t httpUserAgent( request_.lookup( HTTP_USER_AGENT, ORequest::ORIGIN::ENV ) );
 	session_t session;
-	if ( remoteAddress && httpUserAgent )
-		{
-		if ( sid )
-			{
+	if ( remoteAddress && httpUserAgent ) {
+		if ( sid ) {
 			HApplication::sessions_t::iterator sessionIt( sessions_.find( *sid ) );
-			if ( sessionIt != sessions_.end() )
-				{
-				if ( ( *remoteAddress == sessionIt->second.get_remote_addr() ) && ( *httpUserAgent == sessionIt->second.get_http_user_agent() ) )
-					{
+			if ( sessionIt != sessions_.end() ) {
+				if ( ( *remoteAddress == sessionIt->second.get_remote_addr() ) && ( *httpUserAgent == sessionIt->second.get_http_user_agent() ) ) {
 					out << "got valid session ID: " << *sid << endl;
 					session = sessionIt->second;
-					}
-				else
-					{
+				} else {
 					out << "WARNING! forged/spoofed session ID: " << *sid << "( " << *remoteAddress << " ?= " << sessionIt->second.get_remote_addr() << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second.get_http_user_agent() << " )" << endl;
 					sessions_.erase( sessionIt );
-					}
 				}
-			else
-				{
+			} else {
 				clog << "current SIDs: ";
 				transform( sessions_.begin(), sessions_.end(), stream_iterator( clog, " " ), select1st<HApplication::sessions_t::value_type>() );
 				clog << endl;
 				out << "invalid session ID: " << *sid << endl;
-				}
 			}
-		else
+		} else
 			out << "sid not set" << endl;
-		if ( ! session )
-			{
+		if ( ! session ) {
 			HSession newSession( *remoteAddress, *httpUserAgent );
 			session = sessions_.insert( make_pair( newSession.get_id(), newSession ) ).first->second;
 			request_.update( "sid", newSession.get_id(), ORequest::ORIGIN::COOKIE );
 			out << "setting new SID: " << newSession.get_id() << endl;
-			}
 		}
-	else
+	} else
 		out << "WARNING! missing: " << ( remoteAddress ? "" : REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP_USER_AGENT ) << endl;
 	return ( session );
 	M_EPILOG
-	}
+}
 
-void HApplicationServer::do_service_request( ORequest& request_ )
-	{
+void HApplicationServer::do_service_request( ORequest& request_ ) {
 	M_PROLOG
 	HSocket::ptr_t sock = request_.socket();
 	HString application( _defaultApplication );
-	if ( request_.lookup( "application", application ) && _defaultApplication.is_empty() )
-		{
+	if ( request_.lookup( "application", application ) && _defaultApplication.is_empty() ) {
 		static HString const err( "\n\nno default application set nor application selected!\n" );
 		*sock << err << endl;
 		out << err << endl;
-		}
-	else
-		{
+	} else {
 		applications_t::iterator it = _applications.find( application );
-		if ( it != _applications.end() )
-			{
+		if ( it != _applications.end() ) {
 			out << "using application: " << application << endl;
-			try
-				{
+			try {
 				request_.decompress_jar( application );
-				}
-			catch ( HBase64Exception& e )
-				{
+			} catch ( HBase64Exception& e ) {
 				hcore::log << e.what() << endl;
-				}
-			catch ( ORequestException& e )
-				{
+			} catch ( ORequestException& e ) {
 				hcore::log << e.what() << endl;
-				}
-			try
-				{
+			}
+			try {
 				session_t session( handle_session( request_, it->second.sessions() ) );
 				if ( session )
 					it->second.handle_logic( request_, *session );
 				int pid = fork();
-				if ( ! pid )
-					{
-					try
-						{
+				if ( ! pid ) {
+					try {
 						ORequest::dictionary_ptr_t jar = request_.compress_jar( application );
 						for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
 							*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
 						*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
 						if ( session )
 							it->second.generate_page( request_, *session );
-						}
-					catch ( ... )
-						{
+					} catch ( ... ) {
 						/* Graceful shutdown, frist draft. */
-						}
-					_exit( 0 );
 					}
-				else if ( pid > 0 )
+					_exit( 0 );
+				} else if ( pid > 0 )
 					_pending.insert( hcore::make_pair( pid, sock ) );
-				else
-					{
+				else {
 					out << "fork failed!" << endl;
 					disconnect_client( IPC_CHANNEL::REQUEST, sock, _( "request dropped - fork failed" ) );
-					}
 				}
-			catch ( ... )
-				{
+			} catch ( ... ) {
 				/* Completly failed to fulfill request. */
-				}
 			}
-		else
-			{
+		} else {
 			static HString const err( "no such application: " );
 			*sock << "\n\n" << err << application << endl;
 			out << err << application << endl;
 			disconnect_client( IPC_CHANNEL::REQUEST, sock, _( "error message generated" ) );
-			}
 		}
+	}
 	return;
 	M_EPILOG
-	}
+}
 
-int HApplicationServer::on_sigchild( int sigNo_ )
-	{
+int HApplicationServer::on_sigchild( int sigNo_ ) {
 	M_PROLOG
 	_sigChildEvent.write( &sigNo_, sizeof( sigNo_ ) );
 	return ( 1 );
 	M_EPILOG
-	}
+}
 
-void HApplicationServer::process_sigchild( int )
-	{
+void HApplicationServer::process_sigchild( int ) {
 	M_PROLOG
 	int dummy = 0;
 	_sigChildEvent.read( &dummy, sizeof( dummy ) );
@@ -278,15 +229,13 @@ void HApplicationServer::process_sigchild( int )
 	clean_request( WNOHANG );
 	return;
 	M_EPILOG
-	}
+}
 
-void HApplicationServer::clean_request( int opts )
-	{
+void HApplicationServer::clean_request( int opts ) {
 	M_PROLOG
 	int pid = 0;
 	int status = 0;
-	while ( ! _pending.is_empty() && ( ( pid = waitpid( WAIT_ANY, &status, opts | WUNTRACED ) ) > 0 ) )
-		{
+	while ( ! _pending.is_empty() && ( ( pid = waitpid( WAIT_ANY, &status, opts | WUNTRACED ) ) > 0 ) ) {
 		pending_t::iterator it = _pending.find( pid );
 		M_ENSURE( it != _pending.end() );
 		out << "activex finished with: " << status << "\n";
@@ -297,39 +246,31 @@ void HApplicationServer::clean_request( int opts )
 		if ( _requests.find( it->second->get_file_descriptor() ) != _requests.end() )
 			disconnect_client( IPC_CHANNEL::REQUEST, it->second, _( "request serviced" ) );
 		_pending.erase( it );
-		}
+	}
 	return;
 	M_EPILOG
-	}
+}
 
-void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appName )
-	{
+void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appName ) {
 	M_PROLOG
 	applications_t::iterator it = _applications.find( appName );
-	if ( it != _applications.end() )
-		{
-		try
-			{
+	if ( it != _applications.end() ) {
+		try {
 			HActiveX& newX = _applications[ appName ] = HActiveX::get_instance( appName, setup._dataDir, _db );
 			newX.reload_binary();
 			*sock << "application `" << appName << "' reloaded successfully" << endl;
-			}
-		catch ( HException& e )
-			{
+		} catch ( HException& e ) {
 			hcore::log( LOG_TYPE::WARNING ) << "Failed to load `" << appName << "': " << e.what() << "." << endl;
 			*sock << "Failed to load `" << appName << "': " << e.what() << "." << endl;
-			}
 		}
-	else
-		{
+	} else {
 		*sock << "no such application: " << appName << endl;
-		}
+	}
 	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
 	M_EPILOG
-	}
+}
 
-void HApplicationServer::do_status( HSocket::ptr_t& sock )
-	{
+void HApplicationServer::do_status( HSocket::ptr_t& sock ) {
 	M_PROLOG
 	*sock << "apps: " << _applications.size() << endl;
 	*sock << "new: " << _requests.size() << endl;
@@ -341,7 +282,7 @@ void HApplicationServer::do_status( HSocket::ptr_t& sock )
 		*sock << "  " << it->first << ": " << it->second.sessions().get_size() << endl;
 	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
 	M_EPILOG
-	}
+}
 
 }
 

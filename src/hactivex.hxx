@@ -29,13 +29,11 @@ Copyright:
 
 #include "application.hxx"
 
-namespace hector
-{
+namespace hector {
 
 struct HSession;
 
-class HActiveX
-	{
+class HActiveX {
 	yaal::hcore::HString _binaryPath;
 	yaal::tools::HPlugin::ptr_t _activeX;
 	HApplication::ptr_t _application;
@@ -47,7 +45,7 @@ public:
 	void generate_page( ORequest const&, HSession const& );
 	HApplication::sessions_t& sessions( void );
 	HApplication::sessions_t const& sessions( void ) const;
-	};
+};
 
 }
 

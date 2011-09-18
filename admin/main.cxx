@@ -40,8 +40,7 @@ using namespace yaal::tools;
 using namespace yaal::tools::util;
 using namespace hector;
 
-namespace hector
-{
+namespace hector {
 
 OSetup setup;
 
@@ -49,12 +48,10 @@ OSetup setup;
 
 void query( void );
 
-int main( int argc_, char* argv_[] )
-	{
+int main( int argc_, char* argv_[] ) {
 	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
 	M_PROLOG
-	try
-		{
+	try {
 /* TO-DO: enter main loop code here */
 		HSignalService::get_instance();
 		setup._programName = argv_[ 0 ];
@@ -67,37 +64,31 @@ int main( int argc_, char* argv_[] )
 /* *BOOM* */
 		query();
 /* ... there is the place main loop ends. :OD-OT */
-		}
-	catch ( ... )
-		{
+	} catch ( ... ) {
 		throw;
-		}
+	}
 	return ( 0 );
 	M_FINAL
-	}
+}
 
-void show_answer( HSocket& sock )
-	{
+void show_answer( HSocket& sock ) {
 	M_PROLOG
 	HString msg;
 	int long nRead( 0 );
 	bool err( false );
-	while ( ( nRead = sock.read_until( msg ) ) )
-		{
-		if ( nRead < 0 )
-			{
+	while ( ( nRead = sock.read_until( msg ) ) ) {
+		if ( nRead < 0 ) {
 			err = true;
 			continue;
-			}
-		cout << msg << endl;
 		}
+		cout << msg << endl;
+	}
 	cout << "status: " << ( ! err ? "ok" : "error" ) << endl;
 	return;
 	M_EPILOG
-	}
+}
 
-void query_status( void )
-	{
+void query_status( void ) {
 	M_PROLOG
 	HString sockPath( setup._socketRoot );
 	sockPath += "/control.sock";
@@ -107,10 +98,9 @@ void query_status( void )
 	show_answer( sock );
 	return;
 	M_EPILOG
-	}
+}
 
-void query_shutdown( void )
-	{
+void query_shutdown( void ) {
 	M_PROLOG
 	HString sockPath( setup._socketRoot );
 	sockPath += "/control.sock";
@@ -120,10 +110,9 @@ void query_shutdown( void )
 	show_answer( sock );
 	return;
 	M_EPILOG
-	}
+}
 
-void query_restart_reload( char const* const action_, HString const& object_ )
-	{
+void query_restart_reload( char const* const action_, HString const& object_ ) {
 	M_PROLOG
 	HString sockPath( setup._socketRoot );
 	sockPath += "/control.sock";
@@ -133,13 +122,11 @@ void query_restart_reload( char const* const action_, HString const& object_ )
 	show_answer( sock );
 	return;
 	M_EPILOG
-	}
+}
 
-void query( void )
-	{
+void query( void ) {
 	M_PROLOG
-	try
-		{
+	try {
 		if ( ! setup._reload.is_empty() )
 			query_restart_reload( "reload:", setup._reload );
 		if ( ! setup._restart.is_empty() )
@@ -148,13 +135,11 @@ void query( void )
 			query_status();
 		if ( setup._shutdown )
 			query_shutdown();
-		}
-	catch ( HSocketException& e )
-		{
+	} catch ( HSocketException& e ) {
 		cout << "Cannot connect to `hector' daemon." << endl;
 		cout << e.what() << endl;
-		}
+	}
 	return;
 	M_EPILOG
-	}
+}
 

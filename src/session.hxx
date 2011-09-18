@@ -30,11 +30,9 @@ Copyright:
 #include <yaal/hcore/hstring.hxx>
 #include <yaal/hcore/htime.hxx>
 
-namespace hector
-{
+namespace hector {
 
-class HSession
-	{
+class HSession {
 private:
 	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
 	typedef yaal::hcore::HSet<yaal::hcore::HString> groups_t;
@@ -54,7 +52,7 @@ public:
 	groups_t const& get_groups( void ) const;
 	void set_user( yaal::hcore::HString const& );
 	void add_group( yaal::hcore::HString const& );
-	};
+};
 
 }
 

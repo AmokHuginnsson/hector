@@ -29,11 +29,9 @@ Copyright:
 
 #include <yaal/hcore/harray.hxx>
 
-namespace hector
-{
+namespace hector {
 
-class HForm
-	{
+class HForm {
 public:
 	class HInput;
 private:
@@ -42,11 +40,10 @@ private:
 public:
 	HForm( void );
 	void add_input( HInput const& );
-	};
+};
 
-class HForm::HInput
-	{
-	};
+class HForm::HInput {
+};
 
 }
 

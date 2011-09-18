@@ -41,19 +41,16 @@ using namespace yaal::tools;
 using namespace yaal::tools::util;
 using namespace hector;
 
-namespace hector
-{
+namespace hector {
 
 OSetup setup;
 
 }
 
-int main( int argc_, char* argv_[] )
-	{
+int main( int argc_, char* argv_[] ) {
 	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
 	M_PROLOG
-	try
-		{
+	try {
 /* TO-DO: enter main loop code here */
 		HSignalService::get_instance();
 		setup._programName = argv_[ 0 ];
@@ -65,13 +62,11 @@ int main( int argc_, char* argv_[] )
 /* *BOOM* */
 		appServ.run();
 /* ... there is the place main loop ends. :OD-OT */
-		}
-	catch ( ... )
-		{
+	} catch ( ... ) {
 		throw;
-		}
+	}
 	cerr << _( "Done" ) << endl;
 	return ( 0 );
 	M_FINAL
-	}
+}
 

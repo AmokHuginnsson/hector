@@ -47,8 +47,7 @@ using namespace yaal::tools;
 using namespace yaal::tools::util;
 using namespace hector;
 
-namespace hector
-{
+namespace hector {
 
 OSetup setup;
 
@@ -56,12 +55,10 @@ OSetup setup;
 
 void query( int, char** );
 
-int main( int argc_, char* argv_[] )
-	{
+int main( int argc_, char* argv_[] ) {
 	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
 	M_PROLOG
-	try
-		{
+	try {
 /* TO-DO: enter main loop code here */
 		HSignalService::get_instance();
 		setup._programName = argv_[ 0 ];
@@ -72,17 +69,14 @@ int main( int argc_, char* argv_[] )
 /* *BOOM* */
 		query( argc_, argv_ );
 /* ... there is the place main loop ends. :OD-OT */
-		}
-	catch ( ... )
-		{
+	} catch ( ... ) {
 		throw;
-		}
+	}
 	return ( 0 );
 	M_FINAL
-	}
+}
 
-HString escape( HString const& source )
-	{
+HString escape( HString const& source ) {
 	M_PROLOG
 	static HString result;
 	result = source;
@@ -90,10 +84,9 @@ HString escape( HString const& source )
 	M_ASSERT( result.get_length() == static_cast<int long>( ::strlen( result.raw() ) ) );
 	return ( result );
 	M_EPILOG
-	}
+}
 
-void push_query( HSocket& sock, HString const& query, char const* const mode, char const* const delim )
-	{
+void push_query( HSocket& sock, HString const& query, char const* const mode, char const* const delim ) {
 	M_PROLOG
 	HStringStream buffer;
 	HTokenizer t( query, delim, HTokenizer::SKIP_EMPTY );
@@ -101,15 +94,13 @@ void push_query( HSocket& sock, HString const& query, char const* const mode, ch
 		sock << ( buffer << mode << ":" << escape( *it ) << endl << buffer );
 	return;
 	M_EPILOG
-	}
+}
 
-void query( int argc, char** argv )
-	{
+void query( int argc, char** argv ) {
 	M_PROLOG
 	HString sockPath( setup._socketRoot );
 	sockPath += "/request.sock";
-	try
-		{
+	try {
 		HSocket sock( HSocket::TYPE::FILE );
 		sock.connect( sockPath );
 		HStringStream buffer;
@@ -121,32 +112,26 @@ void query( int argc, char** argv )
 			sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
 		char QS[] = "QUERY_STRING=";
 		char CS[] = "HTTP_COOKIE=";
-		for ( int i = 0; environ[ i ]; ++ i )
-			{
-			if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) )
-				{
+		for ( int i = 0; environ[ i ]; ++ i ) {
+			if ( ! strncmp( environ[ i ], QS, sizeof ( QS ) - 1 ) ) {
 				push_query( sock, environ[ i ] + sizeof ( QS ) - 1, "get", "&" );
 				continue;
-				}
-			else if ( ! strncmp( environ[ i ], CS, sizeof ( CS ) - 1 ) )
-				{
+			} else if ( ! strncmp( environ[ i ], CS, sizeof ( CS ) - 1 ) ) {
 				push_query( sock, environ[ i ] + sizeof ( CS ) - 1, "cookie", ";" );
 				continue;
-				}
+			}
 			buffer << "env:" << escape( environ[ i ] ) << endl;
 			sock << buffer.consume();
-			}
+		}
 		sock << ( buffer << "done" << endl << buffer );
 		HString msg;
 		while ( sock.read_until( msg ) > 0 )
 			cout << msg << endl;
-		}
-	catch ( HSocketException& e )
-		{
+	} catch ( HSocketException& e ) {
 		cout << "Cannot connect to `hector' daemon.<br />" << endl;
 		cout << e.what() << endl;
-		}
+	}
 	return;
 	M_EPILOG
-	}
+}
 

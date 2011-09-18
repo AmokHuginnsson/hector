@@ -34,13 +34,11 @@ Copyright:
 #include "securitycontext.hxx"
 #include "form.hxx"
 
-namespace hector
-{
+namespace hector {
 
 struct HSession;
 
-class HApplication
-	{
+class HApplication {
 public:
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
@@ -77,7 +75,7 @@ protected:
 private:
 	HApplication( HApplication const& );
 	HApplication& operator = ( HApplication const& );
-	};
+};
 
 typedef yaal::hcore::HExceptionT<HApplication> HApplicationException;
 

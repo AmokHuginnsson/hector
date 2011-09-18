@@ -37,11 +37,9 @@ Copyright:
 #include "hactivex.hxx"
 #include "session.hxx"
 
-namespace hector
-{
+namespace hector {
 
-class HApplicationServer : public HServer
-	{
+class HApplicationServer : public HServer {
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
 	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
 	typedef yaal::tools::HOptional<HSession&> session_t;
@@ -67,7 +65,7 @@ protected:
 private:
 	void read_configuration( yaal::tools::HXml::HConstNodeProxy const& );
 	void read_applications( yaal::tools::HXml::HConstNodeProxy const& );
-	};
+};
 
 }
 

@@ -33,8 +33,7 @@ using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
 
-namespace hector
-{
+namespace hector {
 
 HSession::HSession( HString const& remoteAddr_ , HString const& httpUserAgent_ )
 	: _id( hash::sha1( remoteAddr_ + httpUserAgent_ + HTime().string() + randomizer_helper::make_randomizer()() ) ),
@@ -56,19 +55,17 @@ yaal::hcore::HString const& HSession::get_http_user_agent( void ) const
 HSession::groups_t const& HSession::get_groups( void ) const
 	{ return ( _groups ); }
 
-void HSession::set_user( yaal::hcore::HString const& user_ )
-	{
+void HSession::set_user( yaal::hcore::HString const& user_ ) {
 	_user = user_;
 	return;
-	}
+}
 
-void HSession::add_group( yaal::hcore::HString const& group_ )
-	{
+void HSession::add_group( yaal::hcore::HString const& group_ ) {
 	M_PROLOG
 	_groups.insert( group_ );
 	return;
 	M_EPILOG
-	}
+}
 
 }
 
