@@ -231,6 +231,23 @@ void HApplicationServer::process_sigchild( int ) {
 	M_EPILOG
 }
 
+namespace {
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+template<typename T>
+inline int FWD_WEXITSTATUS( T val_ ) {
+	return ( WEXITSTATUS( val_ ) );
+}
+template<typename T>
+inline bool FWD_WIFSIGNALED( T val_ ) {
+	return ( WIFSIGNALED( val_ ) ? true : false );
+}
+template<typename T>
+inline int FWD_WTERMSIG( T val_ ) {
+	return ( WTERMSIG( val_ ) );
+}
+#pragma GCC diagnostic error "-Wold-style-cast"
+}
+
 void HApplicationServer::clean_request( int opts ) {
 	M_PROLOG
 	int pid = 0;
@@ -239,10 +256,10 @@ void HApplicationServer::clean_request( int opts ) {
 		pending_t::iterator it = _pending.find( pid );
 		M_ENSURE( it != _pending.end() );
 		out << "activex finished with: " << status << "\n";
-		if ( WIFSIGNALED( status ) )
-			clog << "\tby signal: " << WTERMSIG( status ) << endl;
+		if ( FWD_WIFSIGNALED( status ) )
+			clog << "\tby signal: " << FWD_WTERMSIG( status ) << endl;
 		else
-			clog << "\tnormally: " << WEXITSTATUS( status ) << endl;
+			clog << "\tnormally: " << FWD_WEXITSTATUS( status ) << endl;
 		if ( _requests.find( it->second->get_file_descriptor() ) != _requests.end() )
 			disconnect_client( IPC_CHANNEL::REQUEST, it->second, _( "request serviced" ) );
 		_pending.erase( it );
