@@ -76,6 +76,8 @@ int main( int argc_, char* argv_[] ) {
 	M_FINAL
 }
 
+namespace {
+
 HString escape( HString const& source ) {
 	M_PROLOG
 	static HString result;
@@ -94,6 +96,8 @@ void push_query( HSocket& sock, HString const& query, char const* const mode, ch
 		sock << ( buffer << mode << ":" << escape( *it ) << endl << buffer );
 	return;
 	M_EPILOG
+}
+
 }
 
 void query( int argc, char** argv ) {

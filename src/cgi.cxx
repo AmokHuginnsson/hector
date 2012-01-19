@@ -75,7 +75,7 @@ bool has_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString
 	M_EPILOG
 }
 
-bool is_in_attribute( yaal::tools::HXml::HNodeProxy const& node, HString const& attribute, HString const& element ) {
+bool is_in_attribute( yaal::tools::HXml::HConstNodeProxy const& node, HString const& attribute, HString const& element ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
 	HXml::HNode::properties_t const& props = node.properties();
@@ -83,7 +83,7 @@ bool is_in_attribute( yaal::tools::HXml::HNodeProxy const& node, HString const& 
 	M_EPILOG
 }
 
-bool is_kind_of( yaal::tools::HXml::HNodeProxy const& node, HString const& kind ) {
+bool is_kind_of( yaal::tools::HXml::HConstNodeProxy const& node, HString const& kind ) {
 	M_PROLOG
 	return ( is_in_attribute( node, ATTRIBUTE_CLASS, kind ) );
 	M_EPILOG
@@ -96,6 +96,8 @@ bool has_attribute( yaal::tools::HXml::HConstNodeProxy const& node, HString cons
 	return ( has_attribute( props, attribute ) );
 	M_EPILOG
 }
+
+namespace {
 
 HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
@@ -197,6 +199,8 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 	}
 	return;
 	M_EPILOG
+}
+
 }
 
 void waste_children( yaal::tools::HXml::HNodeProxy node,
@@ -316,6 +320,8 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 	M_EPILOG
 }
 
+namespace {
+
 void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::tools::HXml::HNodeProxy* pick ) {
 	M_PROLOG
 	static char const* const NODE_ITEM = "item";
@@ -341,6 +347,8 @@ void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::to
 	}
 	return;
 	M_EPILOG
+}
+
 }
 
 void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::tools::HXml& doc, yaal::tools::HXml::HNodeProxy* pick ) {

@@ -71,6 +71,8 @@ int main( int argc_, char* argv_[] ) {
 	M_FINAL
 }
 
+namespace {
+
 void show_answer( HSocket& sock ) {
 	M_PROLOG
 	HString msg;
@@ -122,6 +124,8 @@ void query_restart_reload( char const* const action_, HString const& object_ ) {
 	show_answer( sock );
 	return;
 	M_EPILOG
+}
+
 }
 
 void query( void ) {
