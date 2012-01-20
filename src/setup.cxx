@@ -91,7 +91,7 @@ void OSetup::test_setup( void ) {
 	if ( ! ( !! data && data.is_directory() ) ) {
 		HString err( ! _dataDir.is_empty() ? _dataDir : "(nil)" );
 		err += _( ": applications database path is invalid\n" );
-		yaal::tools::util::failure( failNo, err.raw() );
+		yaal::tools::util::failure( failNo, "%s", err.raw() );
 	}
 #elif defined ( TARGET_HECTOR_ADMIN )
 	++ failNo;
