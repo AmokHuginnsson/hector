@@ -24,6 +24,7 @@ cd ~/src/hector
 . ${HOME}/src/yaal/_aux/set-limits.sh
 
 invoke ulimit -a
+invoke umask 077
 
 /etc/init.d/hector restart
 
