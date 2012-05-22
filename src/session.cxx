@@ -36,7 +36,7 @@ using namespace yaal::tools;
 namespace hector {
 
 HSession::HSession( HString const& remoteAddr_ , HString const& httpUserAgent_ )
-	: _id( hash::sha1( remoteAddr_ + httpUserAgent_ + HTime().string() + randomizer_helper::make_randomizer()() ) ),
+	: _id( tools::hash::sha1( remoteAddr_ + httpUserAgent_ + HTime().string() + randomizer_helper::make_randomizer()() ) ),
 	_user(), _groups(), _remoteAddr( remoteAddr_ ), _httpUserAgent( httpUserAgent_ ), _lastSeen(), _persistance()
 	{}
 
