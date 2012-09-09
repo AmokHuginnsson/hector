@@ -46,9 +46,9 @@ GITID        = @GITID@
 
 include $(DIR_ROOT)/_aux/inc-helper-pre.mk
 
-CXXFLAGS     += @EXTRA_CXXFLAGS@ @DEFS@
-LXXFLAGS     += @EXTRA_LXXFLAGS@
-LXXFLAGS     := $(filter-out -Wl$(COMA)--no-undefined,$(LXXFLAGS))
+override CXXFLAGS += @EXTRA_CXXFLAGS@ @DEFS@
+override LXXFLAGS += @EXTRA_LXXFLAGS@
+override LXXFLAGS := $(filter-out -Wl$(COMA)--no-undefined,$(LXXFLAGS))
 START_GROUP  = @START_GROUP@
 END_GROUP    = @END_GROUP@
 
