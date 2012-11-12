@@ -34,7 +34,7 @@ LIBS         = hcore$(LIB_INFIX) tools$(LIB_INFIX) dbwrapper$(LIB_INFIX) hconsol
                hdata$(LIB_INFIX) \
                hconsole$(LIB_INFIX) dbwrapper$(LIB_INFIX) tools$(LIB_INFIX) hcore$(LIB_INFIX) \
                pthread
-NO_UNDEFINED=$(call quotecomma,$(filter -Wl$(COMA)--no-undefined,@EXTRA_LXXFLAGS@))
+NO_UNDEFINED=$(call quotecomma,$(filter -Wl$(COMMA)--no-undefined,@EXTRA_LXXFLAGS@))
 $(eval $(call NEW_TARGET,hectord,src,-DTARGET_HECTOR_DAEMON,@RDYNAMIC@ $(NO_UNDEFINED)))
 $(eval $(call NEW_TARGET,hector.cgi,cgi,-DTARGET_HECTOR_CGI,$(NO_UNDEFINED)))
 $(eval $(call NEW_TARGET,hectoradmin,admin,-DTARGET_HECTOR_ADMIN,$(NO_UNDEFINED)))
@@ -48,7 +48,7 @@ include $(DIR_ROOT)/_aux/inc-helper-pre.mk
 
 override CXXFLAGS += @EXTRA_CXXFLAGS@ @DEFS@
 override LXXFLAGS += @EXTRA_LXXFLAGS@
-override LXXFLAGS := $(filter-out -Wl$(COMA)--no-undefined,$(LXXFLAGS))
+override LXXFLAGS := $(filter-out -Wl$(COMMA)--no-undefined,$(LXXFLAGS))
 START_GROUP  = @START_GROUP@
 END_GROUP    = @END_GROUP@
 

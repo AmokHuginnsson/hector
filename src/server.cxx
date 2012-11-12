@@ -35,7 +35,7 @@ M_VCSID( "$Id: "__ID__" $" )
 
 using namespace yaal;
 using namespace yaal::hcore;
-using namespace yaal::hconsole;
+using namespace yaal::ansi;
 using namespace yaal::tools;
 using namespace yaal::tools::util;
 
