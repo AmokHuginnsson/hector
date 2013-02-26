@@ -34,6 +34,8 @@ namespace HTTP {
 
 char const REMOTE_ADDR[] = "REMOTE_ADDR";
 char const HTTP_USER_AGENT[] = "HTTP_USER_AGENT";
+char const SERVER_PORT[] = "SERVER_PORT";
+char const HTTP_HOST[] = "HTTP_HOST";
 
 }
 

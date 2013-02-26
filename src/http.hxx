@@ -32,6 +32,8 @@ namespace hector {
 namespace HTTP {
 
 extern char const REMOTE_ADDR[];
+extern char const SERVER_PORT[];
+extern char const HTTP_HOST[];
 extern char const HTTP_USER_AGENT[];
 
 }

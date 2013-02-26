@@ -44,6 +44,7 @@ struct OSetup {
 	static int const DEFAULT_MAX_CONNECTIONS = 2;
 	static int const DEFAULT_MAX_WORKING_THREADS = 2;
 	static int const DEFAULT_SOCKET_WRITE_TIMEOUT = 5; /* seconds */
+	static int const DEFAULT_SSL_PORT = 443;
 	static char const* const DEFAULT_SOCKET_ROOT;
 	bool _quiet;			/* --quiet, --silent */
 	bool _verbose;		/* --verbose */
@@ -53,6 +54,7 @@ struct OSetup {
 	int _maxConnections;
 	int _maxWorkingThreads;
 	int _socketWriteTimeout;
+	int _sslPort;
 	yaal::hcore::HString _logPath;
 	yaal::hcore::HString _dataDir;
 	yaal::hcore::HString _socketRoot;
@@ -74,6 +76,7 @@ struct OSetup {
 		_maxConnections( DEFAULT_MAX_CONNECTIONS ),
 		_maxWorkingThreads( DEFAULT_MAX_WORKING_THREADS ),
 		_socketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT ),
+		_sslPort( DEFAULT_SSL_PORT ),
 		_logPath(), _dataDir(), _socketRoot( DEFAULT_SOCKET_ROOT ),
 		_reload(), _restart(),
 		_databaseName(), _databaseLogin(), _databasePassword(),

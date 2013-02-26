@@ -188,8 +188,12 @@ void HApplicationServer::do_service_request( ORequest& request_ ) {
 						for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
 							*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
 						*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
+						request_.update( "ssl", request_.is_ssl() ? "ssl-on" : "ssl-off", ORequest::ORIGIN::ENV );
+						request_.update( "mobile", request_.is_mobile() ? "mobile-on" : "mobile-off", ORequest::ORIGIN::ENV );
 						if ( session )
 							it->second.generate_page( request_, *session );
+					} catch ( HException const& e ) {
+						*sock << e.what() << endl;
 					} catch ( ... ) {
 						/* Graceful shutdown, frist draft. */
 					}

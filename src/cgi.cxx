@@ -238,8 +238,9 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 					else
 						waste_children( *del, req, defaults, selfwaste );
 					props.erase( kindIt );
-				} else
-					waste_children( *del, req, defaults, selfwaste );
+				} else {
+					M_ENSURE( ! "wasteable node must have 'kind' attribute" );
+				}
 			} else
 				waste_children( *del, req, defaults, selfwaste );
 		}

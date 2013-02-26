@@ -73,6 +73,7 @@ public:
 	void decompress_jar( yaal::hcore::HString const& );
 	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
 	bool is_ssl( void ) const;
+	bool is_mobile( void ) const;
 	yaal::hcore::HSocket::ptr_t socket( void );
 	yaal::hcore::HSocket::ptr_t const socket( void ) const;
 	const_iterator begin( void ) const;

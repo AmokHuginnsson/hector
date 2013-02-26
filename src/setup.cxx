@@ -80,6 +80,11 @@ void OSetup::test_setup( void ) {
 	if ( _socketWriteTimeout < 0 )
 		yaal::tools::util::failure( failNo,
 				_( "negative write timeout set\n" ) );
+	++ failNo;
+	static int const MAX_PORT( 65535 );
+	if ( ( _sslPort < 0 ) || ( _sslPort > MAX_PORT ) )
+		yaal::tools::util::failure( failNo,
+				_( "bad ssl port number\n" ) );
 	HFSItem root( _socketRoot );
 	++ failNo;
 	if ( ! root.is_directory() )

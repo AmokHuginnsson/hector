@@ -86,6 +86,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 		( "status", program_options_helper::option_value( setup._status ), "i", HProgramOptionsHandler::OOption::TYPE::NONE, "print server information" )
 #endif
 		( "timeout_write", program_options_helper::option_value( setup._socketWriteTimeout ), "T", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "timeout for socket write operation", "seconds" )
+		( "ssl_port", program_options_helper::option_value( setup._sslPort ), "S", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "port number for SSL based connections", "number" )
 		( "socket_root", program_options_helper::option_value( setup._socketRoot ), "R", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "root path for communication socket", "path" )
 		( "quiet", program_options_helper::option_value( setup._quiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
 		( "silent", program_options_helper::option_value( setup._quiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
