@@ -27,6 +27,7 @@ Copyright:
 #ifndef APPLICATION_HXX_INCLUDED
 #define APPLICATION_HXX_INCLUDED
 
+#include <yaal/hcore/hhashset.hxx>
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/hplugin.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>

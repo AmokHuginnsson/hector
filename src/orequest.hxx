@@ -27,6 +27,13 @@ Copyright:
 #ifndef HECTOR_OREQUEST_HXX_INCLUDED
 #define HECTOR_OREQUEST_HXX_INCLUDED 1
 
+#include <yaal/hcore/hstring.hxx>
+#include <yaal/hcore/hpointer.hxx>
+#include <yaal/hcore/hstrongenum.hxx>
+#include <yaal/hcore/hmap.hxx>
+#include <yaal/hcore/hsocket.hxx>
+#include <yaal/tools/hoptional.hxx>
+
 namespace hector {
 
 class ORequest {
@@ -65,6 +72,7 @@ public:
 	value_t lookup( yaal::hcore::HString const&, origin_t const& = ORIGIN::ANY ) const;
 	void decompress_jar( yaal::hcore::HString const& );
 	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
+	bool is_ssl( void ) const;
 	yaal::hcore::HSocket::ptr_t socket( void );
 	yaal::hcore::HSocket::ptr_t const socket( void ) const;
 	const_iterator begin( void ) const;

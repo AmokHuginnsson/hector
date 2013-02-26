@@ -27,16 +27,17 @@ Copyright:
 #include <unistd.h>
 #include <sys/wait.h>
 
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/hlog.hxx>
+#include <yaal/tools/hstringstream.hxx>
+#include <yaal/tools/base64.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "applicationserver.hxx"
+#include "http.hxx"
 #include "setup.hxx"
 
 using namespace yaal;
 using namespace yaal::hcore;
-using namespace yaal::hconsole;
 using namespace yaal::tools;
-using namespace yaal::tools::util;
 using namespace yaal::dbwrapper;
 
 namespace hector {
@@ -122,11 +123,9 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 
 HApplicationServer::session_t HApplicationServer::handle_session( ORequest& request_, HApplication::sessions_t& sessions_ ) {
 	M_PROLOG
-	static char const REMOTE_ADDR[] = "REMOTE_ADDR";
-	static char const HTTP_USER_AGENT[] = "HTTP_USER_AGENT";
 	ORequest::value_t sid( request_.lookup( "sid", ORequest::ORIGIN::COOKIE ) );
-	ORequest::value_t remoteAddress( request_.lookup( REMOTE_ADDR, ORequest::ORIGIN::ENV ) );
-	ORequest::value_t httpUserAgent( request_.lookup( HTTP_USER_AGENT, ORequest::ORIGIN::ENV ) );
+	ORequest::value_t remoteAddress( request_.lookup( HTTP::REMOTE_ADDR, ORequest::ORIGIN::ENV ) );
+	ORequest::value_t httpUserAgent( request_.lookup( HTTP::HTTP_USER_AGENT, ORequest::ORIGIN::ENV ) );
 	session_t session;
 	if ( remoteAddress && httpUserAgent ) {
 		if ( sid ) {
@@ -154,7 +153,7 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 			out << "setting new SID: " << newSession.get_id() << endl;
 		}
 	} else
-		out << "WARNING! missing: " << ( remoteAddress ? "" : REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP_USER_AGENT ) << endl;
+		out << "WARNING! missing: " << ( remoteAddress ? "" : HTTP::REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP::HTTP_USER_AGENT ) << endl;
 	return ( session );
 	M_EPILOG
 }

@@ -24,9 +24,13 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/htokenizer.hxx>
+#include <yaal/hcore/hfile.hxx>
+#include <yaal/hcore/hformat.hxx>
+#include <yaal/tools/base64.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "orequest.hxx"
+#include "http.hxx"
 #include "setup.hxx"
 
 using namespace yaal;
@@ -108,6 +112,14 @@ ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t c
 		&& ( !! *( value = it->second ) );
 	out << "key: " << key_ << ", value: " << ( value ? *value : HString( "(nil)" ) ) << endl;
 	return ( value );
+	M_EPILOG
+}
+
+bool ORequest::is_ssl( void ) const {
+	M_PROLOG
+	bool ssl( false );
+	ORequest::value_t remoteAddress( lookup( HTTP::REMOTE_ADDR, ORequest::ORIGIN::ENV ) );
+	return ( ssl );
 	M_EPILOG
 }
 

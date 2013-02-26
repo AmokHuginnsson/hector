@@ -24,7 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/hfile.hxx>
+#include <yaal/tools/hstringstream.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "hactivex.hxx"
 #include "setup.hxx"
@@ -32,7 +33,6 @@ M_VCSID( "$Id: "__ID__" $" )
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
-using namespace yaal::tools::util;
 using namespace yaal::dbwrapper;
 
 namespace hector {

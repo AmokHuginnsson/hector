@@ -27,7 +27,8 @@ Copyright:
 #include <cstring>
 #include <iostream>
 
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/hfile.hxx>
+#include <yaal/tools/hxml.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "cgi.hxx"
 #include "application.hxx"

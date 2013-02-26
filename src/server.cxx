@@ -27,7 +27,8 @@ Copyright:
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/hlog.hxx>
+#include <yaal/hconsole/ansi.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "server.hxx"
 
@@ -37,7 +38,6 @@ using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::ansi;
 using namespace yaal::tools;
-using namespace yaal::tools::util;
 
 namespace hector {
 

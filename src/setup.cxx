@@ -27,9 +27,9 @@ Copyright:
 #include <cstdio>
 
 #include <yaal/hcore/base.hxx>
-M_VCSID( "$Id: "__ID__" $" )
 #include <yaal/tools/util.hxx>
 #include <yaal/tools/hfsitem.hxx>
+M_VCSID( "$Id: "__ID__" $" )
 
 #include "setup.hxx"
 

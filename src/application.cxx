@@ -24,7 +24,10 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/yaal.hxx>
+#include <yaal/hcore/hlog.hxx>
+#include <yaal/hcore/hformat.hxx>
+#include <yaal/tools/hstringstream.hxx>
+#include <yaal/tools/hfsitem.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "application.hxx"
 #include "applicationserver.hxx"
@@ -34,7 +37,6 @@ M_VCSID( "$Id: "__ID__" $" )
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
-using namespace yaal::tools::util;
 using namespace yaal::dbwrapper;
 
 namespace hector {
@@ -144,7 +146,7 @@ void HApplication::do_handle_logic( ORequest& req_, HSession& session_ ) {
 
 void HApplication::do_generate_page( ORequest const& req, HSession const& session_ ) {
 	M_PROLOG
-	out << __PRETTY_FUNCTION__ << endl;
+	out << __PRETTY_FUNCTION__ << ( req.is_ssl() ? " with SSL" : "" ) << endl;
 	cgi::default_t defaults;
 	if ( !! dom().get_root() )
 		cgi::waste_children( dom().get_root(), req, defaults );

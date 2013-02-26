@@ -29,6 +29,8 @@ Copyright:
 
 #include <yaal/hcore/hstring.hxx>
 #include <yaal/hcore/htime.hxx>
+#include <yaal/hcore/hset.hxx>
+#include <yaal/hcore/hmap.hxx>
 
 namespace hector {
 

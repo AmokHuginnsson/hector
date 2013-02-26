@@ -24,7 +24,7 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/yaal.hxx>
+#include <yaal/tools/hash.hxx>
 M_VCSID( "$Id: "__ID__" $" )
 #include "session.hxx"
 #include "setup.hxx"

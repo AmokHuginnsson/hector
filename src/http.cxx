@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	form.cxx - this file is integral part of `hector' project.
+	http.cxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -17,7 +17,7 @@ Copyright:
   4. If you want to distribute a binary package of this software you cannot
      demand any fees for it. You cannot even demand
      a return of cost of the media or distribution (CD for example).
-  5. You cannot involve this software in any commercial activity (for example 
+  5. You cannot involve this software in any commercial activity (for example
      as a free add-on to paid software or newspaper).
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -26,14 +26,16 @@ Copyright:
 
 #include <yaal/hcore/macro.hxx>
 M_VCSID( "$Id: "__ID__" $" )
-#include "form.hxx"
+#include "http.hxx"
 
 namespace hector {
 
-HForm::HForm( void ) : _inputs() {
-	return;
-}
+namespace HTTP {
 
+char const REMOTE_ADDR[] = "REMOTE_ADDR";
+char const HTTP_USER_AGENT[] = "HTTP_USER_AGENT";
+
+}
 
 }
 
