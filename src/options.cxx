@@ -79,6 +79,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 		( "auth_query", program_options_helper::option_value( setup._authQuery ), HProgramOptionsHandler::OOption::TYPE::REQUIRED, "free form authentication query", "query" )
 		( "max_connections", program_options_helper::option_value( setup._maxConnections ), "M", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "maximum number of concurent connections", "count" )
 		( "max_working_threads", program_options_helper::option_value( setup._maxWorkingThreads ), "j", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "maximum number of internal task processing threads", "count" )
+		( "ssl_port", program_options_helper::option_value( setup._sslPort ), "S", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "port number for SSL based connections", "number" )
 #elif defined ( TARGET_HECTOR_ADMIN )
 		( "shutdown", program_options_helper::option_value( setup._shutdown ), "S", HProgramOptionsHandler::OOption::TYPE::NONE, "shutdown server nicely" )
 		( "reload", program_options_helper::option_value( setup._reload ), "r", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "reload given application", "app" )
@@ -86,7 +87,6 @@ int handle_program_options( int argc_, char** argv_ ) {
 		( "status", program_options_helper::option_value( setup._status ), "i", HProgramOptionsHandler::OOption::TYPE::NONE, "print server information" )
 #endif
 		( "timeout_write", program_options_helper::option_value( setup._socketWriteTimeout ), "T", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "timeout for socket write operation", "seconds" )
-		( "ssl_port", program_options_helper::option_value( setup._sslPort ), "S", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "port number for SSL based connections", "number" )
 		( "socket_root", program_options_helper::option_value( setup._socketRoot ), "R", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "root path for communication socket", "path" )
 		( "quiet", program_options_helper::option_value( setup._quiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
 		( "silent", program_options_helper::option_value( setup._quiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
