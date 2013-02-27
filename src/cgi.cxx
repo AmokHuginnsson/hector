@@ -525,6 +525,27 @@ void handle_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	M_EPILOG
 }
 
+void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req ) {
+	M_PROLOG
+	static char const NODE_COOKIE[] = "cookie";
+	static char const ATTRIBUTE_NAME[] = "name";
+	HString value;
+	for ( HXml::HIterator child( logic.begin() ), endChild( logic.end() ); child != endChild; ++ child ) {
+		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
+			if ( (*child).get_name() == NODE_COOKIE ) {
+				HXml::HNode::properties_t& props( (*child).properties() );
+				HXml::HNode::properties_t::iterator nameIt( props.find( ATTRIBUTE_NAME ) );
+				M_ENSURE( nameIt != props.end() );
+				M_ENSURE( ! nameIt->second.is_empty() );
+				if ( ! req.lookup( nameIt->second, value, ORequest::origin_t( ORequest::ORIGIN::POST ) | ORequest::ORIGIN::GET ) )
+					req.update( nameIt->second, value, ORequest::ORIGIN::COOKIE );
+			}
+		}
+	}
+	return;
+	M_EPILOG
+}
+
 bool has_access( ACCESS::type_t accessType_, HSession const& session_, OSecurityContext const& securityContext_ ) {
 	M_PROLOG
 	bool access( false );

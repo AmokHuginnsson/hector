@@ -118,12 +118,16 @@ ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t c
 bool ORequest::is_ssl( void ) const {
 	M_PROLOG
 	bool ssl( false );
-	ORequest::value_t httpHost( lookup( HTTP::HTTP_HOST, ORequest::ORIGIN::ENV ) );
-	ORequest::value_t serverPort( lookup( HTTP::SERVER_PORT, ORequest::ORIGIN::ENV ) );
-	if ( httpHost && serverPort ) {
-		int long pos( httpHost->find( ':' ) );
-		ssl = ( pos != HString::npos ) && ( pos < ( httpHost->get_length() - 1 ) ) && ( ::strcmp( serverPort->raw(), httpHost->raw() + pos + 1 ) );
-	}
+	ORequest::value_t https( lookup( HTTP::HTTPS, ORequest::ORIGIN::ENV ) );
+	if ( ! https ) {
+		ORequest::value_t httpHost( lookup( HTTP::HTTP_HOST, ORequest::ORIGIN::ENV ) );
+		ORequest::value_t serverPort( lookup( HTTP::SERVER_PORT, ORequest::ORIGIN::ENV ) );
+		if ( httpHost && serverPort ) {
+			int long pos( httpHost->find( ':' ) );
+			ssl = ( pos != HString::npos ) && ( pos < ( httpHost->get_length() - 1 ) ) && ( ::strcmp( serverPort->raw(), httpHost->raw() + pos + 1 ) );
+		}
+	} else
+		ssl = ( *https == "on" );
 	return ( ssl );
 	M_EPILOG
 }
