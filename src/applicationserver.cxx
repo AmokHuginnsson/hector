@@ -135,7 +135,7 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 					out << "got valid session ID: " << *sid << endl;
 					session = sessionIt->second;
 				} else {
-					out << "WARNING! forged/spoofed session ID: " << *sid << "( " << *remoteAddress << " ?= " << sessionIt->second.get_remote_addr() << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second.get_http_user_agent() << " )" << endl;
+					out << "WARNING! forged/spoofed session ID: " << *sid << " ( " << *remoteAddress << " ?= " << sessionIt->second.get_remote_addr() << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second.get_http_user_agent() << " )" << endl;
 					sessions_.erase( sessionIt );
 				}
 			} else {
