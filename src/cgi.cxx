@@ -27,6 +27,7 @@ Copyright:
 #include <cstring>
 #include <iostream>
 
+#include <yaal/hcore/htokenizer.hxx>
 #include <yaal/hcore/hfile.hxx>
 #include <yaal/tools/hxml.hxx>
 M_VCSID( "$Id: "__ID__" $" )
@@ -43,7 +44,13 @@ namespace hector {
 
 namespace cgi {
 
+static HString const ATTRIBUTE_ID( "id" );
 static HString const ATTRIBUTE_CLASS( "class" );
+static HString const ATTRIBUTE_USER( "user" );
+static HString const ATTRIBUTE_GROUP( "group" );
+static HString const ATTRIBUTE_MODE( "mode" );
+static HString const CLASS_WASTEABLE( "wasteable" );
+static HString const CLASS_AUTOBUTTON( "autobutton" );
 
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString const& attribute, HString const& element ) {
 	M_PROLOG
@@ -103,7 +110,6 @@ namespace {
 HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
-	char const ATTRIBUTE_USER[] = "user";
 	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_USER ), HString() ) );
 	M_EPILOG
 }
@@ -111,7 +117,6 @@ HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
-	char const ATTRIBUTE_GROUP[] = "group";
 	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_GROUP ), HString() ) );
 	M_EPILOG
 }
@@ -119,7 +124,6 @@ HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 int get_permissions( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
-	char const ATTRIBUTE_MODE[] = "mode";
 	xml::value_t val( xml::try_attr_val( node, ATTRIBUTE_MODE ) );
 	return ( val ? lexical_cast<int>( *val ) : -1 );
 	M_EPILOG
@@ -128,11 +132,8 @@ int get_permissions( HXml::HConstNodeProxy const& node ) {
 void update_security_context( OSecurityContext& securityContext_, HXml::HConstNodeProxy const& node_ ) {
 	M_PROLOG
 	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::NODE );
-	char const ATTRIBUTE_USER[] = "user";
 	xml::value_t user( xml::try_attr_val( node_, ATTRIBUTE_USER ) );
-	char const ATTRIBUTE_GROUP[] = "group";
 	xml::value_t group( xml::try_attr_val( node_, ATTRIBUTE_GROUP ) );
-	char const ATTRIBUTE_MODE[] = "mode";
 	xml::value_t mode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	if ( user )
 		securityContext_._user = *user;
@@ -208,9 +209,8 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 		ORequest const& req, default_t& defaults,
 		HXml::HNodeProxy* selfwaste ) {
 	M_PROLOG
-	static char const* const CLASS_WASTEABLE = "wasteable";
-	static char const* const NODE_KEEP = "keep";
-	static char const* const ATTRIBUTE_KIND = "kind";
+	static HString const NODE_KEEP( "keep" );
+	static HString const ATTRIBUTE_KIND( "kind" );
 	static HXml waste;
 	static HXml::HNodeProxy root;
 	static keep_t keepGlobal;
@@ -232,10 +232,17 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 				HXml::HNode::properties_t& props = (*del).properties();
 				HXml::HNode::properties_t::iterator kindIt = props.find( ATTRIBUTE_KIND );
 				if ( kindIt != props.end() ) {
-					if ( ( keep.find( kindIt->second ) == keep.end() )
-							&& ( keepGlobal.find( kindIt->second ) == keepGlobal.end() ) )
-						selfwaste->move_node( *del );
-					else
+					HTokenizer tok( kindIt->second, "," );
+					bool wasted( false );
+					for ( HTokenizer::HIterator t( tok.begin() ), te( tok.end() ); t != te; ++ t ) {
+						if ( ( keep.find( *t ) == keep.end() )
+								&& ( keepGlobal.find( *t ) == keepGlobal.end() ) ) {
+							selfwaste->move_node( *del );
+							wasted = true;
+							break;
+						}
+					}
+					if ( ! wasted )
 						waste_children( *del, req, defaults, selfwaste );
 					props.erase( kindIt );
 				} else {
@@ -252,9 +259,8 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 void mark_children( yaal::tools::HXml::HNodeProxy node,
 		ORequest const& req, default_t const& defaults, HXml& doc ) {
 	M_PROLOG
-	static char const* const CLASS_MARKABLE = "markable";
-	static char const* const CLASS_CURRENT = " current";
-	static char const* const ATTRIBUTE_ID = "id";
+	static HString const CLASS_MARKABLE( "markable" );
+	static HString const CLASS_CURRENT( " current" );
 	for ( HXml::HIterator it( node.begin() ), end( node.end() ); it != end; ++ it ) {
 		if ( (*it).get_type() == HXml::HNode::TYPE::NODE ) {
 			HXml::HNode::properties_t& props = (*it).properties();
@@ -287,8 +293,8 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 		yaal::tools::HXml& doc, HXml::HNodeProxy* selfwaste ) {
 	M_PROLOG
-	static char const* const NODE_MOVE = "move";
-	static char const* const ATTRIBUTE_TO = "to";
+	static HString const NODE_MOVE( "move" );
+	static HString const ATTRIBUTE_TO( "to" );
 	static HXml waste;
 	static HXml::HNodeProxy root;
 	if ( ! selfwaste ) {
@@ -326,8 +332,8 @@ namespace {
 
 void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::tools::HXml::HNodeProxy* pick ) {
 	M_PROLOG
-	static char const* const NODE_ITEM = "item";
-	static char const* const ATTRIBUTE_INDEX = "index";
+	static HString const NODE_ITEM( "item" );
+	static HString const ATTRIBUTE_INDEX( "index" );
 	for ( HXml::HIterator child = node.begin(); child != node.end(); ) {
 		HXml::HIterator del = child;
 		++ child;
@@ -355,8 +361,8 @@ void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::to
 
 void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::tools::HXml& doc, yaal::tools::HXml::HNodeProxy* pick ) {
 	M_PROLOG
-	static char const* const NODE_QUERY = "query";
-	static char const* const ATTRIBUTE_SQL = "sql";
+	static HString const NODE_QUERY( "query" );
+	static HString const ATTRIBUTE_SQL( "sql" );
 	static HXml waste;
 	if ( ! pick ) {
 		waste.create_root( "x" );
@@ -398,13 +404,12 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 
 void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req ) {
 	M_PROLOG
-	static char const* const CLASS_AUTOBUTTON = "autobutton";
-	static char const* const NODE_FIELDSET = "fieldset";
-	static char const* const NODE_INPUT = "input";
-	static char const* const ATTRIBUTE_TYPE = "type";
-	static char const* const ATTRIBUTE_TYPE_VALUE = "hidden";
-	static char const* const ATTRIBUTE_NAME = "name";
-	static char const* const ATTRIBUTE_VALUE = "value";
+	static HString const NODE_FIELDSET( "fieldset" );
+	static HString const NODE_INPUT( "input" );
+	static HString const ATTRIBUTE_TYPE( "type" );
+	static HString const ATTRIBUTE_TYPE_VALUE( "hidden" );
+	static HString const ATTRIBUTE_NAME( "name" );
+	static HString const ATTRIBUTE_VALUE( "value" );
 	for ( HXml::HIterator it( node.begin() ); it != node.end(); ++ it ) {
 		if ( (*it).get_type() == HXml::HNode::TYPE::NODE ) {
 			if ( is_kind_of( *it, CLASS_AUTOBUTTON ) ) {
@@ -474,7 +479,6 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 
 void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 	M_PROLOG
-	static char const ATTRIBUTE_MODE[] = "mode";
 	ORequest::value_t optMode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	if ( optMode ) {
 		int mode( lexical_cast<int>( *optMode ) );
@@ -490,10 +494,9 @@ void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 
 void handle_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	M_PROLOG
-	static char const NODE_FORM[] = "h-form";
-	static char const NODE_INPUT[] = "h-input";
-	static char const NODE_VERIFY[] = "verify";
-	static char const ATTRIBUTE_ID[] = "id";
+	static HString const NODE_FORM( "h-form" );
+	static HString const NODE_INPUT( "h-input" );
+	static HString const NODE_VERIFY( "verify" );
 	HString name;
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
@@ -527,8 +530,8 @@ void handle_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 
 void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req ) {
 	M_PROLOG
-	static char const NODE_COOKIE[] = "cookie";
-	static char const ATTRIBUTE_NAME[] = "name";
+	static HString const NODE_COOKIE( "cookie" );
+	static HString const ATTRIBUTE_NAME( "name" );
 	HString value;
 	for ( HXml::HIterator child( logic.begin() ), endChild( logic.end() ); child != endChild; ++ child ) {
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
@@ -556,6 +559,33 @@ bool has_access( ACCESS::type_t accessType_, HSession const& session_, OSecurity
 	else
 		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );
 	return ( access );
+	M_EPILOG
+}
+
+void clean( yaal::tools::HXml::HNodeProxy node_ ) {
+	M_PROLOG
+	HXml::HNode::properties_t& props( node_.properties() );
+	props.erase( ATTRIBUTE_MODE );
+	props.erase( ATTRIBUTE_USER );
+	props.erase( ATTRIBUTE_GROUP );
+	HXml::HNode::properties_t::iterator classProp( props.find( ATTRIBUTE_CLASS ) );
+	if ( classProp != props.end() ) {
+		HString& classVal( classProp->second );
+		int long valIdx( classVal.find( CLASS_WASTEABLE ) );
+		if ( valIdx != HString::npos )
+			classVal.erase( valIdx - ( valIdx > 0 ? 1 : 0 ), CLASS_WASTEABLE.get_length() + 1 );
+		valIdx = classVal.find( CLASS_AUTOBUTTON );
+		if ( valIdx != HString::npos )
+			classVal.erase( valIdx - ( valIdx > 0 ? 1 : 0 ), CLASS_AUTOBUTTON.get_length() + 1 );
+		if ( classVal.is_empty() )
+			props.erase( classProp );
+	}
+	for ( HXml::HIterator it( node_.begin() ); it != node_.end(); ++ it ) {
+		if ( (*it).get_type() == HXml::HNode::TYPE::NODE ) {
+			clean( *it );
+		}
+	}
+	return;
 	M_EPILOG
 }
 

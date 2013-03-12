@@ -162,6 +162,8 @@ void HApplication::do_generate_page( ORequest const& req, HSession const& sessio
 		cgi::move_children( dom().get_root(), req, dom() );
 	if ( !! dom().get_root() )
 		cgi::expand_autobutton( dom().get_root(), req );
+	if ( !! dom().get_root() )
+		cgi::clean( dom().get_root() );
 	return;
 	M_EPILOG
 }
