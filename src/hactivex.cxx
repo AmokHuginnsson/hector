@@ -56,7 +56,7 @@ HActiveX HActiveX::get_instance( HString const& name, HString const& path, HData
 	out << "activex factory for `" << name << "' connected" << endl;
 	app = factory( db_ );
 	if ( ! app )
-		throw HApplicationException( "invalid activex" );
+		throw HActiveXException( "invalid activex" );
 	HActiveX proc( activex.raw() );
 	proc._application = app;
 	proc._activeX = activeX;

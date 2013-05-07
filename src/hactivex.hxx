@@ -47,6 +47,8 @@ public:
 	HApplication::sessions_t const& sessions( void ) const;
 };
 
+typedef yaal::hcore::HExceptionT<HActiveX> HActiveXException;
+
 }
 
 #endif /* not HECTOR_OACTIVEX_HXX_INCLUDED */

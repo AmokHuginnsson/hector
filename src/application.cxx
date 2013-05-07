@@ -68,7 +68,7 @@ void HApplication::load( HString const& name, HString const& path ) {
 	_dOM.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
-	cgi::handle_logic( this, _dOM.get_root() );
+	cgi::prepare_logic( this, _dOM.get_root() );
 	_dOM.apply_style( toolkit.string() );
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();

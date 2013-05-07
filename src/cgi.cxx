@@ -492,7 +492,7 @@ void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 	M_EPILOG
 }
 
-void handle_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
+void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	M_PROLOG
 	static HString const NODE_FORM( "h-form" );
 	static HString const NODE_INPUT( "h-input" );
@@ -521,7 +521,7 @@ void handle_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 				out << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
 				app_->add_form( make_pair( get_optional_value_or<HString>( optId, "(nuil)" ), form ) );
 			} else
-				handle_logic( app_, *child );
+				prepare_logic( app_, *child );
 		}
 	}
 	return;
