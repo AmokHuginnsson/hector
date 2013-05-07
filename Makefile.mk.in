@@ -56,11 +56,10 @@ include $(DIR_ROOT)/_aux/inc-helper-post.mk
 
 cgi-exe:
 	cd $(DIR_ROOT)/build/release ; \
-	g++ $(wildcard $(DIR_ROOT)/build/release/hector.cgi/*.o) ${PREFIX}/lib/libtools.a ${PREFIX}/lib/libhcore.a -lpthread -lssl -lcrypto -lrt -lz -o exec ; \
+	g++ $(wildcard $(DIR_ROOT)/build/release/hector.cgi/*.o) -Wl,--whole-archive ${PREFIX}/lib/libhcore.a ${PREFIX}/lib/libtools.a -Wl,--no-whole-archive -lpthread -lssl -lcrypto -ldl -lxslt -lexslt -lxml2 -lrt -lz -o exec ; \
 	strip exec
 
 cgi-exe-debug:
 	cd $(DIR_ROOT)/build/debug ; \
-	g++ $(wildcard $(DIR_ROOT)/build/debug/hector.cgi/*.o) ${PREFIX}/lib/libtools-d.a ${PREFIX}/lib/libhcore-d.a -lpthread -lssl -lcrypto -lrt -lz -o exec ; \
-	strip exec
+	g++ $(wildcard $(DIR_ROOT)/build/release/hector.cgi/*.o) -Wl,--whole-archive ${PREFIX}/lib/libhcore-d.a ${PREFIX}/lib/libtools-d.a -Wl,--no-whole-archive -lpthread -lssl -lcrypto -ldl -lxslt -lexslt -lxml2 -lrt -lz -o exec
 
