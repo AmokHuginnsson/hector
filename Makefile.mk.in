@@ -43,6 +43,7 @@ DO_@DO_TARGET@=1
 EXEC_NAME    = 1exec
 CTAGS        = @CTAGS@
 GITID        = @GITID@
+override CXX_STANDARD=@CXX_STANDARD@
 
 include $(DIR_ROOT)/_aux/inc-helper-pre.mk
 

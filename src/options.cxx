@@ -31,7 +31,7 @@ Copyright:
 #include <yaal/hcore/hprogramoptionshandler.hxx>
 #include <yaal/hcore/hlog.hxx>
 #include <yaal/tools/util.hxx>
-M_VCSID( "$Id: "__ID__" $" )
+M_VCSID( "$Id: " __ID__ " $" )
 
 #include "options.hxx"
 #include "config.hxx"

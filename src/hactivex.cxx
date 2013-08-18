@@ -26,7 +26,7 @@ Copyright:
 
 #include <yaal/hcore/hfile.hxx>
 #include <yaal/tools/hstringstream.hxx>
-M_VCSID( "$Id: "__ID__" $" )
+M_VCSID( "$Id: " __ID__ " $" )
 #include "hactivex.hxx"
 #include "setup.hxx"
 

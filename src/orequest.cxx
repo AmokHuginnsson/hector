@@ -29,7 +29,7 @@ Copyright:
 #include <yaal/hcore/hformat.hxx>
 #include <yaal/hcore/hregex.hxx>
 #include <yaal/tools/base64.hxx>
-M_VCSID( "$Id: "__ID__" $" )
+M_VCSID( "$Id: " __ID__ " $" )
 #include "orequest.hxx"
 #include "http.hxx"
 #include "setup.hxx"

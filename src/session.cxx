@@ -25,7 +25,7 @@ Copyright:
 */
 
 #include <yaal/tools/hash.hxx>
-M_VCSID( "$Id: "__ID__" $" )
+M_VCSID( "$Id: " __ID__ " $" )
 #include "session.hxx"
 #include "setup.hxx"
 

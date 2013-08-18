@@ -29,7 +29,7 @@ Copyright:
 
 #include <yaal/hcore/hlog.hxx>
 #include <yaal/tools/signals.hxx>
-M_VCSID( "$Id: "__ID__" $" )
+M_VCSID( "$Id: " __ID__ " $" )
 
 #include "setup.hxx"
 #include "options.hxx"
