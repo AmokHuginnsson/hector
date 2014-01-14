@@ -1,1 +1,1 @@
-../yaal/makefile
+./_aux/mk/makefile

@@ -1,1 +1,1 @@
-../yaal/GNUmakefile
+./_aux/mk/GNUmakefile

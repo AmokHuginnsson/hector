@@ -29,6 +29,18 @@ PRJNAME      = hector
 VERSION      = 0
 SUBVERSION   = 0
 EXTRAVERSION = 0
+prefix       = @prefix@
+exec_prefix  = @exec_prefix@
+DIR_SYSCONF  = $(DESTDIR)@sysconfdir@
+DIR_BIN      = $(DESTDIR)@bindir@
+DIR_HEADERS  = $(DESTDIR)@includedir@
+DIR_SHARE    = $(DESTDIR)@datarootdir@
+LIB_PREFIX   = @LIB_PREFIX@
+MKDIR_P      = @MKDIR_P@
+INSTALL      = @INSTALL@
+RANLIB       = @RANLIB@
+GITID        = @GITID@
+CTAGS        = @CTAGS@
 include $(DIR_ROOT)/_aux/mk/1_basic.mk
 LIBS         = hcore$(LIB_INFIX) tools$(LIB_INFIX) dbwrapper$(LIB_INFIX) hconsole$(LIB_INFIX) \
                hdata$(LIB_INFIX) \
@@ -41,8 +53,6 @@ $(eval $(call NEW_TARGET,hectoradmin,admin,-DTARGET_HECTOR_ADMIN,$(NO_UNDEFINED)
 $(eval $(call NEW_TARGET,codestation,app/codestation,,-fPIC -shared))
 DO_@DO_TARGET@=1
 EXEC_NAME    = 1exec
-CTAGS        = @CTAGS@
-GITID        = @GITID@
 override CXX_STANDARD=@CXX_STANDARD@
 
 include $(DIR_ROOT)/_aux/inc-helper-pre.mk

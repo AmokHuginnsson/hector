@@ -1,1 +1,1 @@
-../yaal/BSDmakefile
+./_aux/mk/BSDmakefile
