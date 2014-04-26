@@ -4,7 +4,7 @@
 #
 #	Makefile - this file is integral part of `hector' project.
 #
-#	i.  You may not $(MAKE) any changes in Copyright information.
+#	i.  You may not make any changes in Copyright information.
 #	ii. You must attach Copyright information to any part of every copy
 #	    of this software.
 #
@@ -25,27 +25,31 @@
 # FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 
 $(foreach DIR,$(subst /, ,$(CURDIR)), $(eval $(eval DIR_ROOT_TEST=$(DIR_ROOT_TEST)/$(DIR)) $(if $(wildcard $(DIR_ROOT_TEST)/Makefile.mk.in),export DIR_ROOT ?= $(DIR_ROOT_TEST))))
-PRJNAME      = hector
-VERSION      = 0
-SUBVERSION   = 0
-EXTRAVERSION = 0
-prefix       = @prefix@
-exec_prefix  = @exec_prefix@
-DIR_SYSCONF  = $(DESTDIR)@sysconfdir@
-DIR_BIN      = $(DESTDIR)@bindir@
-DIR_HEADERS  = $(DESTDIR)@includedir@
-DIR_SHARE    = $(DESTDIR)@datarootdir@
-LIB_PREFIX   = @LIB_PREFIX@
-MKDIR_P      = @MKDIR_P@
-INSTALL      = @INSTALL@
-RANLIB       = @RANLIB@
-GITID        = @GITID@
-CTAGS        = @CTAGS@
+PRJNAME        = hector
+VERSION        = 0
+SUBVERSION     = 0
+EXTRAVERSION   = 0
+prefix         = @prefix@
+exec_prefix    = @exec_prefix@
+DIR_SYSCONF    = $(DESTDIR)@sysconfdir@
+DIR_BIN        = $(DESTDIR)@bindir@
+DIR_LIB        = $(DESTDIR)@libdir@
+DIR_LOCALSTATE = $(DESTDIR)@localstatedir@
+DIR_HEADERS    = $(DESTDIR)@includedir@
+DIR_SHARE      = $(DESTDIR)@datarootdir@
+LIB_PREFIX     = @LIB_PREFIX@
+CXX            = @CXX@
+MKDIR_P        = @MKDIR_P@
+INSTALL        = @INSTALL@
+RANLIB         = @RANLIB@
+GITID          = @GITID@
+CTAGS          = @CTAGS@
+GTAGS          = @GTAGS@
 include $(DIR_ROOT)/_aux/mk/1_basic.mk
-LIBS         = hcore$(LIB_INFIX) tools$(LIB_INFIX) dbwrapper$(LIB_INFIX) hconsole$(LIB_INFIX) \
-               hdata$(LIB_INFIX) \
-               hconsole$(LIB_INFIX) dbwrapper$(LIB_INFIX) tools$(LIB_INFIX) hcore$(LIB_INFIX) \
-               pthread
+LIBS           = hcore$(LIB_INFIX) tools$(LIB_INFIX) dbwrapper$(LIB_INFIX) \
+								 hconsole$(LIB_INFIX) hdata$(LIB_INFIX) hconsole$(LIB_INFIX) \
+								 dbwrapper$(LIB_INFIX) tools$(LIB_INFIX) hcore$(LIB_INFIX) \
+                 pthread
 NO_UNDEFINED=$(call quotecomma,$(filter -Wl$(COMMA)--no-undefined,@EXTRA_LXXFLAGS@))
 $(eval $(call NEW_TARGET,hectord,src,-DTARGET_HECTOR_DAEMON,@RDYNAMIC@ $(NO_UNDEFINED)))
 $(eval $(call NEW_TARGET,hector.cgi,cgi,-DTARGET_HECTOR_CGI,$(NO_UNDEFINED)))
