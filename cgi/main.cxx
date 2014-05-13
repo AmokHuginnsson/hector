@@ -109,7 +109,7 @@ void query( int argc, char** argv ) {
 		sock.connect( sockPath );
 		HStringStream buffer;
 		HString POST( "" );
-		HFile in( stdin );
+		HFile in( stdin, false );
 		while ( in.read_line( POST, HFile::READ::UNBUFFERED_READS ) >= 0 )
 			push_query( sock, POST, "post", "&" );
 		for ( int i = 1; i < argc; ++ i )
