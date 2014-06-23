@@ -5,5 +5,7 @@ app/hector.xml
 css
 css-local
 img
+jar
 js
 jnlp
+.htpasswd
