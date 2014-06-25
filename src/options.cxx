@@ -47,9 +47,11 @@ namespace hector {
 namespace {
 
 bool set_variables( HString& option_, HString& value_ ) {
-	fprintf( stdout, "option: [%s], value: [%s]\n",
-			option_.raw(), value_.raw() );
-	return ( false );
+	static bool const HECTOR_RC_DEBUG( !! ::getenv( "HECTOR_RC_DEBUG" ) );
+	if ( HECTOR_RC_DEBUG ) {
+		cout << "option: [" << option_ << "], value: [" << value_ << "]" << endl;
+	}
+	return ( true );
 }
 
 void version( void* ) {
@@ -93,7 +95,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 		( "help", program_options_helper::option_value( stop ), "h", HProgramOptionsHandler::OOption::TYPE::NONE, "display this help and stop", program_options_helper::callback( util::show_help, &info ) )
 		( "dump-configuration", program_options_helper::option_value( stop ), "W", HProgramOptionsHandler::OOption::TYPE::NONE, "dump current configuration", program_options_helper::callback( util::dump_configuration, &info ) )
 		( "version", program_options_helper::option_value( stop ), 'V', HProgramOptionsHandler::OOption::TYPE::NONE, "output version information and stop", program_options_helper::callback( version, NULL ) );
-	po.process_rc_file( "hector", "", NULL );
+	po.process_rc_file( "hector", "", set_variables );
 	if ( setup._logPath.is_empty() )
 		setup._logPath = "hectord.log";
 	int unknown( 0 );
