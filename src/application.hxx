@@ -17,7 +17,7 @@ Copyright:
   4. If you want to distribute a binary package of this software you cannot
      demand any fees for it. You cannot even demand
      a return of cost of the media or distribution (CD for example).
-  5. You cannot involve this software in any commercial activity (for example 
+  5. You cannot involve this software in any commercial activity (for example
      as a free add-on to paid software or newspaper).
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or

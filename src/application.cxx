@@ -17,7 +17,7 @@ Copyright:
   4. If you want to distribute a binary package of this software you cannot
      demand any fees for it. You cannot even demand
      a return of cost of the media or distribution (CD for example).
-  5. You cannot involve this software in any commercial activity (for example 
+  5. You cannot involve this software in any commercial activity (for example
      as a free add-on to paid software or newspaper).
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -73,7 +73,7 @@ void HApplication::load( HString const& name, HString const& path ) {
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
 	cgi::consistency_check( _dOM.get_root() );
-	return;	
+	return;
 	M_EPILOG
 }
 
@@ -83,7 +83,7 @@ void HApplication::do_load( void ) {
 
 void HApplication::handle_auth( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
-	do_handle_auth( req_, session_ );	
+	do_handle_auth( req_, session_ );
 	return;
 	M_EPILOG
 }

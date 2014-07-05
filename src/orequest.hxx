@@ -17,7 +17,7 @@ Copyright:
   4. If you want to distribute a binary package of this software you cannot
      demand any fees for it. You cannot even demand
      a return of cost of the media or distribution (CD for example).
-  5. You cannot involve this software in any commercial activity (for example 
+  5. You cannot involve this software in any commercial activity (for example
      as a free add-on to paid software or newspaper).
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -29,7 +29,7 @@ Copyright:
 
 #include <yaal/hcore/hstring.hxx>
 #include <yaal/hcore/hpointer.hxx>
-#include <yaal/hcore/hstrongenum.hxx>
+#include <yaal/hcore/hbitflag.hxx>
 #include <yaal/hcore/hmap.hxx>
 #include <yaal/hcore/hsocket.hxx>
 #include <yaal/tools/hoptional.hxx>
@@ -41,18 +41,17 @@ class ORequest {
 public:
 	typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> dictionary_t;
 	typedef yaal::hcore::HPointer<dictionary_t> dictionary_ptr_t;
+	struct ORIGIN;
+	typedef yaal::hcore::HBitFlag<ORIGIN> origin_t;
 	struct ORIGIN {
-		typedef enum {
-			NONE = 0,
-			ENV = 1,
-			COOKIE = 2,
-			GET = 4,
-			POST = 8,
-			JAR = 16,
-			ANY = 31
-		} enum_t;
+		static origin_t const NONE;
+		static origin_t const ENV;
+		static origin_t const COOKIE;
+		static origin_t const GET;
+		static origin_t const POST;
+		static origin_t const JAR;
+		static origin_t const ANY;
 	};
-	typedef yaal::hcore::HStrongEnum<ORIGIN> origin_t;
 	class HConstIterator;
 	typedef HConstIterator const_iterator;
 	typedef yaal::tools::HOptional<yaal::hcore::HString const&> value_t;

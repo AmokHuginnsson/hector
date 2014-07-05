@@ -17,7 +17,7 @@ Copyright:
   4. If you want to distribute a binary package of this software you cannot
      demand any fees for it. You cannot even demand
      a return of cost of the media or distribution (CD for example).
-  5. You cannot involve this software in any commercial activity (for example 
+  5. You cannot involve this software in any commercial activity (for example
      as a free add-on to paid software or newspaper).
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -540,7 +540,7 @@ void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req ) {
 				HXml::HNode::properties_t::iterator nameIt( props.find( ATTRIBUTE_NAME ) );
 				M_ENSURE( nameIt != props.end() );
 				M_ENSURE( ! nameIt->second.is_empty() );
-				if ( ! req.lookup( nameIt->second, value, ORequest::origin_t( ORequest::ORIGIN::POST ) | ORequest::ORIGIN::GET ) )
+				if ( ! req.lookup( nameIt->second, value, ORequest::ORIGIN::POST | ORequest::ORIGIN::GET ) )
 					req.update( nameIt->second, value, ORequest::ORIGIN::COOKIE );
 			}
 		}

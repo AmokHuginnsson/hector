@@ -17,7 +17,7 @@ Copyright:
   4. If you want to distribute a binary package of this software you cannot
      demand any fees for it. You cannot even demand
      a return of cost of the media or distribution (CD for example).
-  5. You cannot involve this software in any commercial activity (for example 
+  5. You cannot involve this software in any commercial activity (for example
      as a free add-on to paid software or newspaper).
  This program is distributed in the hope that it will be useful, but WITHOUT
  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
@@ -39,6 +39,14 @@ using namespace yaal::hcore;
 using namespace yaal::tools;
 
 namespace hector {
+
+ORequest::origin_t const ORequest::ORIGIN::NONE = ORequest::origin_t::new_flag();
+ORequest::origin_t const ORequest::ORIGIN::ENV = ORequest::origin_t::new_flag();
+ORequest::origin_t const ORequest::ORIGIN::COOKIE = ORequest::origin_t::new_flag();
+ORequest::origin_t const ORequest::ORIGIN::GET = ORequest::origin_t::new_flag();
+ORequest::origin_t const ORequest::ORIGIN::POST = ORequest::origin_t::new_flag();
+ORequest::origin_t const ORequest::ORIGIN::JAR = ORequest::origin_t::new_flag();
+ORequest::origin_t const ORequest::ORIGIN::ANY = ORequest::origin_t::new_flag();
 
 ORequest::ORequest( HSocket::ptr_t socket_ )
 	: _socket( socket_ ),
@@ -70,17 +78,27 @@ ORequest& ORequest::operator = ( ORequest const& req ) {
 
 void ORequest::update( HString const& key, HString const& value, origin_t const& origin ) {
 	M_PROLOG
-	dictionary_t* dict = NULL;
-	switch ( origin.value() ) {
-		case ( ORIGIN::ENV ):    dict = &*_environment; break;
-		case ( ORIGIN::POST ):   dict = &*_pOST;        break;
-		case ( ORIGIN::GET ):    dict = &*_gET;         break;
-		case ( ORIGIN::COOKIE ): dict = &*_cookies;     break;
-		case ( ORIGIN::JAR ):    dict = &*_jar;     break;
-		default:
-			M_ASSERT( ! "bad origin" );
-	}
-	(*dict)[ key ] = value;
+	M_ASSERT( ORIGIN::NONE.index()   == 0 );
+	M_ASSERT( ORIGIN::ENV.index()    == 1 );
+	M_ASSERT( ORIGIN::COOKIE.index() == 2 );
+	M_ASSERT( ORIGIN::GET.index()    == 3 );
+	M_ASSERT( ORIGIN::POST.index()   == 4 );
+	M_ASSERT( ORIGIN::JAR.index()    == 5 );
+	M_ASSERT( ORIGIN::ANY.index()    == 6 );
+
+	dictionary_t* dict[] = {
+		NULL, /* so origin_t::index() maps directly to this array */
+		&*_environment,
+		&*_cookies,
+		&*_gET,
+		&*_pOST,
+		&*_jar
+	};
+	/*
+	 * HBitFlag::index() contains proper assertion check.
+	 */
+	M_ASSERT( ( origin.index() >= 1 ) && ( origin.index() < countof ( dict ) ) );
+	(*dict)[origin.index()][ key ] = value;
 	return;
 	M_EPILOG
 }
@@ -215,7 +233,7 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app ) {
 	int size = 0;
 	jar = "";
 	for ( dictionary_t::const_iterator it( _jar->begin() ), endIt( _jar->end() ); it != endIt; ++ it )
-		{ 
+		{
 		properName.format( "%s%02d", app.raw(), cookieNo );
 		if ( it->first != properName )
 			continue;
