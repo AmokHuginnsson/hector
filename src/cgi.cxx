@@ -105,8 +105,7 @@ bool has_attribute( yaal::tools::HXml::HConstNodeProxy const& node, HString cons
 	M_EPILOG
 }
 
-namespace {
-
+HString const& get_owner_user( HXml::HConstNodeProxy const& node );
 HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
@@ -114,6 +113,7 @@ HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 	M_EPILOG
 }
 
+HString const& get_owner_group( HXml::HConstNodeProxy const& node );
 HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
@@ -121,6 +121,7 @@ HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 	M_EPILOG
 }
 
+int get_permissions( HXml::HConstNodeProxy const& node );
 int get_permissions( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
@@ -128,6 +129,8 @@ int get_permissions( HXml::HConstNodeProxy const& node ) {
 	return ( val ? lexical_cast<int>( *val ) : -1 );
 	M_EPILOG
 }
+
+namespace {
 
 void update_security_context( OSecurityContext& securityContext_, HXml::HConstNodeProxy const& node_ ) {
 	M_PROLOG
@@ -382,7 +385,7 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 					HXml::HNodeProxy row = *rowIt;
 					HString sql = sqlIt->second;
 					if ( ! sql.is_empty() ) {
-						HRecordSet::ptr_t rs = db->query( sql );
+						HRecordSet::ptr_t rs = db->execute_query( sql );
 						for ( HRecordSet::iterator it = rs->begin(); it != rs->end(); ++ it ) {
 							if ( child == node.end() )
 								child = node.copy_node( row );
