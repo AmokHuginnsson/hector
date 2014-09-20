@@ -102,15 +102,15 @@ void HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 			ORequest::value_t login( req_.lookup( LOGIN, ORequest::ORIGIN::POST ) );
 			ORequest::value_t password( req_.lookup( PASSWORD, ORequest::ORIGIN::POST ) );
 			if ( login && password ) {
-				HString execute_query;
+				HString query;
 				try {
-					execute_query = str( HFormat( "SELECT ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER('%4$s') AND %3$s = LOWER('%5$s') )"
+					query = str( HFormat( "SELECT ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER('%4$s') AND %3$s = LOWER('%5$s') )"
 									" + ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER('%4$s') );" ) % setup._tableUser % setup._columnLogin % setup._columnPassword % *login % *password );
-					out << "execute_query: " << execute_query << endl;
+					out << "query: " << query << endl;
 				} catch ( HFormatException const& e ) {
 					out << e.what() << endl;
 				}
-				HRecordSet::ptr_t rs( _db->execute_query( execute_query ) );
+				HRecordSet::ptr_t rs( _db->execute_query( query ) );
 				M_ENSURE( !! rs );
 				HRecordSet::iterator row = rs->begin();
 				if ( row == rs->end() ) {
