@@ -141,9 +141,10 @@ void HApplication::do_handle_logic( ORequest& req_, HSession& session_ ) {
 	out << __PRETTY_FUNCTION__ << endl;
 	handle_auth( req_, session_ );
 	static char const LOGIC_PATH[] = "/html/logic/";
-	HXml::HNodeProxy logic = _dOM.get_element_by_path( LOGIC_PATH );
-	if ( !! logic )
-		cgi::make_cookies( logic, req_ );
+	HXml::HNodeSet logic( _dOM.get_elements_by_path( LOGIC_PATH ) );
+	if ( !logic.is_empty() ) {
+		cgi::make_cookies( logic[0], req_ );
+	}
 	return;
 	M_EPILOG
 }

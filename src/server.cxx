@@ -251,7 +251,7 @@ void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& ) {
 
 void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app ) {
 	M_PROLOG
-	_worker.push_task( call( &HServer::do_restart, this, sock, app ) );
+	_worker.push_task( call( &HServer::do_restart, this, ref( sock ), app ) );
 	M_EPILOG
 }
 

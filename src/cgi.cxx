@@ -313,12 +313,12 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 				HXml::HNode::properties_t& props = (*del).properties();
 				HXml::HNode::properties_t::iterator toIt = props.find( ATTRIBUTE_TO );
 				if ( toIt != props.end() ) {
-					HXml::HNodeProxy to = doc.get_element_by_path( toIt->second );
-					if ( !! to ) {
+					HXml::HNodeSet to( doc.get_elements_by_path( toIt->second ) );
+					if ( ! to.is_empty() ) {
 						for ( HXml::HIterator moveIt = (*del).begin(); moveIt != (*del).end(); ) {
 							HXml::HIterator move = moveIt;
 							++ moveIt;
-							to.move_node( *move );
+							to[0].move_node( *move );
 						}
 					}
 				}
