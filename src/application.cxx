@@ -65,7 +65,7 @@ void HApplication::load( HString const& name, HString const& path ) {
 	_defaultSecurityContext._group = app.get_group();
 	_defaultSecurityContext._mode = static_cast<ACCESS::enum_t>( app.get_permissions() );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
-	_dOM.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES );
+	_dOM.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES | HXml::PARSER::AUTO_XINCLUDE );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
 	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
 	cgi::prepare_logic( this, _dOM.get_root() );

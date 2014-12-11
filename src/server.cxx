@@ -192,14 +192,18 @@ void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t const& channel,
 void HServer::read_request( HSocket::ptr_t& sock, ORequest::origin_t const& origin, yaal::hcore::HString const& string_ ) {
 	M_PROLOG
 	requests_t::iterator reqIt;
-	if ( ( reqIt = _requests.find( sock->get_file_descriptor() ) ) == _requests.end() )
+	if ( ( reqIt = _requests.find( sock->get_file_descriptor() ) ) == _requests.end() ) {
 		disconnect_client( IPC_CHANNEL::REQUEST, sock );
-	else {
-		static HString key;
-		static HString value;
+	} else {
+		HString key;
+		HString value;
 		int long sepIdx = string_.find( "=" );
-		key = string_.left( sepIdx >= 0 ? sepIdx : meta::max_signed<int long>::value );
-		value = string_.mid( sepIdx + 1 );
+		if ( sepIdx != HString::npos ) {
+			key = yaal::move( string_.left( sepIdx ) );
+			value = yaal::move( string_.mid( sepIdx + 1 ) );
+		} else {
+			key = string_;
+		}
 		key.trim_left().trim_right();
 		value.trim_left().trim_right();
 		reqIt->second.update( key, value, origin );
