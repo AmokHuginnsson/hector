@@ -98,7 +98,7 @@ void ORequest::update( HString const& key, HString const& value, origin_t const&
 	 * HBitFlag::index() contains proper assertion check.
 	 */
 	M_ASSERT( ( origin.index() >= 1 ) && ( origin.index() < countof ( dict ) ) );
-	(*dict)[origin.index()][ key ] = value;
+	( *( dict[origin.index()] ) )[ key ] = value;
 	return;
 	M_EPILOG
 }
