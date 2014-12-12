@@ -46,13 +46,15 @@ ORequest::origin_t const ORequest::ORIGIN::COOKIE = ORequest::origin_t::new_flag
 ORequest::origin_t const ORequest::ORIGIN::GET = ORequest::origin_t::new_flag();
 ORequest::origin_t const ORequest::ORIGIN::POST = ORequest::origin_t::new_flag();
 ORequest::origin_t const ORequest::ORIGIN::JAR = ORequest::origin_t::new_flag();
-ORequest::origin_t const ORequest::ORIGIN::ANY = ORequest::origin_t::new_flag();
+ORequest::origin_t const ORequest::ORIGIN::ANY =
+	ORequest::ORIGIN::ENV | ORequest::ORIGIN::COOKIE
+	| ORequest::ORIGIN::GET | ORequest::ORIGIN::POST | ORequest::ORIGIN::JAR;
 
 ORequest::ORequest( HSocket::ptr_t socket_ )
 	: _socket( socket_ ),
 	_environment( new dictionary_t() ),
-	_gET( new dictionary_t() ),
-	_pOST( new dictionary_t() ),
+	_get( new dictionary_t() ),
+	_post( new dictionary_t() ),
 	_cookies( new dictionary_t() ),
 	_jar( new dictionary_t() ) {
 }
@@ -60,7 +62,7 @@ ORequest::ORequest( HSocket::ptr_t socket_ )
 ORequest::ORequest( ORequest const& req )
 	: _socket( req._socket ),
 	_environment( req._environment ),
-	_gET( req._gET ), _pOST( req._pOST ),
+	_get( req._get ), _post( req._post ),
 	_cookies( req._cookies ), _jar( req._jar ) {
 }
 
@@ -68,8 +70,8 @@ ORequest& ORequest::operator = ( ORequest const& req ) {
 	if ( &req != this ) {
 		_socket = req._socket;
 		_environment = req._environment;
-		_gET = req._gET;
-		_pOST = req._pOST;
+		_get = req._get;
+		_post = req._post;
 		_cookies = req._cookies;
 		_jar = req._jar;
 	}
@@ -84,14 +86,14 @@ void ORequest::update( HString const& key, HString const& value, origin_t const&
 	M_ASSERT( ORIGIN::GET.index()    == 3 );
 	M_ASSERT( ORIGIN::POST.index()   == 4 );
 	M_ASSERT( ORIGIN::JAR.index()    == 5 );
-	M_ASSERT( ORIGIN::ANY.index()    == 6 );
+	M_ASSERT( ORIGIN::ANY.value()    == 31 );
 
 	dictionary_t* dict[] = {
 		NULL, /* so origin_t::index() maps directly to this array */
 		&*_environment,
 		&*_cookies,
-		&*_gET,
-		&*_pOST,
+		&*_get,
+		&*_post,
 		&*_jar
 	};
 	/*
@@ -121,10 +123,10 @@ ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t c
 		&& ( bFound = ( ( it = _environment->find( key_ ) ) != _environment->end() ) )
 		&& ( !! *( value = it->second ) );
 	( ! bFound ) && ( !!( origin_ & ORIGIN::POST ) )
-		&& ( bFound = ( ( it = _pOST->find( key_ ) )        != _pOST->end() ) )
+		&& ( bFound = ( ( it = _post->find( key_ ) )        != _post->end() ) )
 		&& ( !! *( value = it->second ) );
 	( ! bFound ) && ( !!( origin_ & ORIGIN::GET ) )
-		&& ( bFound = ( ( it = _gET->find( key_ ) )         != _gET->end() ) )
+		&& ( bFound = ( ( it = _get->find( key_ ) )         != _get->end() ) )
 		&& ( !! *( value = it->second ) );
 	( ! bFound ) && ( !!( origin_ & ORIGIN::COOKIE ) )
 		&& ( bFound = ( ( it = _cookies->find( key_ ) )     != _cookies->end() ) )
@@ -229,11 +231,10 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app ) {
 	HString buf;
 	HString& properName = buf;
 	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, true );
-	int cookieNo = 0;
-	int size = 0;
-	jar = "";
-	for ( dictionary_t::const_iterator it( _jar->begin() ), endIt( _jar->end() ); it != endIt; ++ it )
-		{
+	int cookieNo( 0 );
+	int size( 0 );
+	jar.clear();
+	for ( dictionary_t::const_iterator it( _jar->begin() ), endIt( _jar->end() ); it != endIt; ++ it ) {
 		properName.format( "%s%02d", app.raw(), cookieNo );
 		if ( it->first != properName )
 			continue;
@@ -304,13 +305,13 @@ HSocket::ptr_t const ORequest::socket( void ) const {
 }
 
 ORequest::const_iterator ORequest::begin( void ) const {
-	dictionary_t::const_iterator it = _gET->begin();
-	origin_t o = it != _gET->end() ? ORIGIN::GET : ORIGIN::POST;
-	return ( const_iterator( this, o, o == ORIGIN::GET ? it : _pOST->begin() ) );
+	dictionary_t::const_iterator it = _get->begin();
+	origin_t o = it != _get->end() ? ORIGIN::GET : ORIGIN::POST;
+	return ( const_iterator( this, o, o == ORIGIN::GET ? it : _post->begin() ) );
 }
 
 ORequest::const_iterator ORequest::end( void ) const {
-	return ( const_iterator( this, ORIGIN::POST, _pOST->end() ) );
+	return ( const_iterator( this, ORIGIN::POST, _post->end() ) );
 }
 
 
@@ -323,11 +324,11 @@ bool ORequest::HConstIterator::operator != ( HConstIterator const& it ) const {
 }
 
 ORequest::HConstIterator& ORequest::HConstIterator::operator ++ ( void ) {
-	M_ASSERT( ( _origin == ORequest::ORIGIN::GET ) || ( _it != _owner->_pOST->end() ) );
+	M_ASSERT( ( _origin == ORequest::ORIGIN::GET ) || ( _it != _owner->_post->end() ) );
 	++ _it;
-	if ( ( _origin == ORequest::ORIGIN::GET ) && ( _it == _owner->_gET->end() ) ) {
+	if ( ( _origin == ORequest::ORIGIN::GET ) && ( _it == _owner->_get->end() ) ) {
 		_origin = ORequest::ORIGIN::POST;
-		_it = _owner->_pOST->begin();
+		_it = _owner->_post->begin();
 	}
 	return ( *this );
 }

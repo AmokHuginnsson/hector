@@ -58,8 +58,8 @@ public:
 private:
 	yaal::hcore::HSocket::ptr_t _socket;
 	dictionary_ptr_t _environment;
-	dictionary_ptr_t _gET;
-	dictionary_ptr_t _pOST;
+	dictionary_ptr_t _get;
+	dictionary_ptr_t _post;
 	dictionary_ptr_t _cookies;
 	dictionary_ptr_t _jar;
 public:
