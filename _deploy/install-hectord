@@ -43,15 +43,17 @@ conditional_umount() {
 	fi
 }
 
+unset PS_FORMAT
+
 adv ./_deploy/init stop
 adv /bin/rm -fr nest
-adv mkdir -p nest/etc/conf nest/var/db/keys
+adv mkdir -p nest/etc/conf nest/var/db/yaal/keys
 adv cp build/debug/${DAEMON}/1exec nest/
 adv cp -a ${HOME}/usr/lib nest
 adv cp -a ${HOME}/src/yaal/build/debug/yaalrc nest/etc/conf/
 adv cp -a ${HOME}/src/${SERVICE}/hectorrc nest/etc/conf/
 adv cp -a ${HOME}/src/${SERVICE}/system.sqlite nest/
-adv cp -a ${HOME}/var/db/keys/yaal.* nest/var/db/keys/
+adv cp -a ${HOME}/var/db/yaal/keys/* nest/var/db/yaal/keys/
 adv cp -a ${HOME}/src/yaal/_aux/set-limits.sh nest
 adv conditional_chattr ${JAIL}/nest "${JAIL}/nest/*"
 adv conditional_umount
