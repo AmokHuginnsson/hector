@@ -102,15 +102,22 @@ void HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 			ORequest::value_t login( req_.lookup( LOGIN, ORequest::ORIGIN::POST ) );
 			ORequest::value_t password( req_.lookup( PASSWORD, ORequest::ORIGIN::POST ) );
 			if ( login && password ) {
-				HString query;
+				HString queryString;
 				try {
-					query = str( HFormat( "SELECT ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER('%4$s') AND %3$s = LOWER('%5$s') )"
-									" + ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER('%4$s') );" ) % setup._tableUser % setup._columnLogin % setup._columnPassword % *login % *password );
-					out << "query: " << query << endl;
+					queryString = (
+						HFormat(
+							"SELECT ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER(?) AND %3$s = LOWER(?) ) + ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER(?) );"
+						) % setup._tableUser % setup._columnLogin % setup._columnPassword
+					).string();
+					out << "query: " << queryString << endl;
 				} catch ( HFormatException const& e ) {
 					out << e.what() << endl;
 				}
-				HRecordSet::ptr_t rs( _db->execute_query( query ) );
+				HQuery::ptr_t query( _db->prepare_query( queryString ) );
+				query->bind( 1, *login );
+				query->bind( 2, *password );
+				query->bind( 3, *login );
+				HRecordSet::ptr_t rs( query->execute() );
 				M_ENSURE( !! rs );
 				HRecordSet::iterator row = rs->begin();
 				if ( row == rs->end() ) {
@@ -122,10 +129,11 @@ void HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 					session_.set_user( *login );
 					session_.add_group( USERS );
 					out << "authenticated user: " << *login << endl;
-				} else if ( result == 1 )
+				} else if ( result == 1 ) {
 					out << "invalid password" << endl;
-				else
+				} else {
 					out << "invalid user" << endl;
+				}
 			}
 		} else if ( *action == LOGOUT ) {
 			out << "user: " << session_.get_user() << "logged out" << endl;
