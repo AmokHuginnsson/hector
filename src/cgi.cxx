@@ -506,6 +506,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 			name = (*child).get_name();
 			if ( name == NODE_FORM ) {
 				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
+				M_ENSURE_EX( !!optId, "h-from must have an `id' attribute: "_ys.append( (*child).get_line() ) );
 				HForm form;
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
 					HXml::HIterator del( it );
@@ -515,7 +516,8 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 						if ( name == NODE_INPUT ) {
 							out << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
-							app_->add_verificator( name );
+							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
+							app_->add_verificator( *optId, (*(*del).begin()).get_value() );
 							(*child).remove_node( del );
 							out << "verify" << endl;
 						}

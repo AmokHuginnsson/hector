@@ -27,9 +27,9 @@ Copyright:
 #ifndef APPLICATION_HXX_INCLUDED
 #define APPLICATION_HXX_INCLUDED
 
-#include <yaal/hcore/hhashset.hxx>
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/hplugin.hxx>
+#include <yaal/tools/hhuginn.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>
 #include "server.hxx"
 #include "securitycontext.hxx"
@@ -44,9 +44,9 @@ public:
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm> forms_t;
-	typedef yaal::hcore::HHashSet<yaal::hcore::HString> verificators_t;
+	typedef yaal::hcore::HHashMap<yaal::hcore::HString, yaal::tools::HHuginn::ptr_t> verificators_t;
 private:
-	yaal::tools::HXml _dOM;
+	yaal::tools::HXml _dom;
 	yaal::hcore::HString _name;
 	OSecurityContext _defaultSecurityContext;
 	sessions_t _sessions;
@@ -63,7 +63,7 @@ public:
 	sessions_t& sessions( void );
 	sessions_t const& sessions( void ) const;
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
-	void add_verificator( yaal::hcore::HString const& );
+	void add_verificator( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void add_form( forms_t::value_type const& );
 protected:
 	virtual void do_load( void );

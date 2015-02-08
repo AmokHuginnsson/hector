@@ -28,6 +28,7 @@ Copyright:
 #include <yaal/hcore/hformat.hxx>
 #include <yaal/tools/hstringstream.hxx>
 #include <yaal/tools/hfsitem.hxx>
+#include <yaal/tools/hash.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "application.hxx"
 #include "applicationserver.hxx"
@@ -42,7 +43,7 @@ using namespace yaal::dbwrapper;
 namespace hector {
 
 HApplication::HApplication( HDataBase::ptr_t db_ )
-	: _dOM(), _name(), _defaultSecurityContext(), _sessions(),
+	: _dom(), _name(), _defaultSecurityContext(), _sessions(),
 	_db( db_ ), _forms(), _verificators() {
 }
 
@@ -65,14 +66,14 @@ void HApplication::load( HString const& name, HString const& path ) {
 	_defaultSecurityContext._group = app.get_group();
 	_defaultSecurityContext._mode = static_cast<ACCESS::enum_t>( app.get_permissions() );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
-	_dOM.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES | HXml::PARSER::AUTO_XINCLUDE );
+	_dom.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES | HXml::PARSER::AUTO_XINCLUDE );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
-	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
-	cgi::prepare_logic( this, _dOM.get_root() );
-	_dOM.apply_style( toolkit.string() );
-	_dOM.parse( HXml::PARSER::STRIP_COMMENT );
+	_dom.parse( HXml::PARSER::STRIP_COMMENT );
+	cgi::prepare_logic( this, _dom.get_root() );
+	_dom.apply_style( toolkit.string() );
+	_dom.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
-	cgi::consistency_check( _dOM.get_root() );
+	cgi::consistency_check( _dom.get_root() );
 	return;
 	M_EPILOG
 }
@@ -115,7 +116,7 @@ void HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 				}
 				HQuery::ptr_t query( _db->prepare_query( queryString ) );
 				query->bind( 1, *login );
-				query->bind( 2, *password );
+				query->bind( 2, tools::hash::sha1( *password ) );
 				query->bind( 3, *login );
 				HRecordSet::ptr_t rs( query->execute() );
 				M_ENSURE( !! rs );
@@ -149,7 +150,7 @@ void HApplication::do_handle_logic( ORequest& req_, HSession& session_ ) {
 	out << __PRETTY_FUNCTION__ << endl;
 	handle_auth( req_, session_ );
 	static char const LOGIC_PATH[] = "/html/logic/";
-	HXml::HNodeSet logic( _dOM.get_elements_by_path( LOGIC_PATH ) );
+	HXml::HNodeSet logic( _dom.get_elements_by_path( LOGIC_PATH ) );
 	if ( !logic.is_empty() ) {
 		cgi::make_cookies( logic[0], req_ );
 	}
@@ -182,7 +183,7 @@ void HApplication::generate_page( ORequest const& req, HSession const& session_ 
 	out << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req, session_ );
 	if ( !! dom().get_root() )
-		_dOM.save( req.socket() );
+		_dom.save( req.socket() );
 	return;
 	M_EPILOG
 }
@@ -196,7 +197,7 @@ void HApplication::handle_logic( ORequest& req, HSession& session_ ) {
 }
 
 HXml& HApplication::dom( void ) {
-	return ( _dOM );
+	return ( _dom );
 }
 
 yaal::dbwrapper::HDataBase::ptr_t HApplication::db( void ) {
@@ -215,9 +216,18 @@ HApplication::sessions_t& HApplication::sessions( void ) {
 	return ( _sessions );
 }
 
-void HApplication::add_verificator( yaal::hcore::HString const& verificator_ ) {
+void HApplication::add_verificator( yaal::hcore::HString const& id_, yaal::hcore::HString const& verificator_ ) {
 	M_PROLOG
-	_verificators.insert( verificator_ );
+	HHuginn::ptr_t h( make_pointer<HHuginn>() );
+	HStringStream s( verificator_ );
+	h->load( s );
+	h->preprocess();
+	if ( h->parse() && h->compile() ) {
+		_verificators.insert( make_pair( id_, h ) );
+	} else {
+		throw HRuntimeException( h->error_message() );
+	}
+	return;
 	M_EPILOG
 }
 
