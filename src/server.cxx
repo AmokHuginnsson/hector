@@ -28,7 +28,7 @@ Copyright:
 #include <sys/stat.h>
 
 #include <yaal/hcore/hlog.hxx>
-#include <yaal/hconsole/ansi.hxx>
+#include <yaal/tools/ansi.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "server.hxx"
 
@@ -255,7 +255,7 @@ void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& ) {
 
 void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app ) {
 	M_PROLOG
-	_worker.push_task( call( &HServer::do_restart, this, ref( sock ), app ) );
+	_worker.schedule_task( call( &HServer::do_restart, this, ref( sock ), app ) );
 	M_EPILOG
 }
 
