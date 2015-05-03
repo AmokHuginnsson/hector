@@ -64,7 +64,7 @@ void HApplication::load( HString const& name, HString const& path ) {
 	HFSItem app( interface.string() );
 	_defaultSecurityContext._user = app.get_user();
 	_defaultSecurityContext._group = app.get_group();
-	_defaultSecurityContext._mode = static_cast<ACCESS::enum_t>( app.get_permissions() );
+	_defaultSecurityContext._mode = static_cast<ACCESS::mode_t>( app.get_permissions() );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
 	_dom.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES | HXml::PARSER::AUTO_XINCLUDE );
 	hcore::log( LOG_TYPE::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;

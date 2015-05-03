@@ -28,7 +28,6 @@ Copyright:
 #define HECTOR_SECURITYCONTEXT_HXX_INCLUDED 1
 
 #include <yaal/hcore/hstring.hxx>
-#include <yaal/hcore/hstrongenum.hxx>
 
 namespace hector {
 
@@ -54,15 +53,13 @@ struct ACCESS {
 		OTHER_WRITE = WRITE,
 		OTHER_EXECUTE = EXECUTE,
 		NONE = 0
-	} enum_t;
+	} mode_t;
 };
-
-typedef yaal::hcore::HStrongEnum<ACCESS> access_type_t;
 
 struct OSecurityContext {
 	yaal::hcore::HString _user;
 	yaal::hcore::HString _group;
-	access_type_t _mode;
+	mode_t _mode;
 	OSecurityContext( void ) : _user(), _group(), _mode( ACCESS::NONE ) {}
 };
 

@@ -138,12 +138,15 @@ void update_security_context( OSecurityContext& securityContext_, HXml::HConstNo
 	xml::value_t user( xml::try_attr_val( node_, ATTRIBUTE_USER ) );
 	xml::value_t group( xml::try_attr_val( node_, ATTRIBUTE_GROUP ) );
 	xml::value_t mode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
-	if ( user )
+	if ( user ) {
 		securityContext_._user = *user;
-	if ( group )
+	}
+	if ( group ) {
 		securityContext_._group = *group;
-	if ( mode )
-		securityContext_._mode = static_cast<ACCESS::enum_t>( lexical_cast<int>( *mode ) );
+	}
+	if ( mode ) {
+		securityContext_._mode = static_cast<ACCESS::mode_t>( lexical_cast<int>( *mode ) );
+	}
 	return;
 	M_EPILOG
 }
@@ -558,11 +561,11 @@ bool has_access( ACCESS::type_t accessType_, HSession const& session_, OSecurity
 	M_PROLOG
 	bool access( false );
 	if ( session_.get_user() == securityContext_._user )
-		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::USER ) ) != ACCESS::NONE );
+		access = ( ( securityContext_._mode & static_cast<ACCESS::mode_t>( accessType_ << ACCESS::USER ) ) != ACCESS::NONE );
 	else if ( session_.get_groups().count( securityContext_._group ) > 0 )
-		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::GROUP ) ) != ACCESS::NONE );
+		access = ( ( securityContext_._mode & static_cast<ACCESS::mode_t>( accessType_ << ACCESS::GROUP ) ) != ACCESS::NONE );
 	else
-		access = ( ( securityContext_._mode & static_cast<ACCESS::enum_t>( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );
+		access = ( ( securityContext_._mode & static_cast<ACCESS::mode_t>( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );
 	return ( access );
 	M_EPILOG
 }
