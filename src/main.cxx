@@ -1,7 +1,7 @@
 /*
 ---            `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski             ---
 
-	main.cxx - this file is integral part of `hector' project.
+  main.cxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -49,6 +49,7 @@ OSetup setup;
 int main( int argc_, char* argv_[] ) {
 	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
 	M_PROLOG
+	int ret( 0 );
 	try {
 /* TO-DO: enter main loop code here */
 		HSignalService::get_instance();
@@ -60,12 +61,12 @@ int main( int argc_, char* argv_[] ) {
 		appServ.start();
 /* *BOOM* */
 		appServ.run();
+		cerr << _( "Done" ) << endl;
 /* ... there is the place main loop ends. :OD-OT */
-	} catch ( ... ) {
-		throw;
+	} catch ( int err ) {
+		ret = err;
 	}
-	cerr << _( "Done" ) << endl;
-	return ( 0 );
+	return ( ret );
 	M_FINAL
 }
 

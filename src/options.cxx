@@ -1,7 +1,7 @@
 /*
 ---       `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski         ---
 
-	options.cxx - this file is integral part of `hector' project.
+  options.cxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -54,7 +54,7 @@ bool set_variables( HString& option_, HString& value_ ) {
 	return ( true );
 }
 
-void version( void* ) {
+void version( void ) {
 	cout << PACKAGE_STRING << endl;
 	return;
 }
@@ -68,36 +68,194 @@ int handle_program_options( int argc_, char** argv_ ) {
 	HProgramOptionsHandler po;
 	OOptionInfo info( po, setup._programName, "XML based Web Application Server.", NULL );
 	bool stop = false;
-	po( "log_path", program_options_helper::option_value( setup._logPath ), HProgramOptionsHandler::OOption::TYPE::REQUIRED, "path pointing to file for application logs", "path" )
+	po(
+		HProgramOptionsHandler::HOption()
+		.long_form( "log_path" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "path pointing to file for application logs" )
+		.recipient(	setup._logPath )
+		.argument_name( "path" )
+		.default_value( "hectord.log" )
 #if defined ( TARGET_HECTOR_DAEMON )
-		( "data_dir", program_options_helper::option_value( setup._dataDir ), "D", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "find application data here", "path" )
-		( "database_name", program_options_helper::option_value( setup._databaseName ), 'N', HProgramOptionsHandler::OOption::TYPE::REQUIRED, "database connection path scheme", "path" )
-		( "database_login", program_options_helper::option_value( setup._databaseLogin ), 'U', HProgramOptionsHandler::OOption::TYPE::REQUIRED, "datbase connection user name", "user" )
-		( "database_password", program_options_helper::option_value( setup._databasePassword ), 'p', HProgramOptionsHandler::OOption::TYPE::REQUIRED, "database connection password", "password" )
-		( "table_user", program_options_helper::option_value( setup._tableUser ), HProgramOptionsHandler::OOption::TYPE::REQUIRED, "datbase table with authentication data", "name" )
-		( "column_login", program_options_helper::option_value( setup._columnLogin ), HProgramOptionsHandler::OOption::TYPE::REQUIRED, "columnt name with logins in authentication data table", "name" )
-		( "column_password", program_options_helper::option_value( setup._columnPassword ), HProgramOptionsHandler::OOption::TYPE::REQUIRED, "columnt name with passwords in authentication data table", "name" )
-		( "auth_query", program_options_helper::option_value( setup._authQuery ), HProgramOptionsHandler::OOption::TYPE::REQUIRED, "free form authentication query", "query" )
-		( "max_connections", program_options_helper::option_value( setup._maxConnections ), "M", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "maximum number of concurent connections", "count" )
-		( "max_working_threads", program_options_helper::option_value( setup._maxWorkingThreads ), "j", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "maximum number of internal task processing threads", "count" )
-		( "ssl_port", program_options_helper::option_value( setup._sslPort ), "S", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "port number for SSL based connections", "number" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'D' )
+		.long_form( "data_dir" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "find application data here" )
+		.recipient( setup._dataDir )
+		.argument_name( "path" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'N' )
+		.long_form( "database_name" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "database connection path scheme" )
+		.recipient( setup._databaseName )
+		.argument_name( "path" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'U' )
+		.long_form( "database_login" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "datbase connection user name" )
+		.recipient( setup._databaseLogin )
+		.argument_name( "user" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'p' )
+		.long_form( "database_password" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "database connection password" )
+		.recipient( setup._databasePassword )
+		.argument_name( "password" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.long_form( "table_user" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "datbase table with authentication data" )
+		.recipient( setup._tableUser )
+		.argument_name( "name" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.long_form( "column_login" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "columnt name with logins in authentication data table" )
+		.recipient( setup._columnLogin )
+		.argument_name( "name" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.long_form( "column_password" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "columnt name with passwords in authentication data table" )
+		.recipient( setup._columnPassword )
+		.argument_name( "name" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.long_form( "auth_query" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "free form authentication query" )
+		.recipient( setup._authQuery )
+		.argument_name( "query" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'M' )
+		.long_form( "max_connections" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "maximum number of concurent connections" )
+		.recipient( setup._maxConnections )
+		.argument_name( "count" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'j' )
+		.long_form( "max_working_threads" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "maximum number of internal task processing threads" )
+		.recipient( setup._maxWorkingThreads )
+		.argument_name( "count" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'S' )
+		.long_form( "ssl_port" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "port number for SSL based connections" )
+		.recipient( setup._sslPort )
+		.argument_name( "number" )
 #elif defined ( TARGET_HECTOR_ADMIN )
-		( "shutdown", program_options_helper::option_value( setup._shutdown ), "S", HProgramOptionsHandler::OOption::TYPE::NONE, "shutdown server nicely" )
-		( "reload", program_options_helper::option_value( setup._reload ), "r", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "reload given application", "app" )
-		( "restart", program_options_helper::option_value( setup._restart ), "A", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "restart given application (reboot activex)", "app" )
-		( "status", program_options_helper::option_value( setup._status ), "i", HProgramOptionsHandler::OOption::TYPE::NONE, "print server information" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'S' )
+		.long_form( "shutdown" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "shutdown server nicely" )
+		.recipient( setup._shutdown )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'r' )
+		.long_form( "reload" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "reload given application" )
+		.recipient( setup._reload )
+		.argument_name( "app" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'A' )
+		.long_form( "restart" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "restart given application (reboot activex)" )
+		.recipient( setup._restart )
+		.argument_name( "app" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'i' )
+		.long_form( "status" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "print server information" )
+		.recipient( setup._status )
 #endif
-		( "timeout_write", program_options_helper::option_value( setup._socketWriteTimeout ), "T", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "timeout for socket write operation", "seconds" )
-		( "socket_root", program_options_helper::option_value( setup._socketRoot ), "R", HProgramOptionsHandler::OOption::TYPE::REQUIRED, "root path for communication socket", "path" )
-		( "quiet", program_options_helper::option_value( setup._quiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
-		( "silent", program_options_helper::option_value( setup._quiet ), "q", HProgramOptionsHandler::OOption::TYPE::NONE, "inhibit usual output" )
-		( "verbose", program_options_helper::option_value( setup._verbose ), "v", HProgramOptionsHandler::OOption::TYPE::NONE, "print more information" )
-		( "help", program_options_helper::option_value( stop ), "h", HProgramOptionsHandler::OOption::TYPE::NONE, "display this help and stop", program_options_helper::callback( util::show_help, &info ) )
-		( "dump-configuration", program_options_helper::option_value( stop ), "W", HProgramOptionsHandler::OOption::TYPE::NONE, "dump current configuration", program_options_helper::callback( util::dump_configuration, &info ) )
-		( "version", program_options_helper::option_value( stop ), 'V', HProgramOptionsHandler::OOption::TYPE::NONE, "output version information and stop", program_options_helper::callback( version, NULL ) );
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'T' )
+		.long_form( "timeout_write" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "timeout for socket write operation" )
+		.recipient( setup._socketWriteTimeout )
+		.argument_name( "seconds" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'R' )
+		.long_form( "socket_root" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
+		.description( "root path for communication socket" )
+		.recipient( setup._socketRoot )
+		.argument_name( "path" )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'q' )
+		.long_form( "quiet" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "inhibit usual output" )
+		.recipient( setup._quiet )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'q' )
+		.long_form( "silent" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "inhibit usual output" )
+		.recipient( setup._quiet )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'v' )
+		.long_form( "verbose" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "print more information" )
+		.recipient( setup._verbose )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'h' )
+		.long_form( "help" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "display this help and stop" )
+		.recipient( stop )
+		.callback( call( &util::show_help, &info ) )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'W' )
+		.long_form( "dump-configuration" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "dump current configuration" )
+		.recipient( stop )
+		.callback( call( &util::dump_configuration, &info ) )
+	)(
+		HProgramOptionsHandler::HOption()
+		.short_form( 'V' )
+		.long_form( "version" )
+		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::NONE )
+		.description( "output version information and stop" )
+		.recipient( stop )
+		.callback( call( &version ) )
+	);
 	po.process_rc_file( "hector", "", set_variables );
-	if ( setup._logPath.is_empty() )
-		setup._logPath = "hectord.log";
 	int unknown( 0 );
 	int nonOption( po.process_command_line( argc_, argv_, &unknown ) );
 	if ( stop || ( unknown > 0 ) ) {
