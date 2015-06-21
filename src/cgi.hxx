@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	cgi.hxx - this file is integral part of `hector' project.
+  cgi.hxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy

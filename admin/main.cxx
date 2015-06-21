@@ -27,7 +27,9 @@ Copyright:
 #include <cstdlib>
 #include <unistd.h> /* the `char** environ;' variable */
 
-#include <yaal/yaal.hxx> /* all hAPI headers */
+#include <yaal/hcore/hsocket.hxx>
+#include <yaal/hcore/hlog.hxx>
+#include <yaal/tools/signals.hxx>
 M_VCSID ( "$Id$" )
 
 #include "setup.hxx"
@@ -35,9 +37,7 @@ M_VCSID ( "$Id$" )
 
 using namespace yaal;
 using namespace yaal::hcore;
-using namespace yaal::hconsole;
 using namespace yaal::tools;
-using namespace yaal::tools::util;
 using namespace hector;
 
 namespace hector {
@@ -65,8 +65,6 @@ int main( int argc_, char* argv_[] ) {
 /* ... there is the place main loop ends. :OD-OT */
 	} catch ( int err ) {
 		ret = err;
-	} catch ( ... ) {
-		throw;
 	}
 	return ( ret );
 	M_FINAL

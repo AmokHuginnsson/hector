@@ -1,7 +1,7 @@
 /*
 ---            `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski             ---
 
-	setup.hxx - this file is integral part of `hector' project.
+  setup.hxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -29,16 +29,13 @@ Copyright:
 
 #include <libintl.h>
 #include <yaal/hcore/hstring.hxx>
-#include <iostream>
+#include <yaal/hcore/hfile.hxx>
 
 #include "config.hxx"
 
-#define out ( clog << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
+#define out ( yaal::hcore::clog << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
 
 namespace hector {
-
-inline std::ostream& operator << ( std::ostream& o, yaal::hcore::HString const& s )
-	{ return ( o << s.raw() ); }
 
 struct OSetup {
 	static int const DEFAULT_MAX_CONNECTIONS = 2;

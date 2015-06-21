@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	cgi.cxx - this file is integral part of `hector' project.
+  cgi.cxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -560,12 +560,13 @@ void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req ) {
 bool has_access( ACCESS::type_t accessType_, HSession const& session_, OSecurityContext const& securityContext_ ) {
 	M_PROLOG
 	bool access( false );
-	if ( session_.get_user() == securityContext_._user )
-		access = ( ( securityContext_._mode & static_cast<ACCESS::mode_t>( accessType_ << ACCESS::USER ) ) != ACCESS::NONE );
-	else if ( session_.get_groups().count( securityContext_._group ) > 0 )
-		access = ( ( securityContext_._mode & static_cast<ACCESS::mode_t>( accessType_ << ACCESS::GROUP ) ) != ACCESS::NONE );
-	else
-		access = ( ( securityContext_._mode & static_cast<ACCESS::mode_t>( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );
+	if ( session_.get_user() == securityContext_._user ) {
+		access = ( ( securityContext_._mode & ( static_cast<int unsigned>( accessType_ ) << ACCESS::USER ) ) != ACCESS::NONE );
+	} else if ( session_.get_groups().count( securityContext_._group ) > 0 ) {
+		access = ( ( securityContext_._mode & ( static_cast<int unsigned>( accessType_ ) << ACCESS::GROUP ) ) != ACCESS::NONE );
+	} else {
+		access = ( ( securityContext_._mode & ( static_cast<int unsigned>( accessType_ ) << ACCESS::OTHER ) ) != ACCESS::NONE );
+	}
 	return ( access );
 	M_EPILOG
 }

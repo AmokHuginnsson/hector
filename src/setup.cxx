@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	setup.cxx - this file is integral part of `hector' project.
+  setup.cxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -25,13 +25,13 @@ Copyright:
 */
 
 #include <cstdio>
+#include <iostream>
 
+#include "setup.hxx"
+M_VCSID( "$Id: " __ID__ " $" )
 #include <yaal/hcore/base.hxx>
 #include <yaal/tools/util.hxx>
 #include <yaal/tools/hfsitem.hxx>
-M_VCSID( "$Id: " __ID__ " $" )
-
-#include "setup.hxx"
 
 using namespace yaal::hcore;
 using namespace yaal::tools;
