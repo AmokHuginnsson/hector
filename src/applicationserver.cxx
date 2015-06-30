@@ -73,7 +73,7 @@ void HApplicationServer::start( void ) {
 		else if ( name == NODE_APPLICATIONS )
 			read_applications( *it );
 	}
-	hcore::log( LOG_TYPE::INFO ) << "Statring application server." << endl;
+	hcore::log( LOG_LEVEL::INFO ) << "Statring application server." << endl;
 	init_server();
 	_socket[ IPC_CHANNEL::CONTROL ]->set_timeout( setup._socketWriteTimeout );
 	_socket[ IPC_CHANNEL::REQUEST ]->set_timeout( setup._socketWriteTimeout );
@@ -114,7 +114,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 				_applications[ symbol->second ] = HActiveX::get_instance( symbol->second, setup._dataDir, _db );
 			} catch ( HException& e ) {
 				out << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
-				hcore::log( LOG_TYPE::WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
+				hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
 			}
 		}
 	}
@@ -281,7 +281,7 @@ void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appNam
 			newX.reload_binary();
 			*sock << "application `" << appName << "' reloaded successfully" << endl;
 		} catch ( HException& e ) {
-			hcore::log( LOG_TYPE::WARNING ) << "Failed to load `" << appName << "': " << e.what() << "." << endl;
+			hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << appName << "': " << e.what() << "." << endl;
 			*sock << "Failed to load `" << appName << "': " << e.what() << "." << endl;
 		}
 	} else {

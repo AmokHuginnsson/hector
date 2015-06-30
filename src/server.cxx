@@ -101,8 +101,8 @@ void HServer::init_sockets( void ) {
 	HString ctrlSockPath( setup._socketRoot );
 	reqSockPath += REQ_SOCK_NAME;
 	ctrlSockPath += CTRL_SOCK_NAME;
-	hcore::log( LOG_TYPE::INFO ) << "Using `" << reqSockPath << "' as IPC request inteface." << endl;
-	hcore::log( LOG_TYPE::INFO ) << "Using `" << ctrlSockPath << "' as IPC control inteface." << endl;
+	hcore::log( LOG_LEVEL::INFO ) << "Using `" << reqSockPath << "' as IPC request inteface." << endl;
+	hcore::log( LOG_LEVEL::INFO ) << "Using `" << ctrlSockPath << "' as IPC control inteface." << endl;
 	int err = 0;
 	M_ENSURE( ( ! ( err = ::unlink( reqSockPath.raw() ) ) ) || ( errno == ENOENT ) );
 	M_ENSURE( ( ! ( err = ::unlink( ctrlSockPath.raw() ) ) ) || ( errno == ENOENT ) );
