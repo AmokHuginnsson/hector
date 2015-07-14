@@ -29,6 +29,7 @@ Copyright:
 
 #include <yaal/hcore/htokenizer.hxx>
 #include <yaal/hcore/hfile.hxx>
+#include <yaal/tools/stringalgo.hxx>
 #include <yaal/tools/hxml.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "cgi.hxx"
@@ -412,39 +413,72 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	M_PROLOG
 	static HString const NODE_FIELDSET( "fieldset" );
 	static HString const NODE_INPUT( "input" );
+	static HString const NODE_A( "a" );
+	static HString const ATTRIBUTE_HREF( "href" );
 	static HString const ATTRIBUTE_TYPE( "type" );
 	static HString const ATTRIBUTE_TYPE_VALUE( "hidden" );
 	static HString const ATTRIBUTE_NAME( "name" );
 	static HString const ATTRIBUTE_VALUE( "value" );
+	static char const QUERY_SEPARATOR( '?' );
+	static char const PARAM_SEPARATOR( '&' );
+	static char const VALUE_SEPARATOR( '=' );
 	for ( HXml::HIterator it( node.begin() ); it != node.end(); ++ it ) {
-		if ( (*it).get_type() == HXml::HNode::TYPE::NODE ) {
+		HXml::HNodeProxy n( *it );
+		if ( n.get_type() == HXml::HNode::TYPE::NODE ) {
 			if ( is_kind_of( *it, CLASS_AUTOBUTTON ) ) {
-				HXml::HIterator fieldsetIt = (*it).begin();
-				M_ENSURE( fieldsetIt != (*it).end() );
-				HXml::HNodeProxy fieldset = *fieldsetIt;
-				M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::NODE )
-						&& ( fieldset.get_name() == NODE_FIELDSET ) );
 				keep_t keep;
-				for ( HXml::HIterator fieldIt( fieldset.begin() ), end( fieldset.end() ); fieldIt != end; ++ fieldIt ) {
-					if ( (*fieldIt).get_type() == HXml::HNode::TYPE::NODE ) {
-						HXml::HNode::properties_t& props = (*fieldIt).properties();
-						HXml::HNode::properties_t::iterator nameIt = props.find( ATTRIBUTE_NAME );
-						if ( nameIt != props.end() )
-							keep.insert( nameIt->second );
+				if ( n.get_name() == NODE_A ) {
+					HString& href( n.properties().at( ATTRIBUTE_HREF ) );
+					int long querySepPos( href.find( QUERY_SEPARATOR ) );
+					bool haveParams( false );
+					if ( querySepPos != HString::npos ) {
+						typedef HArray<HString> params_t;
+						params_t params( string::split<params_t>( href.substr( querySepPos + 1 ), PARAM_SEPARATOR ) );
+						haveParams = ! params.is_empty();
+						for ( HString const& s : params ) {
+							keep.insert( s.substr( 0, s.find( VALUE_SEPARATOR ) ) );
+						}
+					}
+					for ( ORequest::const_iterator reqIt( req.begin() ), end( req.end() ); reqIt != end; ++ reqIt ) {
+						if ( keep.insert( (*reqIt).first ).second ) {
+							if ( querySepPos == HString::npos ) {
+								href.append( QUERY_SEPARATOR );
+								querySepPos = 0;
+							} else if ( haveParams && ( href.back() != PARAM_SEPARATOR ) ) {
+								href.append( PARAM_SEPARATOR );
+							}
+							haveParams = true;
+							href.append( (*reqIt).first ).append( VALUE_SEPARATOR ).append( (*reqIt).second );
+						}
+					}
+				} else {
+					HXml::HIterator fieldsetIt = n.begin();
+					M_ENSURE( fieldsetIt != n.end() );
+					HXml::HNodeProxy fieldset = *fieldsetIt;
+					M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::NODE )
+							&& ( fieldset.get_name() == NODE_FIELDSET ) );
+					for ( HXml::HIterator fieldIt( fieldset.begin() ), end( fieldset.end() ); fieldIt != end; ++ fieldIt ) {
+						if ( (*fieldIt).get_type() == HXml::HNode::TYPE::NODE ) {
+							HXml::HNode::properties_t& props = (*fieldIt).properties();
+							HXml::HNode::properties_t::iterator nameIt = props.find( ATTRIBUTE_NAME );
+							if ( nameIt != props.end() ) {
+								keep.insert( nameIt->second );
+							}
+						}
+					}
+					for ( ORequest::const_iterator reqIt( req.begin() ), end( req.end() ); reqIt != end; ++ reqIt ) {
+						if ( keep.insert( (*reqIt).first ).second ) {
+							HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::NODE, NODE_INPUT );
+							HXml::HNode::properties_t& props = input.properties();
+							props[ ATTRIBUTE_TYPE ] = ATTRIBUTE_TYPE_VALUE;
+							props[ ATTRIBUTE_NAME ] = (*reqIt).first;
+							props[ ATTRIBUTE_VALUE ] = (*reqIt).second;
+						}
 					}
 				}
-				for ( ORequest::const_iterator reqIt( req.begin() ), end( req.end() ); reqIt != end; ++ reqIt ) {
-					if ( keep.find( (*reqIt).first ) == keep.end() ) {
-						keep.insert( (*reqIt).first );
-						HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::NODE, NODE_INPUT );
-						HXml::HNode::properties_t& props = input.properties();
-						props[ ATTRIBUTE_TYPE ] = ATTRIBUTE_TYPE_VALUE;
-						props[ ATTRIBUTE_NAME ] = (*reqIt).first;
-						props[ ATTRIBUTE_VALUE ] = (*reqIt).second;
-					}
-				}
-			} else
-				expand_autobutton( *it, req );
+			} else {
+				expand_autobutton( n, req );
+			}
 		}
 	}
 	return;
