@@ -5,6 +5,7 @@
 	</configuration>
 	<applications>
 		<application symbol="hector" name="The Hector Application Server" load="false" start="false" />
-		<application symbol="codestation" name="Code Station" load="true" start="true" />
+		<application symbol="codestation" name="Code Station" mode="GET" load="true" start="true" />
+		<application symbol="codestation-post" code="codestation" name="Code Station" mode="POST" load="true" start="true" />
 	</applications>
 </hector>

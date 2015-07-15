@@ -37,30 +37,39 @@ using namespace yaal::dbwrapper;
 
 namespace hector {
 
-HActiveX HActiveX::get_instance( HString const& name, HString const& path, HDataBase::ptr_t db_ ) {
+HActiveX HActiveX::get_instance(
+	HString const& name_,
+	HApplication::MODE mode_,
+	HString const& path_,
+	HDataBase::ptr_t db_
+) {
 	M_PROLOG
 	static char const* const SYMBOL_FACTORY = "factory";
 	static char const* const ATTRIBUTE_ACTIVEX = "activex";
-	HStringStream activex( path );
+	HStringStream activex( path_ );
 	HPlugin::ptr_t activeX( make_pointer<HPlugin>() );
-	activex << "/" << name << "/" << ATTRIBUTE_ACTIVEX;
+	activex << "/" << name_ << "/" << ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
-	out << "Trying path: `" << activex.raw() << "' for activex: `" << name << "'" << endl;
+	out << "Trying path: `" << activex.raw() << "' for activex: `" << name_ << "'" << endl;
 	activeX->load( activex.raw() );
 	M_ASSERT( activeX->is_loaded() );
-	out << "activex nest for `" << name << "' loaded" << endl;
-	typedef HApplication::ptr_t ( *factory_t )( HDataBase::ptr_t );
+	out << "activex nest for `" << name_ << "' loaded" << endl;
+	typedef HApplication::ptr_t ( *factory_t )( void );
 	factory_t factory;
 	activeX->resolve( SYMBOL_FACTORY, factory );
 	M_ASSERT( factory );
-	out << "activex factory for `" << name << "' connected" << endl;
-	app = factory( db_ );
-	if ( ! app )
+	out << "activex factory for `" << name_ << "' connected" << endl;
+	app = factory();
+	if ( ! app ) {
 		throw HActiveXException( "invalid activex" );
+	}
 	HActiveX proc( activex.raw() );
 	proc._application = app;
 	proc._activeX = activeX;
-	app->load( name, path );
+	app->set_mode( mode_ );
+	app->set_db( db_);
+	app->init();
+	app->load( name_, path_ );
 	return ( proc );
 	M_EPILOG
 }
@@ -93,6 +102,10 @@ HApplication::sessions_t& HActiveX::sessions( void ) {
 
 HApplication::sessions_t const& HActiveX::sessions( void ) const {
 	return ( _application->sessions() );
+}
+
+HApplication::MODE HActiveX::get_mode( void ) const {
+	return ( _application->get_mode() );
 }
 
 }

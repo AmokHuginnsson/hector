@@ -41,6 +41,10 @@ struct HSession;
 
 class HApplication {
 public:
+	enum class MODE {
+		GET,
+		POST
+	};
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm> forms_t;
@@ -53,9 +57,12 @@ private:
 	yaal::dbwrapper::HDataBase::ptr_t _db;
 	forms_t _forms;
 	verificators_t _verificators;
+	MODE _mode;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
-	HApplication( yaal::dbwrapper::HDataBase::ptr_t );
+	HApplication();
+	void set_mode( MODE );
+	void set_db( yaal::dbwrapper::HDataBase::ptr_t );
 	virtual ~HApplication( void );
 	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void handle_logic( ORequest&, HSession& );
@@ -65,7 +72,10 @@ public:
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
 	void add_verificator( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void add_form( forms_t::value_type const& );
+	MODE get_mode( void ) const;
+	void init( void );
 protected:
+	virtual void do_init( void );
 	virtual void do_load( void );
 	virtual void do_handle_logic( ORequest&, HSession& ) = 0;
 	virtual void do_generate_page( ORequest const&, HSession const& ) = 0;

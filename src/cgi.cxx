@@ -284,8 +284,24 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 						}
 						if ( ! object.is_empty() ) {
 							HXml::HNodeProxy mark = doc.get_element_by_id( subject + "-" + object );
-							if ( !! mark )
+							if ( !! mark ) {
 								mark.properties()[ ATTRIBUTE_CLASS ] += CLASS_CURRENT;
+#ifdef MARK_SIBLINGS
+								HXml::HNodeProxy p( mark.get_parent() );
+								for ( HXml::HNodeProxy np : p ) {
+									if ( np == mark ) {
+										continue;
+									}
+									HXml::HNode::properties_t::iterator siblingId( np.properties().find( ATTRIBUTE_ID ) );
+									if ( siblingId != np.properties().end() ) {
+										if ( siblingId->second == ( subject + "-" + object ) ) {
+											np.properties()[ ATTRIBUTE_CLASS ] += CLASS_CURRENT;
+											break;
+										}
+									}
+								}
+#endif /* #ifdef MARK_SIBLINGS */
+							}
 						}
 					}
 				}

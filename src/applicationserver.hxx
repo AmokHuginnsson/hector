@@ -67,6 +67,8 @@ private:
 	void read_applications( yaal::tools::HXml::HConstNodeProxy const& );
 };
 
+typedef yaal::hcore::HExceptionT<HApplicationServer> HApplicationServerException;
+
 }
 
 #endif /* #ifndef APPLICATIONSERVER_HXX_INCLUDED */

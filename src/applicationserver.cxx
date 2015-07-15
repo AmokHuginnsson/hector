@@ -99,22 +99,45 @@ void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& config
 
 void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applications ) {
 	M_PROLOG
-	static char const* const APP_NODE_NAME = "application";
-	static char const* const APP_PROP_NAME_SYMBOL = "symbol";
-	static char const* const APP_PROP_NAME_LOAD = "load";
+	static char const APP_NODE_NAME[] = "application";
+	static char const APP_PROP_NAME_SYMBOL[] = "symbol";
+	static char const APP_PROP_NAME_LOAD[] = "load";
+	static char const APP_PROP_NAME_CODE[] = "code";
+	static char const APP_PROP_NAME_MODE[] = "mode";
+	static HApplication::MODE DEFAULT_MODE = HApplication::MODE::GET;
 	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it ) {
 		HXml::HConstNodeProxy application = *it;
 		M_ENSURE( application.get_name() == APP_NODE_NAME );
 		HXml::HNode::properties_t const& props = application.properties();
 		HXml::HNode::properties_t::const_iterator load = props.find( APP_PROP_NAME_LOAD );
 		if ( ( load != props.end() ) && ( lexical_cast<bool>( load->second ) ) ) {
-			HXml::HNode::properties_t::const_iterator symbol = props.find( APP_PROP_NAME_SYMBOL );
-			M_ENSURE( ( symbol != props.end() ) && ! symbol->second.is_empty() );
+			xml::value_t symbol( xml::try_attr_val( application, APP_PROP_NAME_SYMBOL ) );
+			xml::value_t codeVal( xml::try_attr_val( application, APP_PROP_NAME_CODE ) );
+			xml::value_t modeVal( xml::try_attr_val( application, APP_PROP_NAME_MODE ) );
+			M_ENSURE( !! symbol && ! symbol->is_empty() );
 			try {
-				_applications[ symbol->second ] = HActiveX::get_instance( symbol->second, setup._dataDir, _db );
+				HApplication::MODE mode( DEFAULT_MODE );
+				if ( !! modeVal ) {
+					HString modeStr( *modeVal );
+					modeStr.lower();
+					if ( modeStr == "get" ) {
+						mode = HApplication::MODE::GET;
+					} else if ( modeStr == "post" ) {
+						mode = HApplication::MODE::POST;
+					} else {
+						throw HApplicationServerException( "bad application mode: "_ys.append( *modeVal ) );
+					}
+				}
+				HString code( !! codeVal ? *codeVal : *symbol );
+				_applications.insert(
+					make_pair(
+						*symbol,
+						HActiveX::get_instance( code, mode, setup._dataDir, _db )
+					)
+				);
 			} catch ( HException& e ) {
-				out << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
-				hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << symbol->second << "': " << e.what() << "." << endl;
+				out << "Failed to load `" << *symbol << "': " << e.what() << "." << endl;
+				hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << *symbol << "': " << e.what() << "." << endl;
 			}
 		}
 	}
@@ -277,7 +300,9 @@ void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appNam
 	applications_t::iterator it = _applications.find( appName );
 	if ( it != _applications.end() ) {
 		try {
-			HActiveX& newX = _applications[ appName ] = HActiveX::get_instance( appName, setup._dataDir, _db );
+			HActiveX& newX = _applications[ appName ] = HActiveX::get_instance(
+				appName, it->second.get_mode(), setup._dataDir, _db
+			);
 			newX.reload_binary();
 			*sock << "application `" << appName << "' reloaded successfully" << endl;
 		} catch ( HException& e ) {

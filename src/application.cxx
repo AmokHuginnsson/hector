@@ -42,13 +42,27 @@ using namespace yaal::dbwrapper;
 
 namespace hector {
 
-HApplication::HApplication( HDataBase::ptr_t db_ )
-	: _dom(), _name(), _defaultSecurityContext(), _sessions(),
-	_db( db_ ), _forms(), _verificators() {
+HApplication::HApplication( void )
+	: _dom()
+	, _name()
+	, _defaultSecurityContext()
+	, _sessions()
+	, _db()
+	, _forms()
+	, _verificators()
+	, _mode( MODE::GET ) {
+	return;
 }
 
 HApplication::~HApplication( void ) {
 	out << "Application `" << _name << "' unloaded." << endl;
+}
+
+void HApplication::init( void ) {
+	M_PROLOG
+	do_init();
+	return;
+	M_EPILOG
 }
 
 void HApplication::load( HString const& name, HString const& path ) {
@@ -76,6 +90,28 @@ void HApplication::load( HString const& name, HString const& path ) {
 	cgi::consistency_check( _dom.get_root() );
 	return;
 	M_EPILOG
+}
+
+HApplication::MODE HApplication::get_mode( void ) const {
+	return ( _mode );
+}
+
+void HApplication::set_mode( MODE mode_ ) {
+	M_PROLOG
+	_mode = mode_;
+	return;
+	M_EPILOG
+}
+
+void HApplication::set_db( yaal::dbwrapper::HDataBase::ptr_t db_ ) {
+	M_PROLOG
+	_db = db_;
+	return;
+	M_EPILOG
+}
+
+void HApplication::do_init( void ) {
+	out << __PRETTY_FUNCTION__ << endl;
 }
 
 void HApplication::do_load( void ) {
