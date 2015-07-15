@@ -84,7 +84,7 @@ void HApplication::load( HString const& name, HString const& path ) {
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
 	_dom.parse( HXml::PARSER::STRIP_COMMENT );
 	cgi::prepare_logic( this, _dom.get_root() );
-	_dom.apply_style( toolkit.string() );
+	_dom.apply_style( toolkit.string(), {{ "mode", _mode == MODE::GET ? "'GET'" : "'POST'" }} );
 	_dom.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
 	cgi::consistency_check( _dom.get_root() );
