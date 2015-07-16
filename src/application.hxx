@@ -51,6 +51,8 @@ public:
 	typedef yaal::hcore::HHashMap<yaal::hcore::HString, yaal::tools::HHuginn::ptr_t> verificators_t;
 private:
 	yaal::tools::HXml _dom;
+	yaal::hcore::HString _id;
+	yaal::hcore::HString _code;
 	yaal::hcore::HString _name;
 	OSecurityContext _defaultSecurityContext;
 	sessions_t _sessions;
@@ -64,7 +66,12 @@ public:
 	void set_mode( MODE );
 	void set_db( yaal::dbwrapper::HDataBase::ptr_t );
 	virtual ~HApplication( void );
-	void load( yaal::hcore::HString const&, yaal::hcore::HString const& );
+	void load(
+		yaal::hcore::HString const&,
+		yaal::hcore::HString const&,
+		yaal::hcore::HString const&,
+		yaal::hcore::HString const&
+	);
 	void handle_logic( ORequest&, HSession& );
 	void generate_page( ORequest const&, HSession const& );
 	sessions_t& sessions( void );
@@ -73,6 +80,9 @@ public:
 	void add_verificator( yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void add_form( forms_t::value_type const& );
 	MODE get_mode( void ) const;
+	yaal::hcore::HString const& id( void ) const;
+	yaal::hcore::HString const& name( void ) const;
+	yaal::hcore::HString const& code( void ) const;
 	void init( void );
 protected:
 	virtual void do_init( void );

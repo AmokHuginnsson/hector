@@ -4,8 +4,8 @@
 		<default_application name="codestation" />
 	</configuration>
 	<applications>
-		<application symbol="hector" name="The Hector Application Server" load="false" start="false" />
-		<application symbol="codestation" name="Code Station" mode="GET" load="true" start="true" />
-		<application symbol="codestation-post" code="codestation" name="Code Station" mode="POST" load="true" start="true" />
+		<application id="hector" name="The Hector Application Server" load="false" start="false" />
+		<application id="codestation" name="Code Station" mode="GET" load="true" start="true" />
+		<application id="codestation-post" code="codestation" name="Code Station" mode="POST" load="true" start="true" />
 	</applications>
 </hector>

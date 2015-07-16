@@ -44,6 +44,8 @@ namespace hector {
 
 HApplication::HApplication( void )
 	: _dom()
+	, _id()
+	, _code()
 	, _name()
 	, _defaultSecurityContext()
 	, _sessions()
@@ -65,16 +67,23 @@ void HApplication::init( void ) {
 	M_EPILOG
 }
 
-void HApplication::load( HString const& name, HString const& path ) {
+void HApplication::load(
+	HString const& id_,
+	HString const& code_,
+	HString const& name_,
+	HString const& path_
+) {
 	M_PROLOG
 	static char const* const INTERFACE_FILE = "interface.xml";
 	static char const* const TOOLKIT_FILE = "toolkit.xml";
-	_name = name;
-	HStringStream interface( path );
-	HStringStream toolkit( path );
-	hcore::log( LOG_LEVEL::INFO ) << "Loading application `" << _name << "'." << endl;
-	interface << "/" << _name << "/" << INTERFACE_FILE;
-	toolkit << "/" << _name << "/" << TOOLKIT_FILE;
+	_id = id_;
+	_code = code_;
+	_name = name_;
+	HStringStream interface( path_ );
+	HStringStream toolkit( path_ );
+	hcore::log( LOG_LEVEL::INFO ) << "Loading application `" << _id << "'." << endl;
+	interface << "/" << _code << "/" << INTERFACE_FILE;
+	toolkit << "/" << _code << "/" << TOOLKIT_FILE;
 	HFSItem app( interface.string() );
 	_defaultSecurityContext._user = app.get_user();
 	_defaultSecurityContext._group = app.get_group();
@@ -94,6 +103,24 @@ void HApplication::load( HString const& name, HString const& path ) {
 
 HApplication::MODE HApplication::get_mode( void ) const {
 	return ( _mode );
+}
+
+yaal::hcore::HString const& HApplication::id( void ) const {
+	M_PROLOG
+	return ( _id );
+	M_EPILOG
+}
+
+yaal::hcore::HString const& HApplication::code( void ) const {
+	M_PROLOG
+	return ( _code );
+	M_EPILOG
+}
+
+yaal::hcore::HString const& HApplication::name( void ) const {
+	M_PROLOG
+	return ( _name );
+	M_EPILOG
 }
 
 void HApplication::set_mode( MODE mode_ ) {

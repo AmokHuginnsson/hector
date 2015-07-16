@@ -57,9 +57,10 @@ public:
 	int on_sigchild( int );
 	void process_sigchild( int );
 protected:
-	virtual void do_service_request( ORequest& );
-	virtual void do_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	virtual void do_status( yaal::hcore::HSocket::ptr_t& );
+	virtual void do_service_request( ORequest& ) override;
+	virtual void do_restart( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) override;
+	virtual void do_reload( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) override;
+	virtual void do_status( yaal::hcore::HSocket::ptr_t& ) override;
 	session_t handle_session( ORequest&, HApplication::sessions_t& );
 	void clean_request( int );
 private:

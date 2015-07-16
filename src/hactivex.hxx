@@ -45,16 +45,17 @@ public:
 	}
 	static HActiveX get_instance(
 		yaal::hcore::HString const&,
-		HApplication::MODE,
 		yaal::hcore::HString const&,
+		yaal::hcore::HString const&,
+		yaal::hcore::HString const&,
+		HApplication::MODE,
 		yaal::dbwrapper::HDataBase::ptr_t
 	);
 	void reload_binary( void );
 	void handle_logic( ORequest&, HSession& );
 	void generate_page( ORequest const&, HSession const& );
-	HApplication::MODE get_mode( void ) const;
+	HApplication const& app( void ) const;
 	HApplication::sessions_t& sessions( void );
-	HApplication::sessions_t const& sessions( void ) const;
 };
 
 typedef yaal::hcore::HExceptionT<HActiveX> HActiveXException;

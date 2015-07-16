@@ -38,9 +38,11 @@ using namespace yaal::dbwrapper;
 namespace hector {
 
 HActiveX HActiveX::get_instance(
+	HString const& id_,
+	HString const& code_,
 	HString const& name_,
-	HApplication::MODE mode_,
 	HString const& path_,
+	HApplication::MODE mode_,
 	HDataBase::ptr_t db_
 ) {
 	M_PROLOG
@@ -48,17 +50,17 @@ HActiveX HActiveX::get_instance(
 	static char const* const ATTRIBUTE_ACTIVEX = "activex";
 	HStringStream activex( path_ );
 	HPlugin::ptr_t activeX( make_pointer<HPlugin>() );
-	activex << "/" << name_ << "/" << ATTRIBUTE_ACTIVEX;
+	activex << "/" << code_ << "/" << ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
-	out << "Trying path: `" << activex.raw() << "' for activex: `" << name_ << "'" << endl;
+	out << "Trying path: `" << activex.raw() << "' for activex: `" << id_ << "'" << endl;
 	activeX->load( activex.raw() );
 	M_ASSERT( activeX->is_loaded() );
-	out << "activex nest for `" << name_ << "' loaded" << endl;
+	out << "activex nest for `" << id_ << "' loaded" << endl;
 	typedef HApplication::ptr_t ( *factory_t )( void );
 	factory_t factory;
 	activeX->resolve( SYMBOL_FACTORY, factory );
 	M_ASSERT( factory );
-	out << "activex factory for `" << name_ << "' connected" << endl;
+	out << "activex factory for `" << id_ << "' connected" << endl;
 	app = factory();
 	if ( ! app ) {
 		throw HActiveXException( "invalid activex" );
@@ -69,7 +71,7 @@ HActiveX HActiveX::get_instance(
 	app->set_mode( mode_ );
 	app->set_db( db_);
 	app->init();
-	app->load( name_, path_ );
+	app->load( id_, code_, name_, path_ );
 	return ( proc );
 	M_EPILOG
 }
@@ -100,12 +102,8 @@ HApplication::sessions_t& HActiveX::sessions( void ) {
 	return ( _application->sessions() );
 }
 
-HApplication::sessions_t const& HActiveX::sessions( void ) const {
-	return ( _application->sessions() );
-}
-
-HApplication::MODE HActiveX::get_mode( void ) const {
-	return ( _application->get_mode() );
+HApplication const& HActiveX::app( void ) const {
+	return ( *_application );
 }
 
 }

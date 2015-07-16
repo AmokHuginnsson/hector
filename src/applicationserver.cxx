@@ -100,9 +100,10 @@ void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& config
 void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applications ) {
 	M_PROLOG
 	static char const APP_NODE_NAME[] = "application";
-	static char const APP_PROP_NAME_SYMBOL[] = "symbol";
+	static char const APP_PROP_NAME_ID[] = "id";
 	static char const APP_PROP_NAME_LOAD[] = "load";
 	static char const APP_PROP_NAME_CODE[] = "code";
+	static char const APP_PROP_NAME_NAME[] = "name";
 	static char const APP_PROP_NAME_MODE[] = "mode";
 	static HApplication::MODE DEFAULT_MODE = HApplication::MODE::GET;
 	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it ) {
@@ -111,10 +112,11 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 		HXml::HNode::properties_t const& props = application.properties();
 		HXml::HNode::properties_t::const_iterator load = props.find( APP_PROP_NAME_LOAD );
 		if ( ( load != props.end() ) && ( lexical_cast<bool>( load->second ) ) ) {
-			xml::value_t symbol( xml::try_attr_val( application, APP_PROP_NAME_SYMBOL ) );
+			xml::value_t id( xml::try_attr_val( application, APP_PROP_NAME_ID ) );
 			xml::value_t codeVal( xml::try_attr_val( application, APP_PROP_NAME_CODE ) );
+			xml::value_t nameVal( xml::try_attr_val( application, APP_PROP_NAME_NAME ) );
 			xml::value_t modeVal( xml::try_attr_val( application, APP_PROP_NAME_MODE ) );
-			M_ENSURE( !! symbol && ! symbol->is_empty() );
+			M_ENSURE( !! id && ! id->is_empty() );
 			try {
 				HApplication::MODE mode( DEFAULT_MODE );
 				if ( !! modeVal ) {
@@ -128,16 +130,22 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 						throw HApplicationServerException( "bad application mode: "_ys.append( *modeVal ) );
 					}
 				}
-				HString code( !! codeVal ? *codeVal : *symbol );
 				_applications.insert(
 					make_pair(
-						*symbol,
-						HActiveX::get_instance( code, mode, setup._dataDir, _db )
+						*id,
+						HActiveX::get_instance(
+							*id,
+							!! codeVal ? *codeVal : *id,
+							!! nameVal ? *nameVal : *id,
+							setup._dataDir,
+							mode,
+							_db
+						)
 					)
 				);
 			} catch ( HException& e ) {
-				out << "Failed to load `" << *symbol << "': " << e.what() << "." << endl;
-				hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << *symbol << "': " << e.what() << "." << endl;
+				out << "Failed to load `" << *id << "': " << e.what() << "." << endl;
+				hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << *id << "': " << e.what() << "." << endl;
 			}
 		}
 	}
@@ -295,16 +303,21 @@ void HApplicationServer::clean_request( int opts ) {
 	M_EPILOG
 }
 
-void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appName ) {
+void HApplicationServer::do_restart( HSocket::ptr_t sock, HString const& appName ) {
 	M_PROLOG
 	applications_t::iterator it = _applications.find( appName );
 	if ( it != _applications.end() ) {
 		try {
 			HActiveX& newX = _applications[ appName ] = HActiveX::get_instance(
-				appName, it->second.get_mode(), setup._dataDir, _db
+				it->second.app().id(),
+				it->second.app().code(),
+				it->second.app().name(),
+				setup._dataDir,
+				it->second.app().get_mode(),
+				_db
 			);
 			newX.reload_binary();
-			*sock << "application `" << appName << "' reloaded successfully" << endl;
+			*sock << "application `" << appName << "' restarted successfully" << endl;
 		} catch ( HException& e ) {
 			hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << appName << "': " << e.what() << "." << endl;
 			*sock << "Failed to load `" << appName << "': " << e.what() << "." << endl;
@@ -313,6 +326,19 @@ void HApplicationServer::do_restart( HSocket::ptr_t& sock, HString const& appNam
 		*sock << "no such application: " << appName << endl;
 	}
 	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
+	return;
+	M_EPILOG
+}
+
+void HApplicationServer::do_reload( HSocket::ptr_t sock, HString const& appName ) {
+	M_PROLOG
+	applications_t::iterator it = _applications.find( appName );
+	if ( it != _applications.end() ) {
+	} else {
+		*sock << "no such application: " << appName << endl;
+	}
+	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
+	return;
 	M_EPILOG
 }
 
@@ -325,8 +351,9 @@ void HApplicationServer::do_status( HSocket::ptr_t& sock ) {
 	*sock << "clients[request]: " << _socket[IPC_CHANNEL::REQUEST]->get_client_count() << endl;
 	*sock << "application statistics:" << endl;
 	for ( applications_t::const_iterator it( _applications.begin() ), end( _applications.end() ); it != end; ++ it )
-		*sock << "  " << it->first << ": " << it->second.sessions().get_size() << endl;
+		*sock << "  " << it->first << ": " << it->second.app().sessions().get_size() << endl;
 	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
+	return;
 	M_EPILOG
 }
 

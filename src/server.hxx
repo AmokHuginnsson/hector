@@ -82,6 +82,7 @@ protected:
 	void handler_message( int );
 	void handler_shutdown( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
+	void handler_reload( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_status( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_env( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
 	void handler_cookie( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
@@ -91,7 +92,8 @@ protected:
 	void read_request( yaal::hcore::HSocket::ptr_t&, ORequest::origin_t const&, yaal::hcore::HString const& );
 	void service_request( ORequest& );
 	virtual void do_service_request( ORequest& ) = 0;
-	virtual void do_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& ) = 0;
+	virtual void do_restart( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) = 0;
+	virtual void do_reload( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) = 0;
 	virtual void do_status( yaal::hcore::HSocket::ptr_t& ) = 0;
 	/*}*/
 };

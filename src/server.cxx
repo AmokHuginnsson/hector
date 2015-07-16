@@ -76,6 +76,7 @@ int HServer::init_server( void ) {
 	init_sockets();
 	_handlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::SHUTDOWN ] = &HServer::handler_shutdown;
 	_handlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::RESTART ] = &HServer::handler_restart;
+	_handlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::RELOAD ] = &HServer::handler_reload;
 	_handlers[ IPC_CHANNEL::CONTROL ][ CONTROL_PROTO::STATUS ] = &HServer::handler_status;
 	_handlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::ENV ] = &HServer::handler_env;
 	_handlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::COOKIE ] = &HServer::handler_cookie;
@@ -255,7 +256,13 @@ void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& ) {
 
 void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app ) {
 	M_PROLOG
-	_worker.schedule_task( call( &HServer::do_restart, this, ref( sock ), app ) );
+	_worker.schedule_task( call( &HServer::do_restart, this, sock, app ) );
+	M_EPILOG
+}
+
+void HServer::handler_reload( HSocket::ptr_t& sock, yaal::hcore::HString const& app ) {
+	M_PROLOG
+	_worker.schedule_task( call( &HServer::do_reload, this, sock, app ) );
 	M_EPILOG
 }
 
