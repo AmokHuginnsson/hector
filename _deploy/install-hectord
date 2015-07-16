@@ -23,6 +23,12 @@ must_exist ${PARSER}
 
 . ${PARSER}
 
+TARGET="${1}"
+
+if [ "x${TARGET}" != "xdebug" -a "x${TARGET}" != "xrelease" ] ; then
+	TARGET="release"
+fi
+
 if [ ! -d build ] ; then
 	echo "you must start this script from \`hector' root directory"
 	exit 1
@@ -48,9 +54,9 @@ unset PS_FORMAT
 adv ./_deploy/init stop
 adv /bin/rm -fr nest
 adv mkdir -p nest/etc/conf nest/var/db/yaal/keys
-adv cp build/debug/${DAEMON}/1exec nest/
+adv cp build/${TARGET}/${DAEMON}/1exec nest/
 adv cp -a ${HOME}/usr/lib nest
-adv cp -a ${HOME}/src/yaal/build/debug/yaalrc nest/etc/conf/
+adv cp -a ${HOME}/src/yaal/build/${TARGET}/yaalrc nest/etc/conf/
 adv cp -a ${HOME}/src/${SERVICE}/hectorrc nest/etc/conf/
 adv cp -a ${HOME}/src/${SERVICE}/system.sqlite nest/
 adv cp -a ${HOME}/var/db/yaal/keys/* nest/var/db/yaal/keys/
@@ -62,14 +68,17 @@ adv /bin/rm -rf ${JAIL}/*
 adv mkdir -p nest/app
 HECTOR_SETUP=`readlink ${HOME}/src/${SERVICE}/app/hector.xml`
 adv cp -a ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP} nest/app/hector.xml
-APPS=`xmlstarlet sel -T -t -m "/hector/applications/application[@load='true']" -o ${HOME}/src/cellar/web/ -v '@symbol' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP}`
+APPS=`xmlstarlet sel -T -t -m "/hector/applications/application[@load='true' and @code != '']" -o ${HOME}/src/cellar/web/ -v '@code' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP}`
+APPS="${APPS}\\n`xmlstarlet sel -T -t -m "/hector/applications/application[@load='true' and not( @code )]" -o ${HOME}/src/cellar/web/ -v '@id' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP}`"
+APPS=`echo -e "${APPS}" | sort -u`
+echo "Installing applications: ${APPS}"
 adv cp -af ${APPS} nest/app/
 for ITEM in nest/app/* ; do
 	if [ -f ${ITEM}/interface.xml ] ; then
 		APP=`basename ${ITEM}`
-		if [ -f ./build/debug/${APP}/1exec ] ; then
+		if [ -f ./build/${TARGET}/${APP}/1exec ] ; then
 			adv /bin/rm -f nest/app/${APP}/activex
-			adv cp -f ./build/debug/${APP}/1exec nest/app/${APP}/activex
+			adv cp -f ./build/${TARGET}/${APP}/1exec nest/app/${APP}/activex
 			adv chmod 644 nest/app/${APP}/activex
 		fi
 	fi
