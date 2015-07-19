@@ -42,6 +42,7 @@ namespace cgi {
 
 typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
 typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> default_t;
+typedef yaal::hcore::HArray<yaal::hcore::HString> params_t;
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
 bool is_kind_of( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
 bool has_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
@@ -66,6 +67,9 @@ bool has_access( ACCESS::type_t, HSession const&, OSecurityContext const& );
 void clean( yaal::tools::HXml::HNodeProxy );
 
 }
+
+struct CGI {};
+typedef yaal::hcore::HExceptionT<CGI> HCGIException;
 
 }
 

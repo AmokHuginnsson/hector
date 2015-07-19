@@ -448,7 +448,6 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 					int long querySepPos( href.find( QUERY_SEPARATOR ) );
 					bool haveParams( false );
 					if ( querySepPos != HString::npos ) {
-						typedef HArray<HString> params_t;
 						params_t params( string::split<params_t>( href.substr( querySepPos + 1 ), PARAM_SEPARATOR ) );
 						haveParams = ! params.is_empty();
 						for ( HString const& s : params ) {
@@ -553,6 +552,9 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	static HString const NODE_FORM( "h-form" );
 	static HString const NODE_INPUT( "h-input" );
 	static HString const NODE_VERIFY( "verify" );
+	static HString const NODE_CODE( "code" );
+	static HString const NODE_ARGV( "argv" );
+	static HString const NODE_ARG( "arg" );
 	HString name;
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
@@ -570,7 +572,28 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							out << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
 							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
-							app_->add_verificator( *optId, (*(*del).begin()).get_value() );
+							HString code;
+							params_t params;
+							for ( HXml::HConstNodeProxy n : *del ) {
+								M_ENSURE_EX( n.get_type() == HXml::HNode::TYPE::NODE, "verificator can have only node children." );
+								if ( n.get_name() == NODE_CODE ) {
+									M_ENSURE_EX( ( n.child_count() == 1 ) && ( (*n.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator code can only have one content" );
+									code = (*n.begin()).get_value();
+								} else if ( n.get_name() == NODE_ARGV ) {
+									for ( HXml::HConstNodeProxy a : n ) {
+										M_ENSURE_EX( ( a.get_type() == HXml::HNode::TYPE::NODE ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
+										M_ENSURE_EX( ( a.child_count() == 1 ) && ( (*a.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator arg can only have one content" );
+										params.push_back( (*a.begin()).get_value() );
+										out << "arg: " << (*a.begin()).get_value() << endl;
+									}
+								} else {
+									throw HCGIException( "unknown node in verificator: "_ys.append( n.get_name() ), n.get_line() );
+								}
+							}
+							if ( code.is_empty() ) {
+								throw HCGIException( "verificator if missing code", (*del).get_line() );
+							}
+							app_->add_verificator( *optId, code, params );
 							(*child).remove_node( del );
 							out << "verify" << endl;
 						}

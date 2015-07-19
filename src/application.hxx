@@ -34,6 +34,7 @@ Copyright:
 #include "server.hxx"
 #include "securitycontext.hxx"
 #include "form.hxx"
+#include "cgi.hxx"
 
 namespace hector {
 
@@ -48,7 +49,11 @@ public:
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm> forms_t;
-	typedef yaal::hcore::HHashMap<yaal::hcore::HString, yaal::tools::HHuginn::ptr_t> verificators_t;
+	struct OVerificator {
+		yaal::tools::HHuginn::ptr_t _huginn;
+		cgi::params_t _params;
+	};
+	typedef yaal::hcore::HHashMap<yaal::hcore::HString, OVerificator> verificators_t;
 private:
 	yaal::tools::HXml _dom;
 	yaal::hcore::HString _id;
@@ -77,7 +82,7 @@ public:
 	sessions_t& sessions( void );
 	sessions_t const& sessions( void ) const;
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
-	void add_verificator( yaal::hcore::HString const&, yaal::hcore::HString const& );
+	void add_verificator( yaal::hcore::HString const&, yaal::hcore::HString const&, cgi::params_t const& );
 	void add_form( forms_t::value_type const& );
 	MODE get_mode( void ) const;
 	yaal::hcore::HString const& id( void ) const;

@@ -279,14 +279,14 @@ HApplication::sessions_t& HApplication::sessions( void ) {
 	return ( _sessions );
 }
 
-void HApplication::add_verificator( yaal::hcore::HString const& id_, yaal::hcore::HString const& verificator_ ) {
+void HApplication::add_verificator( yaal::hcore::HString const& id_, yaal::hcore::HString const& verificator_, cgi::params_t const& params_ ) {
 	M_PROLOG
 	HHuginn::ptr_t h( make_pointer<HHuginn>() );
 	HStringStream s( verificator_ );
 	h->load( s );
 	h->preprocess();
 	if ( h->parse() && h->compile() ) {
-		_verificators.insert( make_pair( id_, h ) );
+		_verificators.insert( make_pair( id_, OVerificator{ h, params_ } ) );
 	} else {
 		throw HRuntimeException( h->error_message() );
 	}
