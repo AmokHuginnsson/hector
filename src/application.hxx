@@ -48,7 +48,7 @@ public:
 	};
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
-	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm> forms_t;
+	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm::ptr_t> forms_t;
 	struct OVerificator {
 		yaal::tools::HHuginn::ptr_t _huginn;
 		cgi::params_t _params;
@@ -83,7 +83,7 @@ public:
 	sessions_t const& sessions( void ) const;
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
 	void add_verificator( yaal::hcore::HString const&, yaal::hcore::HString const&, cgi::params_t const& );
-	void add_form( forms_t::value_type const& );
+	void add_form( forms_t::value_type&& );
 	MODE get_mode( void ) const;
 	yaal::hcore::HString const& id( void ) const;
 	yaal::hcore::HString const& name( void ) const;

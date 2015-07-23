@@ -28,18 +28,27 @@ Copyright:
 #define HECTOR_FORM_HXX_INCLUDED 1
 
 #include <yaal/hcore/harray.hxx>
+#include <yaal/hcore/hresource.hxx>
+
+#include "verificator.hxx"
 
 namespace hector {
 
 class HForm {
 public:
 	class HInput;
+	typedef yaal::hcore::HResource<HForm> ptr_t;
+	typedef yaal::hcore::HResource<HVerificatorInterface> verificator_t;
 private:
 	typedef yaal::hcore::HArray<HInput> inputs_t;
 	inputs_t _inputs;
+	verificator_t _verificator;
 public:
 	HForm( void );
 	void add_input( HInput const& );
+private:
+	HForm( HForm const& ) = delete;
+	HForm& operator = ( HForm const& ) = delete;
 };
 
 class HForm::HInput {

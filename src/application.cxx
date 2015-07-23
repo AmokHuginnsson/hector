@@ -294,9 +294,9 @@ void HApplication::add_verificator( yaal::hcore::HString const& id_, yaal::hcore
 	M_EPILOG
 }
 
-void HApplication::add_form( forms_t::value_type const& form_ ) {
+void HApplication::add_form( forms_t::value_type&& form_ ) {
 	M_PROLOG
-	_forms.insert( form_ );
+	_forms.insert( yaal::move( form_ ) );
 	return;
 	M_EPILOG
 }

@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	form.cxx - this file is integral part of `hector' project.
+  verificator.hxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -24,18 +24,43 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/hcore/macro.hxx>
-M_VCSID( "$Id: " __ID__ " $" )
-#include "form.hxx"
+/*! \file verificator.hxx
+ * \brief Declaration HVerificatorInterface, HHuginnVerificator and HSQLVerificator.
+ */
+
+#ifndef HECTOR_VERIFICATOR_HXX_INCLUDED
+#define HECTOR_VERIFICATOR_HXX_INCLUDED 1
+
+#include "cgi.hxx"
 
 namespace hector {
 
-HForm::HForm( void )
-	: _inputs()
-	, _verificator() {
-	return;
+class HVerificatorInterface {
+public:
+	typedef HVerificatorInterface this_type;
+	virtual ~HVerificatorInterface( void ) {}
+	bool verify( cgi::params_t const& );
+private:
+	virtual bool do_verify( cgi::params_t const& );
+};
+
+class HHuginnVerificator : public HVerificatorInterface {
+public:
+	typedef HHuginnVerificator this_type;
+	typedef HVerificatorInterface base_type;
+private:
+	virtual bool do_verify( cgi::params_t const& ) override;
+};
+
+class HSQLVerificator : public HVerificatorInterface {
+public:
+	typedef HSQLVerificator this_type;
+	typedef HVerificatorInterface base_type;
+private:
+	virtual bool do_verify( cgi::params_t const& ) override;
+};
+
 }
 
-
-}
+#endif /* #ifndef HECTOR_VERIFICATOR_HXX_INCLUDED */
 

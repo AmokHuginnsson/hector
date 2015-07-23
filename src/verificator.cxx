@@ -1,7 +1,7 @@
 /*
 ---           `hector' 0.0.0 (c) 1978 by Marcin 'Amok' Konarski            ---
 
-	form.cxx - this file is integral part of `hector' project.
+  verificator.cxx - this file is integral part of `hector' project.
 
   i.  You may not make any changes in Copyright information.
   ii. You must attach Copyright information to any part of every copy
@@ -24,17 +24,11 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/hcore/macro.hxx>
+#include "verificator.hxx"
 M_VCSID( "$Id: " __ID__ " $" )
-#include "form.hxx"
+M_VCSID( "$Id: " __TID__ " $" )
 
 namespace hector {
-
-HForm::HForm( void )
-	: _inputs()
-	, _verificator() {
-	return;
-}
 
 
 }

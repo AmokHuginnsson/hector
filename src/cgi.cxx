@@ -562,7 +562,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 			if ( name == NODE_FORM ) {
 				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
 				M_ENSURE_EX( !!optId, "h-from must have an `id' attribute: "_ys.append( (*child).get_line() ) );
-				HForm form;
+				HForm::ptr_t form( make_resource<HForm>() );
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
 					HXml::HIterator del( it );
 					++ it;
@@ -600,7 +600,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 					}
 				}
 				out << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
-				app_->add_form( make_pair( get_optional_value_or<HString>( optId, "(nuil)" ), form ) );
+				app_->add_form( make_pair<HString const, HForm::ptr_t>( get_optional_value_or<HString>( optId, "(nuil)" ), yaal::move( form ) ) );
 			} else
 				prepare_logic( app_, *child );
 		}
