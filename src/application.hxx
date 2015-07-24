@@ -29,7 +29,6 @@ Copyright:
 
 #include <yaal/tools/hxml.hxx>
 #include <yaal/tools/hplugin.hxx>
-#include <yaal/tools/hhuginn.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>
 #include "server.hxx"
 #include "securitycontext.hxx"
@@ -49,11 +48,6 @@ public:
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm::ptr_t> forms_t;
-	struct OVerificator {
-		yaal::tools::HHuginn::ptr_t _huginn;
-		cgi::params_t _params;
-	};
-	typedef yaal::hcore::HHashMap<yaal::hcore::HString, OVerificator> verificators_t;
 private:
 	yaal::tools::HXml _dom;
 	yaal::hcore::HString _id;
@@ -63,7 +57,6 @@ private:
 	sessions_t _sessions;
 	yaal::dbwrapper::HDataBase::ptr_t _db;
 	forms_t _forms;
-	verificators_t _verificators;
 	MODE _mode;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
@@ -82,7 +75,6 @@ public:
 	sessions_t& sessions( void );
 	sessions_t const& sessions( void ) const;
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
-	void add_verificator( yaal::hcore::HString const&, yaal::hcore::HString const&, cgi::params_t const& );
 	void add_form( forms_t::value_type&& );
 	MODE get_mode( void ) const;
 	yaal::hcore::HString const& id( void ) const;

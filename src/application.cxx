@@ -51,7 +51,6 @@ HApplication::HApplication( void )
 	, _sessions()
 	, _db()
 	, _forms()
-	, _verificators()
 	, _mode( MODE::GET ) {
 	return;
 }
@@ -277,21 +276,6 @@ HApplication::sessions_t const& HApplication::sessions( void ) const {
 
 HApplication::sessions_t& HApplication::sessions( void ) {
 	return ( _sessions );
-}
-
-void HApplication::add_verificator( yaal::hcore::HString const& id_, yaal::hcore::HString const& verificator_, cgi::params_t const& params_ ) {
-	M_PROLOG
-	HHuginn::ptr_t h( make_pointer<HHuginn>() );
-	HStringStream s( verificator_ );
-	h->load( s );
-	h->preprocess();
-	if ( h->parse() && h->compile() ) {
-		_verificators.insert( make_pair( id_, OVerificator{ h, params_ } ) );
-	} else {
-		throw HRuntimeException( h->error_message() );
-	}
-	return;
-	M_EPILOG
 }
 
 void HApplication::add_form( forms_t::value_type&& form_ ) {

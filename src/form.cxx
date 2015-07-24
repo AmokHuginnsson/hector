@@ -36,6 +36,22 @@ HForm::HForm( void )
 	return;
 }
 
+void HForm::set_verificator(
+	HVerificatorInterface::TYPE type_,
+	yaal::hcore::HString const& verificator_,
+	cgi::params_t const& params_
+) {
+	M_PROLOG
+	if ( type_ == HVerificatorInterface::TYPE::HUGINN ) {
+		_verificator.reset( new HHuginnVerificator( verificator_, params_ ) );
+	} else if ( type_ == HVerificatorInterface::TYPE::SQL ) {
+		_verificator.reset( new HSQLVerificator( verificator_, params_ ) );
+	}
+	return;
+	M_EPILOG
+}
+
+
 
 }
 

@@ -46,6 +46,11 @@ private:
 public:
 	HForm( void );
 	void add_input( HInput const& );
+	void set_verificator(
+		HVerificatorInterface::TYPE,
+		yaal::hcore::HString const&,
+		cgi::params_t const&
+	);
 private:
 	HForm( HForm const& ) = delete;
 	HForm& operator = ( HForm const& ) = delete;

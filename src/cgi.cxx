@@ -555,6 +555,9 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	static HString const NODE_CODE( "code" );
 	static HString const NODE_ARGV( "argv" );
 	static HString const NODE_ARG( "arg" );
+	static HString const ATTRIBUTE_LANG( "lang" );
+	static HString const LANG_HUGINN( "huginn" );
+	static HString const LANG_SQL( "sql" );
 	HString name;
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
@@ -574,11 +577,16 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
 							HString code;
 							params_t params;
+							HVerificatorInterface::TYPE type( HVerificatorInterface::TYPE::NONE );
 							for ( HXml::HConstNodeProxy n : *del ) {
 								M_ENSURE_EX( n.get_type() == HXml::HNode::TYPE::NODE, "verificator can have only node children." );
 								if ( n.get_name() == NODE_CODE ) {
 									M_ENSURE_EX( ( n.child_count() == 1 ) && ( (*n.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator code can only have one content" );
 									code = (*n.begin()).get_value();
+									xml::value_t typeVal( xml::try_attr_val( n, ATTRIBUTE_LANG ) );
+									M_ENSURE_EX( !! typeVal, "verificator language not set: "_ys.append( n.get_line() ) );
+									M_ENSURE_EX( ( *typeVal == LANG_HUGINN ) || ( *typeVal == LANG_SQL ), "unsupported language for verificator"_ys.append( n.get_line() ) );
+									type = ( *typeVal == LANG_HUGINN ) ? HVerificatorInterface::TYPE::HUGINN : HVerificatorInterface::TYPE::SQL;
 								} else if ( n.get_name() == NODE_ARGV ) {
 									for ( HXml::HConstNodeProxy a : n ) {
 										M_ENSURE_EX( ( a.get_type() == HXml::HNode::TYPE::NODE ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
@@ -593,7 +601,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							if ( code.is_empty() ) {
 								throw HCGIException( "verificator if missing code", (*del).get_line() );
 							}
-							app_->add_verificator( *optId, code, params );
+							form->set_verificator( type, code, params );
 							(*child).remove_node( del );
 							out << "verify" << endl;
 						}
