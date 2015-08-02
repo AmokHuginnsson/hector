@@ -11,13 +11,14 @@ if [ "x${REQUEST_METHOD}" = "xPOST" ] ; then
 	while read line ; do
 		echo "BODY: ${line}" >> ${LOG}
 	done
+	PARAM=`echo ${HTTP_REFERER} | awk -F '?' '{print "?"$NF}'`
 else
 	echo "GET Method" >> ${LOG}
 fi
 
-REQUEST_URI=`echo ${QUERY_STRING} | awk -F '=' '{print $NF}'`
-PARAM=`echo ${HTTP_REFERER} | awk -F '?' '{print $NF}'`
+REQUEST_URI=`echo ${QUERY_STRING} | sed -s 's/REQUEST_URI\=//'`
 
 echo "Status: 307"
-echo "Location: https://${SERVER_ADDR}:8443/${REQUEST_URI}?${PARAM}\n"
+echo "Location: https://${SERVER_ADDR}:8443/${REQUEST_URI}${PARAM}\n"
+echo "Location: https://${SERVER_ADDR}:8443/${REQUEST_URI}${PARAM}\n" >> ${LOG}
 
