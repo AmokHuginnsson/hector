@@ -41,8 +41,8 @@ HVerificatorInterface::HVerificatorInterface( cgi::params_t const& params_ )
 	return;
 }
 
-bool HVerificatorInterface::verify( ORequest const& req_ ) const {
-	return ( do_verify( req_ ) );
+bool HVerificatorInterface::verify( ORequest const& req_, HSession& session_ ) {
+	return ( do_verify( req_, session_ ) );
 }
 
 HHuginnVerificator::HHuginnVerificator(
@@ -64,7 +64,14 @@ HHuginnVerificator::HHuginnVerificator(
 	M_EPILOG
 }
 
-bool HHuginnVerificator::do_verify( ORequest const& ) const {
+bool HHuginnVerificator::do_verify( ORequest const& req_, HSession& ) {
+	_huginn->clear_arguments();
+	for ( yaal::hcore::HString const& p : _params ) {
+		ORequest::value_t value( req_.lookup( p, ORequest::ORIGIN::POST ) );
+		if ( !! value ) {
+			_huginn->add_argument( *value );
+		}
+	}
 	return ( false );
 }
 
@@ -78,7 +85,7 @@ HSQLVerificator::HSQLVerificator(
 	M_EPILOG
 }
 
-bool HSQLVerificator::do_verify( ORequest const& ) const {
+bool HSQLVerificator::do_verify( ORequest const&, HSession& ) {
 	return ( false );
 }
 

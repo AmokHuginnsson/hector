@@ -51,6 +51,7 @@ public:
 		yaal::hcore::HString const&,
 		cgi::params_t const&
 	);
+	bool verify( ORequest&, HSession& );
 private:
 	HForm( HForm const& ) = delete;
 	HForm& operator = ( HForm const& ) = delete;

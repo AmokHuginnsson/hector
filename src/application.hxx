@@ -87,8 +87,10 @@ protected:
 	virtual void do_handle_logic( ORequest&, HSession& ) = 0;
 	virtual void do_generate_page( ORequest const&, HSession const& ) = 0;
 	virtual yaal::dbwrapper::HDataBase::ptr_t do_db( void );
-	void handle_auth( ORequest&, HSession& );
-	virtual void do_handle_auth( ORequest&, HSession& );
+	bool handle_auth( ORequest&, HSession& );
+	virtual bool do_handle_auth( ORequest&, HSession& );
+	bool handle_forms( ORequest&, HSession& );
+	virtual bool do_handle_forms( ORequest&, HSession& );
 	yaal::tools::HXml& dom( void );
 private:
 	HApplication( HApplication const& );

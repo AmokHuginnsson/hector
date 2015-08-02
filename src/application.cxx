@@ -42,6 +42,10 @@ using namespace yaal::dbwrapper;
 
 namespace hector {
 
+namespace {
+static char const HACTION[] = "h-action";
+}
+
 HApplication::HApplication( void )
 	: _dom()
 	, _id()
@@ -144,22 +148,21 @@ void HApplication::do_load( void ) {
 	out << __PRETTY_FUNCTION__ << endl;
 }
 
-void HApplication::handle_auth( ORequest& req_, HSession& session_ ) {
+bool HApplication::handle_auth( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
-	do_handle_auth( req_, session_ );
-	return;
+	return ( do_handle_auth( req_, session_ ) );
 	M_EPILOG
 }
 
-void HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
+bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
-	static char const HACTION[] = "h-action";
 	static char const AUTH[] = "auth";
 	static char const LOGOUT[] = "logout";
 	static char const LOGIN[] = "login";
 	static char const PASSWORD[] = "password";
 	static char const USERS[] = "users";
 	ORequest::value_t action( req_.lookup( HACTION, ORequest::ORIGIN::POST ) );
+	bool handled( false );
 	if ( action ) {
 		if ( *action == AUTH ) {
 			ORequest::value_t login( req_.lookup( LOGIN, ORequest::ORIGIN::POST ) );
@@ -198,19 +201,44 @@ void HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 					out << "invalid user" << endl;
 				}
 			}
+			handled = true;
 		} else if ( *action == LOGOUT ) {
 			out << "user: " << session_.get_user() << "logged out" << endl;
 			sessions().erase( session_.get_id() );
+			handled = true;
 		}
 	}
-	return;
+	return ( handled );
+	M_EPILOG
+}
+
+bool HApplication::handle_forms( ORequest& req_, HSession& session_ ) {
+	M_PROLOG
+	return ( do_handle_forms( req_, session_ ) );
+	M_EPILOG
+}
+
+bool HApplication::do_handle_forms( ORequest& req_, HSession& session_ ) {
+	M_PROLOG
+	ORequest::value_t action( req_.lookup( HACTION, ORequest::ORIGIN::POST ) );
+	bool handled( false );
+	if ( action ) {
+		forms_t::iterator formIt( _forms.find( *action ) );
+		if ( formIt != _forms.end() ) {
+			formIt->second->verify( req_, session_ );
+			handled = true;
+		}
+	}
+	return ( handled );
 	M_EPILOG
 }
 
 void HApplication::do_handle_logic( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
 	out << __PRETTY_FUNCTION__ << endl;
-	handle_auth( req_, session_ );
+	if ( ! handle_auth( req_, session_ ) ) {
+		handle_forms( req_, session_ );
+	}
 	static char const LOGIC_PATH[] = "/html/logic/";
 	HXml::HNodeSet logic( _dom.get_elements_by_path( LOGIC_PATH ) );
 	if ( !logic.is_empty() ) {

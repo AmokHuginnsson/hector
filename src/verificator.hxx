@@ -37,6 +37,8 @@ Copyright:
 
 namespace hector {
 
+class HSession;
+
 class HVerificatorInterface {
 public:
 	enum class TYPE {
@@ -46,13 +48,13 @@ public:
 	};
 	typedef HVerificatorInterface this_type;
 	virtual ~HVerificatorInterface( void ) {}
-private:
+protected:
 	cgi::params_t _params;
 public:
 	HVerificatorInterface( cgi::params_t const& );
-	bool verify( ORequest const& ) const;
+	bool verify( ORequest const&, HSession& );
 private:
-	virtual bool do_verify( ORequest const& ) const = 0;
+	virtual bool do_verify( ORequest const&, HSession& ) = 0;
 };
 
 class HHuginnVerificator : public HVerificatorInterface {
@@ -61,7 +63,7 @@ public:
 	typedef HVerificatorInterface base_type;
 private:
 	yaal::tools::HHuginn::ptr_t _huginn;
-	virtual bool do_verify( ORequest const& ) const override;
+	virtual bool do_verify( ORequest const&, HSession& ) override;
 public:
 	HHuginnVerificator( yaal::hcore::HString const&, cgi::params_t const& );
 };
@@ -75,7 +77,7 @@ private:
 public:
 	HSQLVerificator( yaal::hcore::HString const&, cgi::params_t const& );
 private:
-	virtual bool do_verify( ORequest const& ) const override;
+	virtual bool do_verify( ORequest const&, HSession& ) override;
 };
 
 }

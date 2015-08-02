@@ -51,7 +51,15 @@ void HForm::set_verificator(
 	M_EPILOG
 }
 
-
+bool HForm::verify( ORequest& req_, HSession& session_ ) {
+	M_PROLOG
+	bool verified( false );
+	if ( !! _verificator ) {
+		verified = _verificator->verify( req_, session_ );
+	}
+	return ( verified );
+	M_EPILOG
+}
 
 }
 
