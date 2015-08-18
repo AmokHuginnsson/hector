@@ -24,6 +24,8 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <cstring>
+
 #include <yaal/hcore/htokenizer.hxx>
 #include <yaal/hcore/hfile.hxx>
 #include <yaal/hcore/hformat.hxx>
