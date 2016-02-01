@@ -110,7 +110,8 @@ HString const& get_owner_user( HXml::HConstNodeProxy const& node );
 HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
-	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_USER ), HString() ) );
+	static HString const empty;
+	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_USER ), empty ) );
 	M_EPILOG
 }
 
@@ -118,7 +119,8 @@ HString const& get_owner_group( HXml::HConstNodeProxy const& node );
 HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
 	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
-	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_GROUP ), HString() ) );
+	static HString const empty;
+	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_GROUP ), empty ) );
 	M_EPILOG
 }
 
