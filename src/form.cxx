@@ -35,9 +35,10 @@ using namespace yaal::tools;
 
 namespace hector {
 
-HForm::HForm( void )
+HForm::HForm( HApplication& application_ )
 	: _inputs()
-	, _verificator() {
+	, _verificator()
+	, _application( application_ ) {
 	return;
 }
 
@@ -48,9 +49,9 @@ void HForm::set_verificator(
 ) {
 	M_PROLOG
 	if ( type_ == HVerificatorInterface::TYPE::HUGINN ) {
-		_verificator.reset( new HHuginnVerificator( verificator_, params_ ) );
+		_verificator.reset( new HHuginnVerificator( verificator_, params_, this ) );
 	} else if ( type_ == HVerificatorInterface::TYPE::SQL ) {
-		_verificator.reset( new HSQLVerificator( verificator_, params_ ) );
+		_verificator.reset( new HSQLVerificator( verificator_, params_, this ) );
 	}
 	return;
 	M_EPILOG

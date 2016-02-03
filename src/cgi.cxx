@@ -569,7 +569,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 			if ( name == NODE_FORM ) {
 				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
 				M_ENSURE_EX( !!optId, "h-from must have an `id' attribute: "_ys.append( (*child).get_line() ) );
-				HForm::ptr_t form( make_resource<HForm>() );
+				HForm::ptr_t form( make_resource<HForm>( *app_ ) );
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
 					HXml::HIterator del( it );
 					++ it;

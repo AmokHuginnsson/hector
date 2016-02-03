@@ -25,20 +25,25 @@ Copyright:
 */
 
 #include <yaal/tools/hstringstream.hxx>
+#include <yaal/dbwrapper/hdatabase.hxx>
 
 #include "verificator.hxx"
 M_VCSID( "$Id: " __ID__ " $" )
 M_VCSID( "$Id: " __TID__ " $" )
 #include "setup.hxx"
+#include "form.hxx"
+#include "application.hxx"
 
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
+using namespace yaal::dbwrapper;
 
 namespace hector {
 
-HVerificatorInterface::HVerificatorInterface( cgi::params_t const& params_ )
-	: _params( params_ ) {
+HVerificatorInterface::HVerificatorInterface( cgi::params_t const& params_, HForm* form_ )
+	: _params( params_ )
+	, _form( form_ ) {
 	return;
 }
 
@@ -48,8 +53,9 @@ bool HVerificatorInterface::verify( ORequest const& req_, HSession& session_ ) {
 
 HHuginnVerificator::HHuginnVerificator(
 	yaal::hcore::HString const& code_,
-	cgi::params_t const& params_
-) : HVerificatorInterface( params_ )
+	cgi::params_t const& params_,
+	HForm* form_
+) : HVerificatorInterface( params_, form_ )
 	, _huginn() {
 	M_PROLOG
 	HHuginn::ptr_t h( make_pointer<HHuginn>() );
@@ -94,16 +100,42 @@ bool HHuginnVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 
 HSQLVerificator::HSQLVerificator(
 	yaal::hcore::HString const& code_,
-	cgi::params_t const& params_
-) : HVerificatorInterface( params_ )
-	, _code( code_ ) {
+	cgi::params_t const& params_,
+	HForm* form_
+) : HVerificatorInterface( params_, form_ )
+	, _query( form_->app().db()->prepare_query( code_ ) ) {
 	M_PROLOG
 	return;
 	M_EPILOG
 }
 
-bool HSQLVerificator::do_verify( ORequest const&, HSession& ) {
-	return ( false );
+bool HSQLVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
+	int paramNo( 1 );
+	for ( cgi::HParameter const& p : _params ) {
+		HString const& name( p.name() );
+		if ( name.front() == '@' ) {
+			if ( name == "@user" ) {
+				_query->bind( paramNo, session_.get_user() );
+				out << "setting param: " << name << ", to value: " << session_.get_user() << endl;
+			}
+		} else {
+			ORequest::value_t value( req_.lookup( name, ORequest::ORIGIN::POST ) );
+			if ( !! value ) {
+				_query->bind( paramNo, p.transform( *value ) );
+				out << "setting param: " << name << ", to value: " << *value << endl;
+			}
+		}
+		++ paramNo;
+	}
+	HRecordSet::ptr_t result( _query->execute() );
+	HRecordSet::HIterator rowIt( result->begin() );
+	bool ok( false );
+	try {
+		ok = rowIt != result->end() && !!rowIt[0] && ( lexical_cast<int>( *rowIt[0] ) > 0 );
+	} catch ( HLexicalCastException const& e ) {
+		throw HRuntimeException( e.what() );
+	}
+	return ( ok );
 }
 
 }

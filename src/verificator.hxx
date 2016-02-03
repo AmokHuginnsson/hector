@@ -32,12 +32,14 @@ Copyright:
 #define HECTOR_VERIFICATOR_HXX_INCLUDED 1
 
 #include <yaal/tools/hhuginn.hxx>
+#include <yaal/dbwrapper/hquery.hxx>
 
 #include "cgi.hxx"
 
 namespace hector {
 
 class HSession;
+class HForm;
 
 class HVerificatorInterface {
 public:
@@ -50,11 +52,14 @@ public:
 	virtual ~HVerificatorInterface( void ) {}
 protected:
 	cgi::params_t _params;
+	HForm* _form;
 public:
-	HVerificatorInterface( cgi::params_t const& );
+	HVerificatorInterface( cgi::params_t const&, HForm* );
 	bool verify( ORequest const&, HSession& );
 private:
 	virtual bool do_verify( ORequest const&, HSession& ) = 0;
+	HVerificatorInterface( HVerificatorInterface const& ) = delete;
+	HVerificatorInterface& operator = ( HVerificatorInterface const& ) = delete;
 };
 
 class HHuginnVerificator : public HVerificatorInterface {
@@ -65,7 +70,7 @@ private:
 	yaal::tools::HHuginn::ptr_t _huginn;
 	virtual bool do_verify( ORequest const&, HSession& ) override;
 public:
-	HHuginnVerificator( yaal::hcore::HString const&, cgi::params_t const& );
+	HHuginnVerificator( yaal::hcore::HString const&, cgi::params_t const&, HForm* );
 };
 
 class HSQLVerificator : public HVerificatorInterface {
@@ -73,9 +78,9 @@ public:
 	typedef HSQLVerificator this_type;
 	typedef HVerificatorInterface base_type;
 private:
-	yaal::hcore::HString _code;
+	yaal::dbwrapper::HQuery::ptr_t _query;
 public:
-	HSQLVerificator( yaal::hcore::HString const&, cgi::params_t const& );
+	HSQLVerificator( yaal::hcore::HString const&, cgi::params_t const&, HForm* );
 private:
 	virtual bool do_verify( ORequest const&, HSession& ) override;
 };

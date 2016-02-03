@@ -43,8 +43,9 @@ private:
 	typedef yaal::hcore::HArray<HInput> inputs_t;
 	inputs_t _inputs;
 	verificator_t _verificator;
+	HApplication& _application;
 public:
-	HForm( void );
+	HForm( HApplication& );
 	void add_input( HInput const& );
 	void set_verificator(
 		HVerificatorInterface::TYPE,
@@ -52,6 +53,9 @@ public:
 		cgi::params_t const&
 	);
 	bool verify( ORequest&, HSession& );
+	HApplication& app( void ) const {
+		return ( _application );
+	}
 private:
 	HForm( HForm const& ) = delete;
 	HForm& operator = ( HForm const& ) = delete;
