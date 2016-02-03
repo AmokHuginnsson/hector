@@ -103,7 +103,7 @@ HSQLVerificator::HSQLVerificator(
 	cgi::params_t const& params_,
 	HForm* form_
 ) : HVerificatorInterface( params_, form_ )
-	, _query( form_->app().db()->prepare_query( code_ ) ) {
+	, _query( form_->app().db()->prepare_query( HString( code_ ).trim() ) ) {
 	M_PROLOG
 	return;
 	M_EPILOG
@@ -121,8 +121,9 @@ bool HSQLVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 		} else {
 			ORequest::value_t value( req_.lookup( name, ORequest::ORIGIN::POST ) );
 			if ( !! value ) {
-				_query->bind( paramNo, p.transform( *value ) );
-				out << "setting param: " << name << ", to value: " << *value << endl;
+				HString realValue( p.transform( *value ) );
+				_query->bind( paramNo, realValue );
+				out << "setting param: " << name << ", to value: " << realValue << endl;
 			}
 		}
 		++ paramNo;
@@ -130,10 +131,17 @@ bool HSQLVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 	HRecordSet::ptr_t result( _query->execute() );
 	HRecordSet::HIterator rowIt( result->begin() );
 	bool ok( false );
-	try {
-		ok = rowIt != result->end() && !!rowIt[0] && ( lexical_cast<int>( *rowIt[0] ) > 0 );
-	} catch ( HLexicalCastException const& e ) {
-		throw HRuntimeException( e.what() );
+	if ( rowIt != result->end() ) {
+		if ( !!rowIt[0]  ) {
+			if ( *rowIt[0] == "ok" ) {
+				ok = true;
+			}
+			out << __PRETTY_FUNCTION__ << ": verificator returned: " << *rowIt[0] << endl;
+		} else {
+			out << __PRETTY_FUNCTION__ << ": NULL value returned in result set" << endl;
+		}
+	} else {
+		out << __PRETTY_FUNCTION__ << ": empty result set" << endl;
 	}
 	return ( ok );
 }

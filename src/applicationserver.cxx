@@ -56,6 +56,7 @@ HApplicationServer::~HApplicationServer( void ) {
 void HApplicationServer::start( void ) {
 	M_PROLOG
 	HSignalService& ss = HSignalService::get_instance();
+	_db->connect( setup._databaseName, setup._databaseName, setup._databasePassword );
 	ss.register_handler( SIGCHLD, call( &HApplicationServer::on_sigchild, this, _1 ) );
 	_dispatcher.register_file_descriptor_handler( _sigChildEvent.get_reader_fd(), call( &HApplicationServer::process_sigchild, this, _1 ) );
 
@@ -77,7 +78,6 @@ void HApplicationServer::start( void ) {
 	init_server();
 	_socket[ IPC_CHANNEL::CONTROL ]->set_timeout( setup._socketWriteTimeout );
 	_socket[ IPC_CHANNEL::REQUEST ]->set_timeout( setup._socketWriteTimeout );
-	_db->connect( setup._databaseName, setup._databaseName, setup._databasePassword );
 	M_EPILOG
 }
 
