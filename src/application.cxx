@@ -214,6 +214,7 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 
 bool HApplication::handle_forms( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
+	out << __PRETTY_FUNCTION__ << endl;
 	return ( do_handle_forms( req_, session_ ) );
 	M_EPILOG
 }

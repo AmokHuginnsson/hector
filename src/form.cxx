@@ -27,6 +27,11 @@ Copyright:
 #include <yaal/hcore/macro.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "form.hxx"
+#include "setup.hxx"
+
+using namespace yaal;
+using namespace yaal::hcore;
+using namespace yaal::tools;
 
 namespace hector {
 

@@ -29,6 +29,7 @@ Copyright:
 #include "verificator.hxx"
 M_VCSID( "$Id: " __ID__ " $" )
 M_VCSID( "$Id: " __TID__ " $" )
+#include "setup.hxx"
 
 using namespace yaal;
 using namespace yaal::hcore;
@@ -64,15 +65,30 @@ HHuginnVerificator::HHuginnVerificator(
 	M_EPILOG
 }
 
-bool HHuginnVerificator::do_verify( ORequest const& req_, HSession& ) {
+bool HHuginnVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 	_huginn->clear_arguments();
 	for ( yaal::hcore::HString const& p : _params ) {
-		ORequest::value_t value( req_.lookup( p, ORequest::ORIGIN::POST ) );
-		if ( !! value ) {
-			_huginn->add_argument( *value );
+		if ( p.front() == '@' ) {
+			if ( p == "@user" ) {
+				_huginn->add_argument( session_.get_user() );
+				out << "setting param: " << p << ", to value: " << session_.get_user() << endl;
+			}
+		} else {
+			ORequest::value_t value( req_.lookup( p, ORequest::ORIGIN::POST ) );
+			if ( !! value ) {
+				_huginn->add_argument( *value );
+				out << "setting param: " << p << ", to value: " << *value << endl;
+			}
 		}
 	}
-	return ( false );
+	if ( ! _huginn->execute() ) {
+		throw HRuntimeException( _huginn->error_message() );
+	}
+	HHuginn::value_t const& result( _huginn->result() );
+	if ( result->type_id() != HHuginn::TYPE::BOOLEAN ) {
+		throw HRuntimeException( "bad result type from verificator" );
+	}
+	return ( static_cast<HHuginn::HBoolean const*>( result.raw() )->value() );
 }
 
 HSQLVerificator::HSQLVerificator(

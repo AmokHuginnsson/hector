@@ -175,16 +175,18 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 				clog << endl;
 				out << "invalid session ID: " << *sid << endl;
 			}
-		} else
+		} else {
 			out << "sid not set" << endl;
+		}
 		if ( ! session ) {
 			HSession newSession( *remoteAddress, *httpUserAgent );
 			session = sessions_.insert( make_pair( newSession.get_id(), newSession ) ).first->second;
 			request_.update( "sid", newSession.get_id(), ORequest::ORIGIN::COOKIE );
 			out << "setting new SID: " << newSession.get_id() << endl;
 		}
-	} else
+	} else {
 		out << "WARNING! missing: " << ( remoteAddress ? "" : HTTP::REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP::HTTP_USER_AGENT ) << endl;
+	}
 	return ( session );
 	M_EPILOG
 }
@@ -210,28 +212,31 @@ void HApplicationServer::do_service_request( ORequest& request_ ) {
 			}
 			try {
 				session_t session( handle_session( request_, it->second.sessions() ) );
-				if ( session )
+				if ( !! session ) {
 					it->second.handle_logic( request_, *session );
+				}
 				int pid = fork();
 				if ( ! pid ) {
 					try {
 						ORequest::dictionary_ptr_t jar = request_.compress_jar( application );
-						for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt )
+						for ( ORequest::dictionary_t::iterator cookieIt = jar->begin(); cookieIt != jar->end(); ++ cookieIt ) {
 							*sock << "Set-Cookie: " << cookieIt->first << "=" << cookieIt->second << ";" << endl;
+						}
 						*sock << "Content-type: text/html; charset=ISO-8859-2\n" << endl;
 						request_.update( "ssl", request_.is_ssl() ? "ssl-on" : "ssl-off", ORequest::ORIGIN::ENV );
 						request_.update( "mobile", request_.is_mobile() ? "mobile-on" : "mobile-off", ORequest::ORIGIN::ENV );
-						if ( session )
+						if ( !! session ) {
 							it->second.generate_page( request_, *session );
+						}
 					} catch ( HException const& e ) {
 						*sock << e.what() << endl;
 					} catch ( ... ) {
 						/* Graceful shutdown, frist draft. */
 					}
 					_exit( 0 );
-				} else if ( pid > 0 )
+				} else if ( pid > 0 ) {
 					_pending.insert( hcore::make_pair( pid, sock ) );
-				else {
+				} else {
 					out << "fork failed!" << endl;
 					disconnect_client( IPC_CHANNEL::REQUEST, sock, _( "request dropped - fork failed" ) );
 				}
