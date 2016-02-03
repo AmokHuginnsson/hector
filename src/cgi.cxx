@@ -31,6 +31,7 @@ Copyright:
 #include <yaal/hcore/hfile.hxx>
 #include <yaal/tools/stringalgo.hxx>
 #include <yaal/tools/hxml.hxx>
+#include <yaal/tools/hash.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "cgi.hxx"
 #include "application.hxx"
@@ -450,7 +451,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 					int long querySepPos( href.find( QUERY_SEPARATOR ) );
 					bool haveParams( false );
 					if ( querySepPos != HString::npos ) {
-						params_t params( string::split<params_t>( href.substr( querySepPos + 1 ), PARAM_SEPARATOR ) );
+						strings_t params( string::split<strings_t>( href.substr( querySepPos + 1 ), PARAM_SEPARATOR ) );
 						haveParams = ! params.is_empty();
 						for ( HString const& s : params ) {
 							keep.insert( s.substr( 0, s.find( VALUE_SEPARATOR ) ) );
@@ -558,6 +559,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	static HString const NODE_ARGV( "argv" );
 	static HString const NODE_ARG( "arg" );
 	static HString const ATTRIBUTE_LANG( "lang" );
+	static HString const ATTRIBUTE_TRANSFORM( "transform" );
 	static HString const LANG_HUGINN( "huginn" );
 	static HString const LANG_SQL( "sql" );
 	HString name;
@@ -593,7 +595,14 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 									for ( HXml::HConstNodeProxy a : n ) {
 										M_ENSURE_EX( ( a.get_type() == HXml::HNode::TYPE::NODE ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
 										M_ENSURE_EX( ( a.child_count() == 1 ) && ( (*a.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator arg can only have one content" );
-										params.push_back( (*a.begin()).get_value() );
+										xml::value_t transformArg( xml::try_attr_val( a, ATTRIBUTE_TRANSFORM ) );
+										HParameter::transform_t transform( nullptr );
+										if ( !! transformArg ) {
+											if ( *transformArg == "sha1" ) {
+												transform = &tools::hash::sha1;
+											}
+										}
+										params.emplace_back( (*a.begin()).get_value(), transform );
 										out << "arg: " << (*a.begin()).get_value() << endl;
 									}
 								} else {

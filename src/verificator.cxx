@@ -67,17 +67,18 @@ HHuginnVerificator::HHuginnVerificator(
 
 bool HHuginnVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 	_huginn->clear_arguments();
-	for ( yaal::hcore::HString const& p : _params ) {
-		if ( p.front() == '@' ) {
-			if ( p == "@user" ) {
+	for ( cgi::HParameter const& p : _params ) {
+		HString const& name( p.name() );
+		if ( name.front() == '@' ) {
+			if ( name == "@user" ) {
 				_huginn->add_argument( session_.get_user() );
-				out << "setting param: " << p << ", to value: " << session_.get_user() << endl;
+				out << "setting param: " << name << ", to value: " << session_.get_user() << endl;
 			}
 		} else {
-			ORequest::value_t value( req_.lookup( p, ORequest::ORIGIN::POST ) );
+			ORequest::value_t value( req_.lookup( name, ORequest::ORIGIN::POST ) );
 			if ( !! value ) {
 				_huginn->add_argument( *value );
-				out << "setting param: " << p << ", to value: " << *value << endl;
+				out << "setting param: " << name << ", to value: " << *value << endl;
 			}
 		}
 	}
