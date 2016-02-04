@@ -24,6 +24,7 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
+#include <yaal/hcore/hclock.hxx>
 #include <yaal/tools/hstringstream.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>
 
@@ -48,7 +49,10 @@ HVerificatorInterface::HVerificatorInterface( cgi::params_t const& params_, HFor
 }
 
 bool HVerificatorInterface::verify( ORequest const& req_, HSession& session_ ) {
-	return ( do_verify( req_, session_ ) );
+	HClock c;
+	bool result( do_verify( req_, session_ ) );
+	out << __PRETTY_FUNCTION__ << ": verificator executed in " << c.get_time_elapsed( time::UNIT::MICROSECOND ) << " microseconds" << endl;
+	return ( result );
 }
 
 HHuginnVerificator::HHuginnVerificator(

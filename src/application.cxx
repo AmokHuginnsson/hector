@@ -226,7 +226,9 @@ bool HApplication::do_handle_forms( ORequest& req_, HSession& session_ ) {
 	if ( action ) {
 		forms_t::iterator formIt( _forms.find( *action ) );
 		if ( formIt != _forms.end() ) {
-			formIt->second->verify( req_, session_ );
+			if ( formIt->second->verify( req_, session_ ) ) {
+				out << __PRETTY_FUNCTION__ << ": user input is valid" << endl;
+			}
 			handled = true;
 		}
 	}
