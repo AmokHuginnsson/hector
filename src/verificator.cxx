@@ -51,7 +51,7 @@ HVerificatorInterface::HVerificatorInterface( cgi::params_t const& params_, HFor
 bool HVerificatorInterface::verify( ORequest const& req_, HSession& session_ ) {
 	HClock c;
 	bool result( do_verify( req_, session_ ) );
-	out << __PRETTY_FUNCTION__ << ": verificator executed in " << c.get_time_elapsed( time::UNIT::MICROSECOND ) << " microseconds" << endl;
+	OUT << __PRETTY_FUNCTION__ << ": verificator executed in " << c.get_time_elapsed( time::UNIT::MICROSECOND ) << " microseconds" << endl;
 	return ( result );
 }
 
@@ -82,13 +82,13 @@ bool HHuginnVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 		if ( name.front() == '@' ) {
 			if ( name == "@user" ) {
 				_huginn->add_argument( session_.get_user() );
-				out << "setting param: " << name << ", to value: " << session_.get_user() << endl;
+				OUT << "setting param: " << name << ", to value: " << session_.get_user() << endl;
 			}
 		} else {
 			ORequest::value_t value( req_.lookup( name, ORequest::ORIGIN::POST ) );
 			if ( !! value ) {
 				_huginn->add_argument( *value );
-				out << "setting param: " << name << ", to value: " << *value << endl;
+				OUT << "setting param: " << name << ", to value: " << *value << endl;
 			}
 		}
 	}
@@ -120,14 +120,14 @@ bool HSQLVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 		if ( name.front() == '@' ) {
 			if ( name == "@user" ) {
 				_query->bind( paramNo, session_.get_user() );
-				out << "setting param: " << name << ", to value: " << session_.get_user() << endl;
+				OUT << "setting param: " << name << ", to value: " << session_.get_user() << endl;
 			}
 		} else {
 			ORequest::value_t value( req_.lookup( name, ORequest::ORIGIN::POST ) );
 			if ( !! value ) {
 				HString realValue( p.transform( *value ) );
 				_query->bind( paramNo, realValue );
-				out << "setting param: " << name << ", to value: " << realValue << endl;
+				OUT << "setting param: " << name << ", to value: " << realValue << endl;
 			}
 		}
 		++ paramNo;
@@ -140,12 +140,12 @@ bool HSQLVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 			if ( *rowIt[0] == "ok" ) {
 				ok = true;
 			}
-			out << __PRETTY_FUNCTION__ << ": verificator returned: " << *rowIt[0] << endl;
+			OUT << __PRETTY_FUNCTION__ << ": verificator returned: " << *rowIt[0] << endl;
 		} else {
-			out << __PRETTY_FUNCTION__ << ": NULL value returned in result set" << endl;
+			OUT << __PRETTY_FUNCTION__ << ": NULL value returned in result set" << endl;
 		}
 	} else {
-		out << __PRETTY_FUNCTION__ << ": empty result set" << endl;
+		OUT << __PRETTY_FUNCTION__ << ": empty result set" << endl;
 	}
 	return ( ok );
 }

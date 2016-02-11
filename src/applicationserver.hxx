@@ -55,7 +55,7 @@ public:
 	void start( void );
 	void stop( void );
 	int on_sigchild( int );
-	void process_sigchild( int );
+	void process_sigchild( yaal::tools::HIODispatcher::stream_t& );
 protected:
 	virtual void do_service_request( ORequest& ) override;
 	virtual void do_restart( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) override;

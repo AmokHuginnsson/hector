@@ -133,7 +133,7 @@ ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t c
 	( ! bFound ) && ( !!( origin_ & ORIGIN::COOKIE ) )
 		&& ( bFound = ( ( it = _cookies->find( key_ ) )     != _cookies->end() ) )
 		&& ( !! *( value = it->second ) );
-	out << "key: " << key_ << ", value: " << ( value ? *value : HString( "(nil)" ) ) << endl;
+	OUT << "key: " << key_ << ", value: " << ( value ? *value : HString( "(nil)" ) ) << endl;
 	return ( value );
 	M_EPILOG
 }

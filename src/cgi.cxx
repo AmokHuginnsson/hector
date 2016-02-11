@@ -576,7 +576,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 					if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
 						name = (*del).get_name();
 						if ( name == NODE_INPUT ) {
-							out << "input" << endl;
+							OUT << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
 							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
 							HString code;
@@ -603,7 +603,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 											}
 										}
 										params.emplace_back( (*a.begin()).get_value(), transform );
-										out << "arg: " << (*a.begin()).get_value() << endl;
+										OUT << "arg: " << (*a.begin()).get_value() << endl;
 									}
 								} else {
 									throw HCGIException( "unknown node in verificator: "_ys.append( n.get_name() ), n.get_line() );
@@ -614,11 +614,11 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							}
 							form->set_verificator( type, code, params );
 							(*child).remove_node( del );
-							out << "verify" << endl;
+							OUT << "verify" << endl;
 						}
 					}
 				}
-				out << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
+				OUT << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
 				app_->add_form( make_pair<HString const, HForm::ptr_t>( get_optional_value_or<HString>( optId, "(nuil)" ), yaal::move( form ) ) );
 			} else
 				prepare_logic( app_, *child );

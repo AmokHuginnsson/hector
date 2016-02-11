@@ -58,7 +58,7 @@ void HApplicationServer::start( void ) {
 	HSignalService& ss = HSignalService::get_instance();
 	_db->connect( setup._databaseName, setup._databaseName, setup._databasePassword );
 	ss.register_handler( SIGCHLD, call( &HApplicationServer::on_sigchild, this, _1 ) );
-	_dispatcher.register_file_descriptor_handler( _sigChildEvent.get_reader_fd(), call( &HApplicationServer::process_sigchild, this, _1 ) );
+	_dispatcher.register_file_descriptor_handler( _sigChildEvent.out(), call( &HApplicationServer::process_sigchild, this, _1 ) );
 
 	static char const* const CONFIGURATION_FILE = "/hector.xml";
 	static char const* const NODE_CONFIGURATION = "configuration";
@@ -144,7 +144,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 					)
 				);
 			} catch ( HException& e ) {
-				out << "Failed to load `" << *id << "': " << e.what() << "." << endl;
+				OUT << "Failed to load `" << *id << "': " << e.what() << "." << endl;
 				hcore::log( LOG_LEVEL::WARNING ) << "Failed to load `" << *id << "': " << e.what() << "." << endl;
 			}
 		}
@@ -163,29 +163,29 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 			HApplication::sessions_t::iterator sessionIt( sessions_.find( *sid ) );
 			if ( sessionIt != sessions_.end() ) {
 				if ( ( *remoteAddress == sessionIt->second.get_remote_addr() ) && ( *httpUserAgent == sessionIt->second.get_http_user_agent() ) ) {
-					out << "got valid session ID: " << *sid << endl;
+					OUT << "got valid session ID: " << *sid << endl;
 					session = sessionIt->second;
 				} else {
-					out << "WARNING! forged/spoofed session ID: " << *sid << " ( " << *remoteAddress << " ?= " << sessionIt->second.get_remote_addr() << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second.get_http_user_agent() << " )" << endl;
+					OUT << "WARNING! forged/spoofed session ID: " << *sid << " ( " << *remoteAddress << " ?= " << sessionIt->second.get_remote_addr() << " ), ( " << *httpUserAgent << " ?= " << sessionIt->second.get_http_user_agent() << " )" << endl;
 					sessions_.erase( sessionIt );
 				}
 			} else {
 				clog << "current SIDs: ";
 				transform( sessions_.begin(), sessions_.end(), stream_iterator( clog, " " ), select1st<HApplication::sessions_t::value_type>() );
 				clog << endl;
-				out << "invalid session ID: " << *sid << endl;
+				OUT << "invalid session ID: " << *sid << endl;
 			}
 		} else {
-			out << "sid not set" << endl;
+			OUT << "sid not set" << endl;
 		}
 		if ( ! session ) {
 			HSession newSession( *remoteAddress, *httpUserAgent );
 			session = sessions_.insert( make_pair( newSession.get_id(), newSession ) ).first->second;
 			request_.update( "sid", newSession.get_id(), ORequest::ORIGIN::COOKIE );
-			out << "setting new SID: " << newSession.get_id() << endl;
+			OUT << "setting new SID: " << newSession.get_id() << endl;
 		}
 	} else {
-		out << "WARNING! missing: " << ( remoteAddress ? "" : HTTP::REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP::HTTP_USER_AGENT ) << endl;
+		OUT << "WARNING! missing: " << ( remoteAddress ? "" : HTTP::REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP::HTTP_USER_AGENT ) << endl;
 	}
 	return ( session );
 	M_EPILOG
@@ -198,11 +198,11 @@ void HApplicationServer::do_service_request( ORequest& request_ ) {
 	if ( request_.lookup( "application", application ) && _defaultApplication.is_empty() ) {
 		static HString const err( "\n\nno default application set nor application selected!\n" );
 		*sock << err << endl;
-		out << err << endl;
+		OUT << err << endl;
 	} else {
 		applications_t::iterator it = _applications.find( application );
 		if ( it != _applications.end() ) {
-			out << "using application: " << application << endl;
+			OUT << "using application: " << application << endl;
 			try {
 				request_.decompress_jar( application );
 			} catch ( HBase64Exception& e ) {
@@ -237,7 +237,7 @@ void HApplicationServer::do_service_request( ORequest& request_ ) {
 				} else if ( pid > 0 ) {
 					_pending.insert( hcore::make_pair( pid, sock ) );
 				} else {
-					out << "fork failed!" << endl;
+					OUT << "fork failed!" << endl;
 					disconnect_client( IPC_CHANNEL::REQUEST, sock, _( "request dropped - fork failed" ) );
 				}
 			} catch ( ... ) {
@@ -246,7 +246,7 @@ void HApplicationServer::do_service_request( ORequest& request_ ) {
 		} else {
 			static HString const err( "no such application: " );
 			*sock << "\n\n" << err << application << endl;
-			out << err << application << endl;
+			OUT << err << application << endl;
 			disconnect_client( IPC_CHANNEL::REQUEST, sock, _( "error message generated" ) );
 		}
 	}
@@ -261,7 +261,7 @@ int HApplicationServer::on_sigchild( int sigNo_ ) {
 	M_EPILOG
 }
 
-void HApplicationServer::process_sigchild( int ) {
+void HApplicationServer::process_sigchild( HIODispatcher::stream_t& ) {
 	M_PROLOG
 	int dummy = 0;
 	_sigChildEvent.read( &dummy, sizeof( dummy ) );
@@ -295,7 +295,7 @@ void HApplicationServer::clean_request( int opts ) {
 	while ( ! _pending.is_empty() && ( ( pid = waitpid( WAIT_ANY, &status, opts | WUNTRACED ) ) > 0 ) ) {
 		pending_t::iterator it = _pending.find( pid );
 		M_ENSURE( it != _pending.end() );
-		out << "activex finished with: " << status << "\n";
+		OUT << "activex finished with: " << status << "\n";
 		if ( FWD_WIFSIGNALED( status ) )
 			clog << "\tby signal: " << FWD_WTERMSIG( status ) << endl;
 		else

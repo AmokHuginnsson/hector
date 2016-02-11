@@ -52,15 +52,15 @@ HActiveX HActiveX::get_instance(
 	HPlugin::ptr_t activeX( make_pointer<HPlugin>() );
 	activex << "/" << code_ << "/" << ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
-	out << "Trying path: `" << activex.raw() << "' for activex: `" << id_ << "'" << endl;
+	OUT << "Trying path: `" << activex.raw() << "' for activex: `" << id_ << "'" << endl;
 	activeX->load( activex.raw() );
 	M_ASSERT( activeX->is_loaded() );
-	out << "activex nest for `" << id_ << "' loaded" << endl;
+	OUT << "activex nest for `" << id_ << "' loaded" << endl;
 	typedef HApplication::ptr_t ( *factory_t )( void );
 	factory_t factory;
 	activeX->resolve( SYMBOL_FACTORY, factory );
 	M_ASSERT( factory );
-	out << "activex factory for `" << id_ << "' connected" << endl;
+	OUT << "activex factory for `" << id_ << "' connected" << endl;
 	app = factory();
 	if ( ! app ) {
 		throw HActiveXException( "invalid activex" );

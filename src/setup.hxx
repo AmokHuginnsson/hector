@@ -33,7 +33,7 @@ Copyright:
 
 #include "config.hxx"
 
-#define out ( yaal::hcore::clog << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
+#define OUT ( yaal::hcore::clog << __FILE__ + OSetup::PATH_OFFSET << ":" << __LINE__ << ": " )
 
 namespace hector {
 

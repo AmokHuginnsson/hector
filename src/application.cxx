@@ -60,7 +60,7 @@ HApplication::HApplication( void )
 }
 
 HApplication::~HApplication( void ) {
-	out << "Application `" << _name << "' unloaded." << endl;
+	OUT << "Application `" << _name << "' unloaded." << endl;
 }
 
 void HApplication::init( void ) {
@@ -141,11 +141,11 @@ void HApplication::set_db( yaal::dbwrapper::HDataBase::ptr_t db_ ) {
 }
 
 void HApplication::do_init( void ) {
-	out << __PRETTY_FUNCTION__ << endl;
+	OUT << __PRETTY_FUNCTION__ << endl;
 }
 
 void HApplication::do_load( void ) {
-	out << __PRETTY_FUNCTION__ << endl;
+	OUT << __PRETTY_FUNCTION__ << endl;
 }
 
 bool HApplication::handle_auth( ORequest& req_, HSession& session_ ) {
@@ -175,9 +175,9 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 							"SELECT ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER(?) AND %3$s = LOWER(?) ) + ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER(?) );"
 						) % setup._tableUser % setup._columnLogin % setup._columnPassword
 					).string();
-					out << "query: " << queryString << endl;
+					OUT << "query: " << queryString << endl;
 				} catch ( HFormatException const& e ) {
-					out << e.what() << endl;
+					OUT << e.what() << endl;
 				}
 				HQuery::ptr_t query( _db->prepare_query( queryString ) );
 				query->bind( 1, *login );
@@ -187,23 +187,23 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 				M_ENSURE( !! rs );
 				HRecordSet::iterator row = rs->begin();
 				if ( row == rs->end() ) {
-					out << _db->get_error() << endl;
+					OUT << _db->get_error() << endl;
 					M_ENSURE( ! "database execute_query error" );
 				}
 				int result( lexical_cast<int>( *row[0] ) );
 				if ( result == 2 ) {
 					session_.set_user( *login );
 					session_.add_group( USERS );
-					out << "authenticated user: " << *login << endl;
+					OUT << "authenticated user: " << *login << endl;
 				} else if ( result == 1 ) {
-					out << "invalid password" << endl;
+					OUT << "invalid password" << endl;
 				} else {
-					out << "invalid user" << endl;
+					OUT << "invalid user" << endl;
 				}
 			}
 			handled = true;
 		} else if ( *action == LOGOUT ) {
-			out << "user: " << session_.get_user() << "logged out" << endl;
+			OUT << "user: " << session_.get_user() << "logged out" << endl;
 			sessions().erase( session_.get_id() );
 			handled = true;
 		}
@@ -214,7 +214,7 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 
 bool HApplication::handle_forms( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
-	out << __PRETTY_FUNCTION__ << endl;
+	OUT << __PRETTY_FUNCTION__ << endl;
 	return ( do_handle_forms( req_, session_ ) );
 	M_EPILOG
 }
@@ -227,7 +227,7 @@ bool HApplication::do_handle_forms( ORequest& req_, HSession& session_ ) {
 		forms_t::iterator formIt( _forms.find( *action ) );
 		if ( formIt != _forms.end() ) {
 			if ( formIt->second->verify( req_, session_ ) ) {
-				out << __PRETTY_FUNCTION__ << ": user input is valid" << endl;
+				OUT << __PRETTY_FUNCTION__ << ": user input is valid" << endl;
 			}
 			handled = true;
 		}
@@ -238,7 +238,7 @@ bool HApplication::do_handle_forms( ORequest& req_, HSession& session_ ) {
 
 void HApplication::do_handle_logic( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
-	out << __PRETTY_FUNCTION__ << endl;
+	OUT << __PRETTY_FUNCTION__ << endl;
 	if ( ! handle_auth( req_, session_ ) ) {
 		handle_forms( req_, session_ );
 	}
@@ -253,7 +253,7 @@ void HApplication::do_handle_logic( ORequest& req_, HSession& session_ ) {
 
 void HApplication::do_generate_page( ORequest const& req, HSession const& session_ ) {
 	M_PROLOG
-	out << __PRETTY_FUNCTION__ << ( req.is_ssl() ? " with SSL" : "" ) << endl;
+	OUT << __PRETTY_FUNCTION__ << ( req.is_ssl() ? " with SSL" : "" ) << endl;
 	cgi::default_t defaults;
 	if ( !! dom().get_root() )
 		cgi::waste_children( dom().get_root(), req, defaults );
@@ -273,7 +273,7 @@ void HApplication::do_generate_page( ORequest const& req, HSession const& sessio
 
 void HApplication::generate_page( ORequest const& req, HSession const& session_ ) {
 	M_PROLOG
-	out << __PRETTY_FUNCTION__ << endl;
+	OUT << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req, session_ );
 	if ( !! dom().get_root() )
 		_dom.save( req.socket() );
@@ -283,7 +283,7 @@ void HApplication::generate_page( ORequest const& req, HSession const& session_ 
 
 void HApplication::handle_logic( ORequest& req, HSession& session_ ) {
 	M_PROLOG
-	out << __PRETTY_FUNCTION__ << endl;
+	OUT << __PRETTY_FUNCTION__ << endl;
 	do_handle_logic( req, session_ );
 	return;
 	M_EPILOG

@@ -59,16 +59,18 @@ HServer::HServer( int connections_ )
 	_worker( setup._maxWorkingThreads ),
 	_dispatcher( connections_, 3600 * 1000 ) {
 	M_PROLOG
-	_socket[ IPC_CHANNEL::CONTROL ] = HSocket::ptr_t(
-			new HSocket( HSocket::socket_type_t( HSocket::TYPE::FILE ) | HSocket::TYPE::NONBLOCKING, connections_ ) );
-	_socket[ IPC_CHANNEL::REQUEST ] = HSocket::ptr_t(
-			new HSocket( HSocket::socket_type_t( HSocket::TYPE::FILE ) | HSocket::TYPE::NONBLOCKING, connections_ ) );
+	_socket[ IPC_CHANNEL::CONTROL ] = make_pointer<HSocket>(
+		HSocket::socket_type_t( HSocket::TYPE::FILE ) | HSocket::TYPE::NONBLOCKING, connections_
+	);
+	_socket[ IPC_CHANNEL::REQUEST ] = make_pointer<HSocket>(
+		HSocket::socket_type_t( HSocket::TYPE::FILE ) | HSocket::TYPE::NONBLOCKING, connections_
+	);
 	return;
 	M_EPILOG
 }
 
 HServer::~HServer( void ) {
-	out << brightred << "<<<hector>>>" << lightgray << " server finished." << endl;
+	OUT << brightred << "<<<hector>>>" << lightgray << " server finished." << endl;
 }
 
 int HServer::init_server( void ) {
@@ -84,12 +86,14 @@ int HServer::init_server( void ) {
 	_handlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::POST ] = &HServer::handler_post;
 	_handlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::DONE ] = &HServer::handler_done;
 	_dispatcher.register_file_descriptor_handler(
-			_socket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor(),
-			call( &HServer::handler_connection, this, _1 ) );
+		_socket[ IPC_CHANNEL::CONTROL ],
+		call( &HServer::handler_connection, this, _1 )
+	);
 	_dispatcher.register_file_descriptor_handler(
-			_socket[ IPC_CHANNEL::REQUEST ]->get_file_descriptor(),
-			call( &HServer::handler_connection, this, _1 ) );
-	out << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
+		_socket[ IPC_CHANNEL::REQUEST ],
+		call( &HServer::handler_connection, this, _1 )
+	);
+	OUT << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );
 	M_EPILOG
 }
@@ -115,40 +119,43 @@ void HServer::init_sockets( void ) {
 	M_EPILOG
 }
 
-void HServer::handler_connection( int msgFd ) {
+void HServer::handler_connection( HIODispatcher::stream_t& stream_ ) {
 	M_PROLOG
-	IPC_CHANNEL::ipc_channel_t channel = _socket[ IPC_CHANNEL::CONTROL ]->get_file_descriptor() == msgFd ? IPC_CHANNEL::CONTROL : IPC_CHANNEL::REQUEST;
+	IPC_CHANNEL::ipc_channel_t channel = _socket[ IPC_CHANNEL::CONTROL ] == stream_ ? IPC_CHANNEL::CONTROL : IPC_CHANNEL::REQUEST;
 	HSocket::ptr_t client = _socket[ channel ]->accept();
 	M_ASSERT( !! client );
 	int fd = client->get_file_descriptor();
-	if ( _socket[ channel ]->get_client_count() >= _maxConnections )
+	if ( _socket[ channel ]->get_client_count() >= _maxConnections ) {
 		_socket[ channel ]->shutdown_client( fd );
-	else {
-		if ( channel == IPC_CHANNEL::REQUEST )
+	} else {
+		if ( channel == IPC_CHANNEL::REQUEST ) {
 			_requests[ fd ] = ORequest( client );
-		_dispatcher.register_file_descriptor_handler( fd, call( &HServer::handler_message, this, _1 ) );
+		}
+		_dispatcher.register_file_descriptor_handler( client, call( &HServer::handler_message, this, _1 ) );
 	}
-	out << green << "new connection" << lightgray << endl;
+	OUT << green << "new connection" << lightgray << endl;
 	return;
 	M_EPILOG
 }
 
-void HServer::handler_message( int fileDescriptor_ ) {
+void HServer::handler_message( HIODispatcher::stream_t& stream_ ) {
 	M_PROLOG
 	HString message;
 	IPC_CHANNEL::ipc_channel_t channel = IPC_CHANNEL::REQUEST;
-	HSocket::iterator clientIt( _socket[ channel ]->find( fileDescriptor_ ) );
+	int fd( static_cast<int>( reinterpret_cast<int_native_t>( stream_->data() ) ) );
+	HSocket::iterator clientIt( _socket[ channel ]->find( fd ) );
 	HSocket::ptr_t client;
 	if ( clientIt == _socket[ channel ]->end() ) {
 		channel = IPC_CHANNEL::CONTROL;
-		clientIt = _socket[ channel ]->find( fileDescriptor_ );
+		clientIt = _socket[ channel ]->find( fd );
 	}
-	if ( clientIt != _socket[ channel ]->end() )
+	if ( clientIt != _socket[ channel ]->end() ) {
 		client = clientIt->second;
+	}
 	if ( !! client ) {
 		int long nRead( 0 );
 		if ( ( nRead = client->read_until( message ) ) > 0 ) {
-			out << "<-" << message << endl;
+			OUT << "<-" << message << endl;
 			static HString command;
 			static HString argument;
 			int long sepIdx = message.find( ":" );
@@ -178,11 +185,11 @@ void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t const& channel,
 	M_PROLOG
 	M_ASSERT( !! client_ );
 	int fileDescriptor = client_->get_file_descriptor();
-	_dispatcher.unregister_file_descriptor_handler( fileDescriptor );
+	_dispatcher.unregister_file_descriptor_handler( client_ );
 	if ( channel == IPC_CHANNEL::REQUEST )
 		_requests.erase( fileDescriptor );
 	_socket[ channel ]->shutdown_client( fileDescriptor );
-	out << "client closed connection";
+	OUT << "client closed connection";
 	if ( reason_ )
 		clog << " " << reason_;
 	clog << endl;
