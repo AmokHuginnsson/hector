@@ -36,9 +36,9 @@ namespace hector {
 
 class HServer {
 public:
-	typedef void ( HServer::* handler_t )( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
+	typedef void ( HServer::* handler_t )( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
 	typedef yaal::hcore::HMap<yaal::hcore::HString, handler_t> handlers_t;
-	typedef yaal::hcore::HMap<int, ORequest> requests_t;
+	typedef yaal::hcore::HMap<yaal::hcore::HStreamInterface*, ORequest> requests_t;
 	struct REQUEST_PROTO {
 		static char const* const ENV;
 		static char const* const COOKIE;
@@ -77,24 +77,26 @@ public:
 protected:
 	/*{*/
 	void init_sockets( void );
-	void disconnect_client( IPC_CHANNEL::ipc_channel_t const&, yaal::hcore::HSocket::ptr_t&, char const* const = NULL );
+	void disconnect_client( IPC_CHANNEL::ipc_channel_t, yaal::hcore::HStreamInterface::ptr_t&, char const* const = NULL );
 	void handler_connection( yaal::tools::HIODispatcher::stream_t& );
-	void handler_message( yaal::tools::HIODispatcher::stream_t& );
-	void handler_shutdown( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_restart( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_reload( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_status( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_env( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_cookie( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_get( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_post( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void handler_done( yaal::hcore::HSocket::ptr_t&, yaal::hcore::HString const& );
-	void read_request( yaal::hcore::HSocket::ptr_t&, ORequest::origin_t const&, yaal::hcore::HString const& );
+	void handler_message( yaal::tools::HIODispatcher::stream_t&, int );
+	void handler_request( yaal::tools::HIODispatcher::stream_t& );
+	void handler_control( yaal::tools::HIODispatcher::stream_t& );
+	void handler_shutdown( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_restart( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_reload( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_status( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_env( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_cookie( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_get( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_post( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void handler_done( yaal::hcore::HStreamInterface::ptr_t&, yaal::hcore::HString const& );
+	void read_request( yaal::hcore::HStreamInterface::ptr_t&, ORequest::origin_t const&, yaal::hcore::HString const& );
 	void service_request( ORequest& );
 	virtual void do_service_request( ORequest& ) = 0;
-	virtual void do_restart( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) = 0;
-	virtual void do_reload( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) = 0;
-	virtual void do_status( yaal::hcore::HSocket::ptr_t& ) = 0;
+	virtual void do_restart( yaal::hcore::HStreamInterface::ptr_t, yaal::hcore::HString const& ) = 0;
+	virtual void do_reload( yaal::hcore::HStreamInterface::ptr_t, yaal::hcore::HString const& ) = 0;
+	virtual void do_status( yaal::hcore::HStreamInterface::ptr_t& ) = 0;
 	/*}*/
 };
 

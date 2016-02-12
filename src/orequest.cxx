@@ -52,7 +52,7 @@ ORequest::origin_t const ORequest::ORIGIN::ANY =
 	ORequest::ORIGIN::ENV | ORequest::ORIGIN::COOKIE
 	| ORequest::ORIGIN::GET | ORequest::ORIGIN::POST | ORequest::ORIGIN::JAR;
 
-ORequest::ORequest( HSocket::ptr_t socket_ )
+ORequest::ORequest( HStreamInterface::ptr_t socket_ )
 	: _socket( socket_ ),
 	_environment( new dictionary_t() ),
 	_get( new dictionary_t() ),
@@ -298,11 +298,11 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 	M_EPILOG
 }
 
-HSocket::ptr_t ORequest::socket( void ) {
+HStreamInterface::ptr_t ORequest::socket( void ) {
 	return ( _socket );
 }
 
-HSocket::ptr_t const ORequest::socket( void ) const {
+HStreamInterface::ptr_t const ORequest::socket( void ) const {
 	return ( _socket );
 }
 

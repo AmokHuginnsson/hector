@@ -124,37 +124,40 @@ void HServer::handler_connection( HIODispatcher::stream_t& stream_ ) {
 	IPC_CHANNEL::ipc_channel_t channel = _socket[ IPC_CHANNEL::CONTROL ] == stream_ ? IPC_CHANNEL::CONTROL : IPC_CHANNEL::REQUEST;
 	HSocket::ptr_t client = _socket[ channel ]->accept();
 	M_ASSERT( !! client );
-	int fd = client->get_file_descriptor();
-	if ( _socket[ channel ]->get_client_count() >= _maxConnections ) {
-		_socket[ channel ]->shutdown_client( fd );
-	} else {
+	if ( _requests.get_size() < _maxConnections ) {
 		if ( channel == IPC_CHANNEL::REQUEST ) {
-			_requests[ fd ] = ORequest( client );
+			_requests[ client.raw() ] = ORequest( client );
 		}
-		_dispatcher.register_file_descriptor_handler( client, call( &HServer::handler_message, this, _1 ) );
+		_dispatcher.register_file_descriptor_handler(
+			client,
+			call(
+				channel == IPC_CHANNEL::REQUEST ? &HServer::handler_request : &HServer::handler_control,
+				this,
+				_1
+			)
+		);
 	}
 	OUT << green << "new connection" << lightgray << endl;
 	return;
 	M_EPILOG
 }
 
-void HServer::handler_message( HIODispatcher::stream_t& stream_ ) {
+void HServer::handler_request( HIODispatcher::stream_t& stream_ ) {
+	handler_message( stream_, IPC_CHANNEL::REQUEST );
+	return;
+}
+
+void HServer::handler_control( HIODispatcher::stream_t& stream_ ) {
+	handler_message( stream_, IPC_CHANNEL::CONTROL );
+	return;
+}
+
+void HServer::handler_message( HIODispatcher::stream_t& stream_, int ipcChannel_ ) {
 	M_PROLOG
 	HString message;
-	IPC_CHANNEL::ipc_channel_t channel = IPC_CHANNEL::REQUEST;
-	int fd( static_cast<int>( reinterpret_cast<int_native_t>( stream_->data() ) ) );
-	HSocket::iterator clientIt( _socket[ channel ]->find( fd ) );
-	HSocket::ptr_t client;
-	if ( clientIt == _socket[ channel ]->end() ) {
-		channel = IPC_CHANNEL::CONTROL;
-		clientIt = _socket[ channel ]->find( fd );
-	}
-	if ( clientIt != _socket[ channel ]->end() ) {
-		client = clientIt->second;
-	}
-	if ( !! client ) {
+	if ( !! stream_ ) {
 		int long nRead( 0 );
-		if ( ( nRead = client->read_until( message ) ) > 0 ) {
+		if ( ( nRead = stream_->read_until( message ) ) > 0 ) {
 			OUT << "<-" << message << endl;
 			static HString command;
 			static HString argument;
@@ -162,45 +165,47 @@ void HServer::handler_message( HIODispatcher::stream_t& stream_ ) {
 			command = message.left( sepIdx >= 0 ? sepIdx : meta::max_signed<int long>::value );
 			argument = message.mid( sepIdx + 1 );
 			int msgLength = static_cast<int>( command.get_length() );
-			if ( msgLength < 1 )
-				disconnect_client( channel, client, _( "Malformed data." ) );
-			else {
-				handlers_t::iterator it = _handlers[ channel ].find( command );
-				if ( it != _handlers[ channel ].end() )
-					( this->*it->second )( client, argument );
-				else
-					disconnect_client( channel, client, _( "Unknown command." ) );
+			if ( msgLength < 1 ) {
+				disconnect_client( ipcChannel_, stream_, _( "Malformed data." ) );
+			} else {
+				handlers_t::iterator it = _handlers[ ipcChannel_ ].find( command );
+				if ( it != _handlers[ ipcChannel_ ].end() ) {
+					( this->*it->second )( stream_, argument );
+				} else {
+					disconnect_client( ipcChannel_, stream_, _( "Unknown command." ) );
+				}
 			}
-		} else if ( ! nRead )
-			disconnect_client( channel, client );
+		} else if ( ! nRead ) {
+			disconnect_client( ipcChannel_, stream_ );
+		}
 		/* else nRead < 0 => REPEAT */
 	}
 	return;
 	M_EPILOG
 }
 
-void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t const& channel,
-		yaal::hcore::HSocket::ptr_t& client_,
+void HServer::disconnect_client( IPC_CHANNEL::ipc_channel_t channel,
+		yaal::hcore::HStreamInterface::ptr_t& client_,
 		char const* const reason_ ) {
 	M_PROLOG
 	M_ASSERT( !! client_ );
-	int fileDescriptor = client_->get_file_descriptor();
 	_dispatcher.unregister_file_descriptor_handler( client_ );
-	if ( channel == IPC_CHANNEL::REQUEST )
-		_requests.erase( fileDescriptor );
-	_socket[ channel ]->shutdown_client( fileDescriptor );
+	if ( channel == IPC_CHANNEL::REQUEST ) {
+		_requests.erase( client_.raw() );
+	}
 	OUT << "client closed connection";
-	if ( reason_ )
+	if ( reason_ ) {
 		clog << " " << reason_;
+	}
 	clog << endl;
 	return;
 	M_EPILOG
 }
 
-void HServer::read_request( HSocket::ptr_t& sock, ORequest::origin_t const& origin, yaal::hcore::HString const& string_ ) {
+void HServer::read_request( HStreamInterface::ptr_t& sock, ORequest::origin_t const& origin, yaal::hcore::HString const& string_ ) {
 	M_PROLOG
 	requests_t::iterator reqIt;
-	if ( ( reqIt = _requests.find( sock->get_file_descriptor() ) ) == _requests.end() ) {
+	if ( ( reqIt = _requests.find( sock.raw() ) ) == _requests.end() ) {
 		disconnect_client( IPC_CHANNEL::REQUEST, sock );
 	} else {
 		HString key;
@@ -220,60 +225,60 @@ void HServer::read_request( HSocket::ptr_t& sock, ORequest::origin_t const& orig
 	M_EPILOG
 }
 
-void HServer::handler_env( HSocket::ptr_t& sock, yaal::hcore::HString const& env_ ) {
+void HServer::handler_env( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& env_ ) {
 	M_PROLOG
 	read_request( sock, ORequest::ORIGIN::ENV, env_ );
 	M_EPILOG
 }
 
-void HServer::handler_cookie( HSocket::ptr_t& sock, yaal::hcore::HString const& cookie_ ) {
+void HServer::handler_cookie( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& cookie_ ) {
 	M_PROLOG
 	read_request( sock, ORequest::ORIGIN::JAR, cookie_ );
 	M_EPILOG
 }
 
-void HServer::handler_get( HSocket::ptr_t& sock, yaal::hcore::HString const& gET_ ) {
+void HServer::handler_get( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& gET_ ) {
 	M_PROLOG
 	read_request( sock, ORequest::ORIGIN::GET, gET_ );
 	M_EPILOG
 }
 
-void HServer::handler_post( HSocket::ptr_t& sock, yaal::hcore::HString const& pOST_ ) {
+void HServer::handler_post( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& pOST_ ) {
 	M_PROLOG
 	read_request( sock, ORequest::ORIGIN::POST, pOST_ );
 	M_EPILOG
 }
 
-void HServer::handler_done( HSocket::ptr_t& sock, yaal::hcore::HString const& ) {
+void HServer::handler_done( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& ) {
 	M_PROLOG
 	requests_t::iterator reqIt;
-	if ( ( reqIt = _requests.find( sock->get_file_descriptor() ) ) == _requests.end() )
+	if ( ( reqIt = _requests.find( sock.raw() ) ) == _requests.end() )
 		disconnect_client( IPC_CHANNEL::REQUEST, sock );
 	else
 		service_request( reqIt->second );
 	M_EPILOG
 }
 
-void HServer::handler_shutdown( HSocket::ptr_t&, yaal::hcore::HString const& ) {
+void HServer::handler_shutdown( HStreamInterface::ptr_t&, yaal::hcore::HString const& ) {
 	M_PROLOG
 	_dispatcher.stop();
 	return;
 	M_EPILOG
 }
 
-void HServer::handler_restart( HSocket::ptr_t& sock, yaal::hcore::HString const& app ) {
+void HServer::handler_restart( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& app ) {
 	M_PROLOG
 	_worker.schedule_task( call( &HServer::do_restart, this, sock, app ) );
 	M_EPILOG
 }
 
-void HServer::handler_reload( HSocket::ptr_t& sock, yaal::hcore::HString const& app ) {
+void HServer::handler_reload( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& app ) {
 	M_PROLOG
 	_worker.schedule_task( call( &HServer::do_reload, this, sock, app ) );
 	M_EPILOG
 }
 
-void HServer::handler_status( HSocket::ptr_t& sock, yaal::hcore::HString const& ) {
+void HServer::handler_status( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& ) {
 	M_PROLOG
 	do_status( sock );
 	M_EPILOG

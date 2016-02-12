@@ -56,14 +56,14 @@ public:
 	typedef HConstIterator const_iterator;
 	typedef yaal::tools::HOptional<yaal::hcore::HString const&> value_t;
 private:
-	yaal::hcore::HSocket::ptr_t _socket;
+	yaal::hcore::HStreamInterface::ptr_t _socket;
 	dictionary_ptr_t _environment;
 	dictionary_ptr_t _get;
 	dictionary_ptr_t _post;
 	dictionary_ptr_t _cookies;
 	dictionary_ptr_t _jar;
 public:
-	ORequest( yaal::hcore::HSocket::ptr_t = yaal::hcore::HSocket::ptr_t() );
+	ORequest( yaal::hcore::HStreamInterface::ptr_t = yaal::hcore::HStreamInterface::ptr_t() );
 	ORequest( ORequest const& );
 	ORequest& operator = ( ORequest const& );
 	void update( yaal::hcore::HString const&, yaal::hcore::HString const&, origin_t const& );
@@ -73,8 +73,8 @@ public:
 	dictionary_ptr_t compress_jar( yaal::hcore::HString const& );
 	bool is_ssl( void ) const;
 	bool is_mobile( void ) const;
-	yaal::hcore::HSocket::ptr_t socket( void );
-	yaal::hcore::HSocket::ptr_t const socket( void ) const;
+	yaal::hcore::HStreamInterface::ptr_t socket( void );
+	yaal::hcore::HStreamInterface::ptr_t const socket( void ) const;
 	const_iterator begin( void ) const;
 	const_iterator end( void ) const;
 	friend class HConstIterator;

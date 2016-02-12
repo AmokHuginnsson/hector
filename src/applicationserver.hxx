@@ -41,7 +41,7 @@ namespace hector {
 
 class HApplicationServer : public HServer {
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HActiveX> applications_t;
-	typedef yaal::hcore::HMap<int, yaal::hcore::HSocket::ptr_t> pending_t;
+	typedef yaal::hcore::HMap<int, yaal::hcore::HStreamInterface::ptr_t> pending_t;
 	typedef yaal::tools::HOptional<HSession&> session_t;
 	applications_t _applications;
 	pending_t _pending;
@@ -58,9 +58,9 @@ public:
 	void process_sigchild( yaal::tools::HIODispatcher::stream_t& );
 protected:
 	virtual void do_service_request( ORequest& ) override;
-	virtual void do_restart( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) override;
-	virtual void do_reload( yaal::hcore::HSocket::ptr_t, yaal::hcore::HString const& ) override;
-	virtual void do_status( yaal::hcore::HSocket::ptr_t& ) override;
+	virtual void do_restart( yaal::hcore::HStreamInterface::ptr_t, yaal::hcore::HString const& ) override;
+	virtual void do_reload( yaal::hcore::HStreamInterface::ptr_t, yaal::hcore::HString const& ) override;
+	virtual void do_status( yaal::hcore::HStreamInterface::ptr_t& ) override;
 	session_t handle_session( ORequest&, HApplication::sessions_t& );
 	void clean_request( int );
 private:

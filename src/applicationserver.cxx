@@ -193,7 +193,7 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 
 void HApplicationServer::do_service_request( ORequest& request_ ) {
 	M_PROLOG
-	HSocket::ptr_t sock = request_.socket();
+	HStreamInterface::ptr_t sock = request_.socket();
 	HString application( _defaultApplication );
 	if ( request_.lookup( "application", application ) && _defaultApplication.is_empty() ) {
 		static HString const err( "\n\nno default application set nor application selected!\n" );
@@ -300,15 +300,16 @@ void HApplicationServer::clean_request( int opts ) {
 			clog << "\tby signal: " << FWD_WTERMSIG( status ) << endl;
 		else
 			clog << "\tnormally: " << FWD_WEXITSTATUS( status ) << endl;
-		if ( _requests.find( it->second->get_file_descriptor() ) != _requests.end() )
+		if ( _requests.find( it->second.raw() ) != _requests.end() ) {
 			disconnect_client( IPC_CHANNEL::REQUEST, it->second, _( "request serviced" ) );
+		}
 		_pending.erase( it );
 	}
 	return;
 	M_EPILOG
 }
 
-void HApplicationServer::do_restart( HSocket::ptr_t sock, HString const& appName ) {
+void HApplicationServer::do_restart( HStreamInterface::ptr_t sock, HString const& appName ) {
 	M_PROLOG
 	applications_t::iterator it = _applications.find( appName );
 	if ( it != _applications.end() ) {
@@ -335,7 +336,7 @@ void HApplicationServer::do_restart( HSocket::ptr_t sock, HString const& appName
 	M_EPILOG
 }
 
-void HApplicationServer::do_reload( HSocket::ptr_t sock, HString const& appName ) {
+void HApplicationServer::do_reload( HStreamInterface::ptr_t sock, HString const& appName ) {
 	M_PROLOG
 	applications_t::iterator it = _applications.find( appName );
 	if ( it != _applications.end() ) {
@@ -347,13 +348,11 @@ void HApplicationServer::do_reload( HSocket::ptr_t sock, HString const& appName 
 	M_EPILOG
 }
 
-void HApplicationServer::do_status( HSocket::ptr_t& sock ) {
+void HApplicationServer::do_status( HStreamInterface::ptr_t& sock ) {
 	M_PROLOG
 	*sock << "apps: " << _applications.size() << endl;
 	*sock << "new: " << _requests.size() << endl;
 	*sock << "pending: " << _pending.size() << endl;
-	*sock << "clients[control]: " << _socket[IPC_CHANNEL::CONTROL]->get_client_count() << endl;
-	*sock << "clients[request]: " << _socket[IPC_CHANNEL::REQUEST]->get_client_count() << endl;
 	*sock << "application statistics:" << endl;
 	for ( applications_t::const_iterator it( _applications.begin() ), end( _applications.end() ); it != end; ++ it )
 		*sock << "  " << it->first << ": " << it->second.app().sessions().get_size() << endl;
