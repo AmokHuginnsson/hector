@@ -619,7 +619,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 					}
 				}
 				OUT << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
-				app_->add_form( make_pair<HString const, HForm::ptr_t>( get_optional_value_or<HString>( optId, "(nuil)" ), yaal::move( form ) ) );
+				app_->add_form( make_pair( get_optional_value_or<HString>( optId, "(nuil)" ), yaal::move( form ) ) );
 			} else
 				prepare_logic( app_, *child );
 		}
