@@ -255,18 +255,17 @@ void HApplication::do_generate_page( ORequest const& req, HSession const& sessio
 	M_PROLOG
 	OUT << __PRETTY_FUNCTION__ << ( req.is_ssl() ? " with SSL" : "" ) << endl;
 	cgi::default_t defaults;
-	if ( !! dom().get_root() )
-		cgi::waste_children( dom().get_root(), req, defaults );
-	if ( !! dom().get_root() )
-		cgi::apply_acl( dom().get_root(), req, _defaultSecurityContext, session_ );
-	if ( !! dom().get_root() )
-		cgi::mark_children( dom().get_root(), req, defaults, dom() );
-	if ( !! dom().get_root() )
-		cgi::move_children( dom().get_root(), req, dom() );
-	if ( !! dom().get_root() )
-		cgi::expand_autobutton( dom().get_root(), req );
-	if ( !! dom().get_root() )
-		cgi::clean( dom().get_root() );
+	HXml::HNodeProxy root( dom().get_root() );
+	if ( !! root ) {
+		cgi::waste_children( root, req, defaults );
+		cgi::apply_acl( root, req, _defaultSecurityContext, session_ );
+		cgi::mark_children( root, req, defaults, dom() );
+		cgi::move_children( root, req, dom() );
+		cgi::expand_autobutton( root, req );
+		cgi::clean( root );
+		cgi::run_query( root, db(), dom() );
+		cgi::fill_forms( this, root, session_ );
+	}
 	return;
 	M_EPILOG
 }
@@ -312,6 +311,13 @@ HApplication::sessions_t& HApplication::sessions( void ) {
 void HApplication::add_form( forms_t::value_type&& form_ ) {
 	M_PROLOG
 	_forms.insert( yaal::move( form_ ) );
+	return;
+	M_EPILOG
+}
+
+void HApplication::fill_form( yaal::hcore::HString const& id_, HSession const& session_ ) {
+	M_PROLOG
+	_forms.at( id_ )->fill( session_ );
 	return;
 	M_EPILOG
 }

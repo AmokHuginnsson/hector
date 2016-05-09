@@ -36,17 +36,19 @@ namespace hector {
 
 class HForm {
 public:
-	class HInput;
 	typedef yaal::hcore::HResource<HForm> ptr_t;
 	typedef yaal::hcore::HResource<HVerificatorInterface> verificator_t;
 private:
-	typedef yaal::hcore::HArray<HInput> inputs_t;
+	typedef yaal::hcore::HLookupMap<yaal::hcore::HString, yaal::hcore::HString*> inputs_t;
+	yaal::hcore::HString _table;
+	yaal::hcore::HString _filter;
 	inputs_t _inputs;
 	verificator_t _verificator;
 	HApplication& _application;
 public:
-	HForm( HApplication& );
-	void add_input( HInput const& );
+	HForm( HApplication&, yaal::hcore::HString const&, yaal::hcore::HString const& );
+	void fill( HSession const& );
+	void add_input( yaal::hcore::HString const&, yaal::hcore::HString& );
 	void set_verificator(
 		HVerificatorInterface::TYPE,
 		yaal::hcore::HString const&,
@@ -59,9 +61,6 @@ public:
 private:
 	HForm( HForm const& ) = delete;
 	HForm& operator = ( HForm const& ) = delete;
-};
-
-class HForm::HInput {
 };
 
 }

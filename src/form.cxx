@@ -35,8 +35,10 @@ using namespace yaal::tools;
 
 namespace hector {
 
-HForm::HForm( HApplication& application_ )
-	: _inputs()
+HForm::HForm( HApplication& application_, yaal::hcore::HString const& table_, yaal::hcore::HString const& filter_ )
+	: _table( table_ )
+	, _filter( filter_ )
+	, _inputs()
 	, _verificator()
 	, _application( application_ ) {
 	return;
@@ -53,6 +55,19 @@ void HForm::set_verificator(
 	} else if ( type_ == HVerificatorInterface::TYPE::SQL ) {
 		_verificator.reset( new HSQLVerificator( verificator_, params_, this ) );
 	}
+	return;
+	M_EPILOG
+}
+
+void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString& value_ ) {
+	M_PROLOG
+	_inputs.insert( make_pair( name_, &value_ ) );
+	return;
+	M_EPILOG
+}
+
+void HForm::fill( HSession const& ) {
+	M_PROLOG
 	return;
 	M_EPILOG
 }

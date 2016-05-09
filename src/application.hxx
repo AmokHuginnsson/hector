@@ -76,6 +76,7 @@ public:
 	sessions_t const& sessions( void ) const;
 	yaal::dbwrapper::HDataBase::ptr_t db( void );
 	void add_form( forms_t::value_type&& );
+	void fill_form( yaal::hcore::HString const&, HSession const& );
 	MODE get_mode( void ) const;
 	yaal::hcore::HString const& id( void ) const;
 	yaal::hcore::HString const& name( void ) const;

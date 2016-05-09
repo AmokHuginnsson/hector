@@ -46,7 +46,10 @@ namespace hector {
 
 namespace cgi {
 
+static HString const NODE_FORM( "h-form" );
 static HString const ATTRIBUTE_ID( "id" );
+static HString const ATTRIBUTE_NAME( "name" );
+static HString const ATTRIBUTE_VALUE( "value" );
 static HString const ATTRIBUTE_CLASS( "class" );
 static HString const ATTRIBUTE_USER( "user" );
 static HString const ATTRIBUTE_GROUP( "group" );
@@ -436,8 +439,6 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	static HString const ATTRIBUTE_HREF( "href" );
 	static HString const ATTRIBUTE_TYPE( "type" );
 	static HString const ATTRIBUTE_TYPE_VALUE( "hidden" );
-	static HString const ATTRIBUTE_NAME( "name" );
-	static HString const ATTRIBUTE_VALUE( "value" );
 	static char const QUERY_SEPARATOR( '?' );
 	static char const PARAM_SEPARATOR( '&' );
 	static char const VALUE_SEPARATOR( '=' );
@@ -550,9 +551,25 @@ void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 	M_EPILOG
 }
 
+void fill_forms( HApplication* app_, yaal::tools::HXml::HNodeProxy node_, HSession const& session_ ) {
+	M_PROLOG
+	for ( HXml::HNodeProxy child : node_ ) {
+		if ( child.get_type() == HXml::HNode::TYPE::NODE ) {
+			if ( child.get_name() == NODE_FORM ) {
+				ORequest::value_t optId( xml::try_attr_val( child, ATTRIBUTE_ID ) );
+				M_ASSERT( !!optId );
+				app_->fill_form( *optId, session_ );
+			} else {
+				fill_forms( app_, child, session_ );
+			}
+		}
+	}
+	return;
+	M_EPILOG
+}
+
 void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	M_PROLOG
-	static HString const NODE_FORM( "h-form" );
 	static HString const NODE_INPUT( "h-input" );
 	static HString const NODE_VERIFY( "verify" );
 	static HString const NODE_CODE( "code" );
@@ -560,6 +577,8 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	static HString const NODE_ARG( "arg" );
 	static HString const ATTRIBUTE_LANG( "lang" );
 	static HString const ATTRIBUTE_TRANSFORM( "transform" );
+	static HString const ATTRIBUTE_TABLE( "table" );
+	static HString const ATTRIBUTE_FITER( "filter" );
 	static HString const LANG_HUGINN( "huginn" );
 	static HString const LANG_SQL( "sql" );
 	HString name;
@@ -569,13 +588,22 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 			if ( name == NODE_FORM ) {
 				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
 				M_ENSURE_EX( !!optId, "h-from must have an `id' attribute: "_ys.append( (*child).get_line() ) );
-				HForm::ptr_t form( make_resource<HForm>( *app_ ) );
+				xml::value_t tableVal( xml::try_attr_val( *child, ATTRIBUTE_TABLE ) );
+				M_ENSURE_EX( !!tableVal, "h-from must have a `table' attribute: "_ys.append( (*child).get_line() ) );
+				xml::value_t filterVal( xml::try_attr_val( *child, ATTRIBUTE_FITER ) );
+				M_ENSURE_EX( !!filterVal, "h-from must have a `filter' attribute: "_ys.append( (*child).get_line() ) );
+				HForm::ptr_t form( make_resource<HForm>( *app_, *tableVal, *filterVal ) );
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
 					HXml::HIterator del( it );
 					++ it;
 					if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
 						name = (*del).get_name();
 						if ( name == NODE_INPUT ) {
+							xml::value_t nameAttr( xml::try_attr_val( *del, ATTRIBUTE_NAME ) );
+							M_ENSURE_EX( !!nameAttr, "h-input must have a `name' attribute: "_ys.append( (*del).get_line() ) );
+							xml::value_t valueAttr( xml::try_attr_val( *del, ATTRIBUTE_VALUE ) );
+							M_ENSURE_EX( !!valueAttr, "h-input must have a `value' attribute: "_ys.append( (*del).get_line() ) );
+							form->add_input( *nameAttr, (*del).properties().at( ATTRIBUTE_VALUE ) );
 							OUT << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
 							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
@@ -631,7 +659,6 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req ) {
 	M_PROLOG
 	static HString const NODE_COOKIE( "cookie" );
-	static HString const ATTRIBUTE_NAME( "name" );
 	HString value;
 	for ( HXml::HIterator child( logic.begin() ), endChild( logic.end() ); child != endChild; ++ child ) {
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {

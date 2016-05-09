@@ -85,6 +85,7 @@ void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
+void fill_forms( HApplication*, yaal::tools::HXml::HNodeProxy, HSession const& );
 void prepare_logic( HApplication*, yaal::tools::HXml::HNodeProxy );
 void make_cookies( yaal::tools::HXml::HNodeProxy, ORequest& );
 void consistency_check( yaal::tools::HXml::HNodeProxy );
