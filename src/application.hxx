@@ -94,6 +94,7 @@ protected:
 	bool handle_forms( ORequest&, HSession& );
 	virtual bool do_handle_forms( ORequest&, HSession& );
 	yaal::tools::HXml& dom( void );
+	void set_input_data( void );
 private:
 	HApplication( HApplication const& );
 	HApplication& operator = ( HApplication const& );

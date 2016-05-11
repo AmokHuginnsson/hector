@@ -62,9 +62,19 @@ void HForm::set_verificator(
 	M_EPILOG
 }
 
-void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString& value_, ACCESS::mode_t mode_ ) {
+void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString const& column_, ACCESS::mode_t mode_ ) {
 	M_PROLOG
-	_inputs.insert( make_pair( name_, OInput( &value_, mode_ ) ) );
+	_inputs.insert( make_pair( name_, OInput( column_, nullptr, mode_ ) ) );
+	return;
+	M_EPILOG
+}
+
+void HForm::set_input_data( yaal::hcore::HString const& name_, yaal::hcore::HString& value_ ) {
+	M_PROLOG
+	inputs_t::iterator ii( _inputs.find( name_ ) );
+	if ( ii != _inputs.end() ) {
+		ii->second._data = &value_;
+	}
 	return;
 	M_EPILOG
 }
@@ -77,7 +87,7 @@ void HForm::finalize( void ) {
 			if ( ! columns.is_empty() ) {
 				columns.append( ", " );
 			}
-			columns.append( input.first );
+			columns.append( input.second._column );
 		}
 	}
 	_crud.set_table( _table );

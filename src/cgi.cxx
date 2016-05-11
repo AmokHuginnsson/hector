@@ -48,7 +48,8 @@ namespace cgi {
 
 typedef hector::CGI this_type;
 
-static HString const NODE_FORM( "h-form" );
+static HString const NODE_HFORM( "h-form" );
+static HString const NODE_INPUT( "input" );
 static HString const ATTRIBUTE_ID( "id" );
 static HString const ATTRIBUTE_NAME( "name" );
 static HString const ATTRIBUTE_VALUE( "value" );
@@ -436,7 +437,6 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req ) {
 	M_PROLOG
 	static HString const NODE_FIELDSET( "fieldset" );
-	static HString const NODE_INPUT( "input" );
 	static HString const NODE_A( "a" );
 	static HString const ATTRIBUTE_HREF( "href" );
 	static HString const ATTRIBUTE_TYPE( "type" );
@@ -560,12 +560,14 @@ void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 
 void fill_forms( HApplication* app_, yaal::tools::HXml::HNodeProxy node_, HSession const& session_ ) {
 	M_PROLOG
+	static HString const NODE_FORM( "form" );
 	for ( HXml::HNodeProxy child : node_ ) {
 		if ( child.get_type() == HXml::HNode::TYPE::NODE ) {
 			if ( child.get_name() == NODE_FORM ) {
 				ORequest::value_t optId( xml::try_attr_val( child, ATTRIBUTE_ID ) );
-				M_ASSERT( !!optId );
-				app_->fill_form( *optId, session_ );
+				if ( !!optId ) {
+					app_->fill_form( *optId, session_ );
+				}
 			} else {
 				fill_forms( app_, child, session_ );
 			}
@@ -577,42 +579,44 @@ void fill_forms( HApplication* app_, yaal::tools::HXml::HNodeProxy node_, HSessi
 
 void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	M_PROLOG
-	static HString const NODE_INPUT( "h-input" );
+	static HString const NODE_HINPUT( "h-input" );
 	static HString const NODE_VERIFY( "verify" );
 	static HString const NODE_CODE( "code" );
 	static HString const NODE_ARGV( "argv" );
 	static HString const NODE_ARG( "arg" );
 	static HString const ATTRIBUTE_LANG( "lang" );
+	static HString const ATTRIBUTE_COLUMN( "column" );
 	static HString const ATTRIBUTE_TRANSFORM( "transform" );
 	static HString const ATTRIBUTE_TABLE( "table" );
-	static HString const ATTRIBUTE_FITER( "filter" );
+	static HString const ATTRIBUTE_FITER_COLUMN( "filter_column" );
 	static HString const LANG_HUGINN( "huginn" );
 	static HString const LANG_SQL( "sql" );
 	HString name;
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
 			name = (*child).get_name();
-			if ( name == NODE_FORM ) {
+			if ( name == NODE_HFORM ) {
 				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
 				M_ENSURE_EX( !!optId, "h-from must have an `id' attribute: "_ys.append( (*child).get_line() ) );
 				xml::value_t tableVal( xml::try_attr_val( *child, ATTRIBUTE_TABLE ) );
 				M_ENSURE_EX( !!tableVal, "h-from must have a `table' attribute: "_ys.append( (*child).get_line() ) );
-				xml::value_t filterVal( xml::try_attr_val( *child, ATTRIBUTE_FITER ) );
-				M_ENSURE_EX( !!filterVal, "h-from must have a `filter' attribute: "_ys.append( (*child).get_line() ) );
-				HForm::ptr_t form( make_resource<HForm>( *app_, *tableVal, *filterVal ) );
+				xml::value_t filterColumnVal( xml::try_attr_val( *child, ATTRIBUTE_FITER_COLUMN ) );
+				M_ENSURE_EX( !!filterColumnVal, "h-from must have a `filter' attribute: "_ys.append( (*child).get_line() ) );
+				HForm::ptr_t form( make_resource<HForm>( *app_, *tableVal, *filterColumnVal ) );
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
 					HXml::HIterator del( it );
 					++ it;
 					if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
 						name = (*del).get_name();
-						if ( name == NODE_INPUT ) {
+						if ( name == NODE_HINPUT ) {
+							xml::value_t columnAttr( xml::try_attr_val( *del, ATTRIBUTE_COLUMN ) );
 							xml::value_t nameAttr( xml::try_attr_val( *del, ATTRIBUTE_NAME ) );
 							M_ENSURE_EX( !!nameAttr, "h-input must have a `name' attribute: "_ys.append( (*del).get_line() ) );
 							xml::value_t valueAttr( xml::try_attr_val( *del, ATTRIBUTE_VALUE ) );
 							M_ENSURE_EX( !!valueAttr, "h-input must have a `value' attribute: "_ys.append( (*del).get_line() ) );
 							int perm( get_permissions( *del ) );
 							ACCESS::mode_t mode( static_cast<ACCESS::mode_t>( perm ) );
-							form->add_input( *nameAttr, (*del).properties().at( ATTRIBUTE_VALUE ), perm != -1 ? mode : app_->get_default_security_context()._mode );
+							form->add_input( *nameAttr, !! columnAttr ? *columnAttr : *nameAttr,  perm != -1 ? mode : app_->get_default_security_context()._mode );
 							OUT << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
 							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
@@ -655,11 +659,24 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 						}
 					}
 				}
-				OUT << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
+				OUT << NODE_HFORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
 				form->finalize();
 				app_->add_form( make_pair( get_optional_value_or<HString>( optId, "(nuil)" ), yaal::move( form ) ) );
 			} else
 				prepare_logic( app_, *child );
+		}
+	}
+	return;
+	M_EPILOG
+}
+
+void set_input_data( yaal::tools::HXml::HNodeProxy node_, form_t& form_ ) {
+	M_PROLOG
+	HXml::HNodeSet inputs( node_.get_elements_by_name( NODE_INPUT ) );
+	for ( HXml::HNodeProxy input : inputs ) {
+		xml::value_t nameAttr( xml::try_attr_val( input, ATTRIBUTE_NAME ) );
+		if ( !!nameAttr ) {
+			form_->set_input_data( *nameAttr, input.properties().at( ATTRIBUTE_VALUE ) );
 		}
 	}
 	return;

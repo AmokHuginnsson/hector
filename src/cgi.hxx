@@ -36,6 +36,7 @@ Copyright:
 
 namespace	hector {
 
+class HForm;
 class HApplication;
 
 namespace cgi {
@@ -68,6 +69,7 @@ typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
 typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> default_t;
 typedef yaal::hcore::HArray<yaal::hcore::HString> strings_t;
 typedef yaal::hcore::HArray<HParameter> params_t;
+typedef yaal::hcore::HResource<HForm> form_t;
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
 bool is_kind_of( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
 bool has_attribute( yaal::tools::HXml::HNode::properties_t const&, yaal::hcore::HString const& );
@@ -86,6 +88,7 @@ void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 void fill_forms( HApplication*, yaal::tools::HXml::HNodeProxy, HSession const& );
+void set_input_data( yaal::tools::HXml::HNodeProxy, form_t& );
 void prepare_logic( HApplication*, yaal::tools::HXml::HNodeProxy );
 void make_cookies( yaal::tools::HXml::HNodeProxy, ORequest& );
 void consistency_check( yaal::tools::HXml::HNodeProxy );

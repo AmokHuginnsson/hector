@@ -99,6 +99,7 @@ void HApplication::load(
 	_dom.apply_style( toolkit.string(), {{ "mode", _mode == MODE::GET ? "'GET'" : "'POST'" }} );
 	_dom.parse( HXml::PARSER::STRIP_COMMENT );
 	do_load();
+	set_input_data();
 	cgi::consistency_check( _dom.get_root() );
 	return;
 	M_EPILOG
@@ -316,6 +317,15 @@ HApplication::sessions_t& HApplication::sessions( void ) {
 void HApplication::add_form( forms_t::value_type&& form_ ) {
 	M_PROLOG
 	_forms.insert( yaal::move( form_ ) );
+	return;
+	M_EPILOG
+}
+
+void HApplication::set_input_data( void ) {
+	M_PROLOG
+	for ( forms_t::value_type& f : _forms ) {
+		cgi::set_input_data( dom().get_element_by_id( f.first ), f.second );
+	}
 	return;
 	M_EPILOG
 }

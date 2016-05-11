@@ -40,10 +40,12 @@ public:
 	typedef yaal::hcore::HResource<HForm> ptr_t;
 	typedef yaal::hcore::HResource<HVerificatorInterface> verificator_t;
 	struct OInput {
+		yaal::hcore::HString _column;
 		yaal::hcore::HString* _data;
 		ACCESS::mode_t _mode;
-		OInput( yaal::hcore::HString* data_, ACCESS::mode_t mode_ )
-			: _data( data_ )
+		OInput( yaal::hcore::HString const& column_, yaal::hcore::HString* data_, ACCESS::mode_t mode_ )
+			: _column( column_ )
+			, _data( data_ )
 			, _mode( mode_ ) {
 			return;
 		}
@@ -61,7 +63,8 @@ private:
 public:
 	HForm( HApplication&, yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void fill( HSession const& );
-	void add_input( yaal::hcore::HString const&, yaal::hcore::HString&, ACCESS::mode_t );
+	void add_input( yaal::hcore::HString const&, yaal::hcore::HString const&, ACCESS::mode_t );
+	void set_input_data( yaal::hcore::HString const&, yaal::hcore::HString& );
 	void set_verificator(
 		HVerificatorInterface::TYPE,
 		yaal::hcore::HString const&,
