@@ -28,10 +28,12 @@ Copyright:
 M_VCSID( "$Id: " __ID__ " $" )
 #include "form.hxx"
 #include "setup.hxx"
+#include "application.hxx"
 
 using namespace yaal;
 using namespace yaal::hcore;
 using namespace yaal::tools;
+using namespace yaal::dbwrapper;
 
 namespace hector {
 
@@ -40,6 +42,7 @@ HForm::HForm( HApplication& application_, yaal::hcore::HString const& table_, ya
 	, _filter( filter_ )
 	, _inputs()
 	, _verificator()
+	, _crud( application_.db() )
 	, _application( application_ ) {
 	return;
 }
@@ -59,15 +62,45 @@ void HForm::set_verificator(
 	M_EPILOG
 }
 
-void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString& value_ ) {
+void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString& value_, ACCESS::mode_t mode_ ) {
 	M_PROLOG
-	_inputs.insert( make_pair( name_, &value_ ) );
+	_inputs.insert( make_pair( name_, OInput( &value_, mode_ ) ) );
 	return;
 	M_EPILOG
 }
 
-void HForm::fill( HSession const& ) {
+void HForm::finalize( void ) {
 	M_PROLOG
+	HString columns;
+	for ( inputs_t::value_type input : _inputs ) {
+		if ( input.second._mode & ACCESS::USER_READ ) {
+			if ( ! columns.is_empty() ) {
+				columns.append( ", " );
+			}
+			columns.append( input.first );
+		}
+	}
+	_crud.set_table( _table );
+	_crud.set_filter( _filter );
+	_crud.set_columns( columns );
+	return;
+	M_EPILOG
+}
+
+void HForm::fill( HSession const& session_ ) {
+	M_PROLOG
+	OUT << __PRETTY_FUNCTION__ << endl;
+	_crud.set_filter_value( session_.get_user() );
+	HRecordSet::ptr_t rs( _crud.execute( HCRUDDescriptor::MODE::READ ) );
+	HRecordSet::HIterator rowIt( rs->begin() );
+	if ( rowIt != rs->end() ) {
+		for ( int i( 0 ), fc( rs->get_field_count() ); i < fc; ++ i ) {
+			HRecordSet::value_t v( rowIt[i] );
+			if ( !! v ) {
+				*(_inputs.at( rs->get_column_name( i ) )._data) = *v;
+			}
+		}
+	}
 	return;
 	M_EPILOG
 }

@@ -104,6 +104,10 @@ void HApplication::load(
 	M_EPILOG
 }
 
+OSecurityContext const& HApplication::get_default_security_context( void ) const {
+	return ( _defaultSecurityContext );
+}
+
 HApplication::MODE HApplication::get_mode( void ) const {
 	return ( _mode );
 }
@@ -274,8 +278,9 @@ void HApplication::generate_page( ORequest const& req, HSession const& session_ 
 	M_PROLOG
 	OUT << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req, session_ );
-	if ( !! dom().get_root() )
+	if ( !! dom().get_root() ) {
 		_dom.save( req.socket() );
+	}
 	return;
 	M_EPILOG
 }

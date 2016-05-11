@@ -46,6 +46,8 @@ namespace hector {
 
 namespace cgi {
 
+typedef hector::CGI this_type;
+
 static HString const NODE_FORM( "h-form" );
 static HString const ATTRIBUTE_ID( "id" );
 static HString const ATTRIBUTE_NAME( "name" );
@@ -541,7 +543,12 @@ void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 	ORequest::value_t optMode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	if ( optMode ) {
 		int mode( lexical_cast<int>( *optMode ) );
-		M_ENSURE_EX( ( is_octal( *optMode ) && ( mode >= 0 ) && ( mode <= 0777 ) ), *optMode );
+		if ( ! is_octal( *optMode ) ) {
+			throw HCGIException( "`mode' must by octal: "_ys.append( *optMode ), node_.get_line() );
+		}
+		if ( ( mode < 0 ) || ( mode > 0777 ) ) {
+			throw HCGIException( "Bad `mode' value: "_ys.append( *optMode ), node_.get_line() );
+		}
 	}
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
 		if ( (*child).get_type() == HXml::HNode::TYPE::NODE )
@@ -603,7 +610,9 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							M_ENSURE_EX( !!nameAttr, "h-input must have a `name' attribute: "_ys.append( (*del).get_line() ) );
 							xml::value_t valueAttr( xml::try_attr_val( *del, ATTRIBUTE_VALUE ) );
 							M_ENSURE_EX( !!valueAttr, "h-input must have a `value' attribute: "_ys.append( (*del).get_line() ) );
-							form->add_input( *nameAttr, (*del).properties().at( ATTRIBUTE_VALUE ) );
+							int perm( get_permissions( *del ) );
+							ACCESS::mode_t mode( static_cast<ACCESS::mode_t>( perm ) );
+							form->add_input( *nameAttr, (*del).properties().at( ATTRIBUTE_VALUE ), perm != -1 ? mode : app_->get_default_security_context()._mode );
 							OUT << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
 							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
@@ -647,6 +656,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 					}
 				}
 				OUT << NODE_FORM << ": " << get_optional_value_or<HString>( optId, "(nuil)" ) << endl;
+				form->finalize();
 				app_->add_form( make_pair( get_optional_value_or<HString>( optId, "(nuil)" ), yaal::move( form ) ) );
 			} else
 				prepare_logic( app_, *child );
@@ -680,11 +690,11 @@ bool has_access( ACCESS::type_t accessType_, HSession const& session_, OSecurity
 	M_PROLOG
 	bool access( false );
 	if ( session_.get_user() == securityContext_._user ) {
-		access = ( ( securityContext_._mode & ( static_cast<int unsigned>( accessType_ ) << ACCESS::USER ) ) != ACCESS::NONE );
+		access = ( ( securityContext_._mode & ( accessType_ << ACCESS::USER ) ) != ACCESS::NONE );
 	} else if ( session_.get_groups().count( securityContext_._group ) > 0 ) {
-		access = ( ( securityContext_._mode & ( static_cast<int unsigned>( accessType_ ) << ACCESS::GROUP ) ) != ACCESS::NONE );
+		access = ( ( securityContext_._mode & ( accessType_ << ACCESS::GROUP ) ) != ACCESS::NONE );
 	} else {
-		access = ( ( securityContext_._mode & ( static_cast<int unsigned>( accessType_ ) << ACCESS::OTHER ) ) != ACCESS::NONE );
+		access = ( ( securityContext_._mode & ( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );
 	}
 	return ( access );
 	M_EPILOG

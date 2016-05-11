@@ -32,17 +32,17 @@ Copyright:
 namespace hector {
 
 struct ACCESS {
-	typedef enum {
+	typedef enum : yaal::u16_t {
 		READ = 04,
 		WRITE = 02,
 		EXECUTE = 01
 	} type_t;
-	typedef enum {
+	typedef enum : yaal::u16_t {
 		USER = 6,
 		GROUP = 3,
 		OTHER = 0
 	} context_t;
-	typedef enum {
+	typedef enum : yaal::u16_t {
 		USER_READ = READ << 6,
 		USER_WRITE = WRITE << 6,
 		USER_EXECUTE = EXECUTE << 6,
@@ -59,8 +59,12 @@ struct ACCESS {
 struct OSecurityContext {
 	yaal::hcore::HString _user;
 	yaal::hcore::HString _group;
-	mode_t _mode;
-	OSecurityContext( void ) : _user(), _group(), _mode( ACCESS::NONE ) {}
+	ACCESS::mode_t _mode;
+	OSecurityContext( void )
+		: _user()
+		, _group()
+		, _mode( ACCESS::NONE ) {
+	}
 };
 
 }
