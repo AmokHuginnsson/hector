@@ -25,6 +25,7 @@ Copyright:
 */
 
 #include <yaal/hcore/macro.hxx>
+#include <yaal/tools/hash.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "form.hxx"
 #include "setup.hxx"
@@ -40,7 +41,10 @@ namespace hector {
 HForm::HForm( HApplication& application_, yaal::hcore::HString const& table_, yaal::hcore::HString const& filter_ )
 	: _table( table_ )
 	, _filter( filter_ )
+	, _readColumns()
+	, _writeColumns()
 	, _inputs()
+	, _inputsDBView()
 	, _verificator()
 	, _crud( application_.db() )
 	, _application( application_ ) {
@@ -62,9 +66,9 @@ void HForm::set_verificator(
 	M_EPILOG
 }
 
-void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString const& column_, ACCESS::mode_t mode_ ) {
+void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString const& column_, OInput::TYPE type_, ACCESS::mode_t mode_ ) {
 	M_PROLOG
-	_inputs.insert( make_pair( name_, OInput( column_, nullptr, mode_ ) ) );
+	_inputs.insert( make_pair( name_, OInput( column_, name_, type_, mode_ ) ) );
 	return;
 	M_EPILOG
 }
@@ -82,17 +86,22 @@ void HForm::set_input_data( yaal::hcore::HString const& name_, yaal::hcore::HStr
 void HForm::finalize( void ) {
 	M_PROLOG
 	HString columns;
-	for ( inputs_t::value_type input : _inputs ) {
+	for ( inputs_t::value_type const& input : _inputs ) {
+		bool bean( false );
 		if ( input.second._mode & ACCESS::USER_READ ) {
-			if ( ! columns.is_empty() ) {
-				columns.append( ", " );
-			}
-			columns.append( input.second._column );
+			_readColumns.push_back( input.second._column );
+			bean = true;
+		}
+		if ( input.second._mode & ACCESS::USER_WRITE ) {
+			_writeColumns.push_back( input.second._column );
+			bean = true;
+		}
+		if ( bean ) {
+			_inputsDBView.insert( make_pair( input.second._column, &input.second ) );
 		}
 	}
 	_crud.set_table( _table );
 	_crud.set_filter( _filter );
-	_crud.set_columns( columns );
 	return;
 	M_EPILOG
 }
@@ -100,6 +109,7 @@ void HForm::finalize( void ) {
 void HForm::fill( HSession const& session_ ) {
 	M_PROLOG
 	OUT << __PRETTY_FUNCTION__ << endl;
+	_crud.set_columns( _readColumns );
 	_crud.set_filter_value( session_.get_user() );
 	HRecordSet::ptr_t rs( _crud.execute( HCRUDDescriptor::MODE::READ ) );
 	HRecordSet::HIterator rowIt( rs->begin() );
@@ -107,7 +117,8 @@ void HForm::fill( HSession const& session_ ) {
 		for ( int i( 0 ), fc( rs->get_field_count() ); i < fc; ++ i ) {
 			HRecordSet::value_t v( rowIt[i] );
 			if ( !! v ) {
-				*(_inputs.at( rs->get_column_name( i ) )._data) = *v;
+				OInput const& input( *_inputsDBView.at( rs->get_column_name( i ) ) );
+				*(input._data) = *v;
 			}
 		}
 	}
@@ -122,6 +133,28 @@ bool HForm::verify( ORequest& req_, HSession& session_ ) {
 		verified = _verificator->verify( req_, session_ );
 	}
 	return ( verified );
+	M_EPILOG
+}
+
+void HForm::commit( ORequest& req_, HSession& session_ ) {
+	M_PROLOG
+	OUT << __PRETTY_FUNCTION__ << endl;
+	_crud.set_columns( _writeColumns );
+	_crud.set_filter_value( session_.get_user() );
+	int colNo( 0 );
+	for ( HString const& col : _writeColumns ) {
+		OInput const& input( *_inputsDBView.at( col ) );
+		OUT << "req ask: " << input._htmlName << endl;
+		ORequest::value_t value( req_.lookup( input._htmlName, ORequest::ORIGIN::POST ) );
+		if ( !! value ) {
+			_crud[colNo] = ( input._type == OInput::TYPE::PASSWORD ) ? tools::hash::sha1( *value ) : *value;
+		} else {
+			_crud[colNo] = HRecordSet::value_t();
+		}
+		++ colNo;
+	}
+	HRecordSet::ptr_t rs( _crud.execute( HCRUDDescriptor::MODE::UPDATE ) );
+	return;
 	M_EPILOG
 }
 

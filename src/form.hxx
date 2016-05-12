@@ -40,12 +40,21 @@ public:
 	typedef yaal::hcore::HResource<HForm> ptr_t;
 	typedef yaal::hcore::HResource<HVerificatorInterface> verificator_t;
 	struct OInput {
+		enum class TYPE {
+			TEXT,
+			PASSWORD,
+			CALENDAR
+		};
 		yaal::hcore::HString _column;
+		yaal::hcore::HString _htmlName;
 		yaal::hcore::HString* _data;
+		TYPE _type;
 		ACCESS::mode_t _mode;
-		OInput( yaal::hcore::HString const& column_, yaal::hcore::HString* data_, ACCESS::mode_t mode_ )
+		OInput( yaal::hcore::HString const& column_, yaal::hcore::HString const& htmlName_, TYPE type_, ACCESS::mode_t mode_ )
 			: _column( column_ )
-			, _data( data_ )
+			, _htmlName( htmlName_ )
+			, _data( nullptr )
+			, _type( type_ )
 			, _mode( mode_ ) {
 			return;
 		}
@@ -54,16 +63,20 @@ public:
 	};
 private:
 	typedef yaal::hcore::HLookupMap<yaal::hcore::HString, OInput> inputs_t;
+	typedef yaal::hcore::HLookupMap<yaal::hcore::HString, OInput const*> inputs_db_view_t;
 	yaal::hcore::HString _table;
 	yaal::hcore::HString _filter;
+	yaal::dbwrapper::HCRUDDescriptor::field_names_t _readColumns;
+	yaal::dbwrapper::HCRUDDescriptor::field_names_t _writeColumns;
 	inputs_t _inputs;
+	inputs_db_view_t _inputsDBView;
 	verificator_t _verificator;
 	yaal::dbwrapper::HCRUDDescriptor _crud;
 	HApplication& _application;
 public:
 	HForm( HApplication&, yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void fill( HSession const& );
-	void add_input( yaal::hcore::HString const&, yaal::hcore::HString const&, ACCESS::mode_t );
+	void add_input( yaal::hcore::HString const&, yaal::hcore::HString const&, OInput::TYPE, ACCESS::mode_t );
 	void set_input_data( yaal::hcore::HString const&, yaal::hcore::HString& );
 	void set_verificator(
 		HVerificatorInterface::TYPE,
@@ -71,6 +84,7 @@ public:
 		cgi::params_t const&
 	);
 	bool verify( ORequest&, HSession& );
+	void commit( ORequest&, HSession& );
 	HApplication& app( void ) const {
 		return ( _application );
 	}

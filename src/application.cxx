@@ -233,6 +233,7 @@ bool HApplication::do_handle_forms( ORequest& req_, HSession& session_ ) {
 		if ( formIt != _forms.end() ) {
 			if ( formIt->second->verify( req_, session_ ) ) {
 				OUT << __PRETTY_FUNCTION__ << ": user input is valid" << endl;
+				formIt->second->commit( req_, session_ );
 			}
 			handled = true;
 		}
@@ -332,7 +333,10 @@ void HApplication::set_input_data( void ) {
 
 void HApplication::fill_form( yaal::hcore::HString const& id_, HSession const& session_ ) {
 	M_PROLOG
-	_forms.at( id_ )->fill( session_ );
+	forms_t::iterator fi( _forms.find( id_ ) );
+	if ( fi != _forms.end() ) {
+		fi->second->fill( session_ );
+	}
 	return;
 	M_EPILOG
 }
