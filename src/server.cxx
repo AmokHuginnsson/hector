@@ -31,7 +31,7 @@ Copyright:
 #include <yaal/tools/ansi.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "server.hxx"
-
+#include "http.hxx"
 #include "setup.hxx"
 
 using namespace yaal;
@@ -214,6 +214,9 @@ void HServer::read_request( HStreamInterface::ptr_t& sock, ORequest::origin_t co
 		if ( sepIdx != HString::npos ) {
 			key = yaal::move( string_.left( sepIdx ) );
 			value = yaal::move( string_.mid( sepIdx + 1 ) );
+			if ( origin == ORequest::ORIGIN::POST ) {
+				value = HTTP::decode( value );
+			}
 		} else {
 			key = string_;
 		}
