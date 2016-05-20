@@ -56,7 +56,7 @@ OSetup setup;
 void query( int, char** );
 
 int main( int argc_, char* argv_[] ) {
-	M_AT_END_OF_SCOPE( HSignalService::get_instance().stop(); );
+	HScopeExitCall sec( call( &HSignalService::stop, &HSignalService::get_instance() ) );
 	M_PROLOG
 	int ret( 0 );
 	try {
