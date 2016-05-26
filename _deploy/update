@@ -15,6 +15,10 @@ invoke cp -a ${SRC}/codestation ${DST}/codestation
 invoke cp -a ${SRC}/hector.xml ${DST}/
 invoke /bin/rm -f ${DST}/codestation/activex
 invoke cp -a /home/amok/src/hector/build/debug/codestation/1exec ${DST}/codestation/activex
+invoke /bin/rm -f ${DST}/codestation/bits/projects/huginn/huginn-samples
+invoke cp -a ${SRC}/data/codestation/huginn-samples ${DST}/codestation/bits/projects/huginn/
+invoke /bin/rm -f ${DST}/codestation/bits/projects/huginn/huginn-samples/solve.hgn
+invoke cp -a /home/amok/src/cellar/boggle-solvers/solve.hgn ${DST}/codestation/bits/projects/huginn/huginn-samples/
 invoke chown -R root:root ${DST}
 invoke chmod -R a+rX ${DST}
 invoke chattr +i ${DST}
