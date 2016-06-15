@@ -25,7 +25,7 @@ DESC="web application server"
 HECTOR_SRC="/home/amok/src/${NAME}/"
 PREFIX="/home/amok/usr/"
 SOCKDIR="/home/${NAME}/tmp/${NAME}/"
-HECTORADMIN="${HECTOR_SRC}/build/debug/hectoradmin/1exec"
+HECTORADMIN="${HECTOR_SRC}/build/release/hectoradmin/1exec"
 HECTORADMIN_HARD_ARGS="--log_path /tmp/x_hectoradmin.log -R /home/hector/tmp/hector"
 SCRIPTNAME="${0}"
 
@@ -60,8 +60,8 @@ do_start() {
 
 prep_hectoradmin() {
 	chmod o+x ${HECTOR_SRC} ${HECTOR_SRC}/.. ${HECTOR_SRC}/../.. ${HECTOR_SRC}/../../.. ${HECTOR_SRC}/../../../.. \
-		${HECTOR_SRC}/build ${HECTOR_SRC}/build/debug \
-		${HECTOR_SRC}/build/debug/hectoradmin ${HECTORADMIN} \
+		${HECTOR_SRC}/build ${HECTOR_SRC}/build/release \
+		${HECTOR_SRC}/build/release/hectoradmin ${HECTORADMIN} \
 		${PREFIX} ${PREFIX}/lib
 	chmod o+r ${PREFIX}/lib/libhcore* ${PREFIX}/lib/libtools*
 }
