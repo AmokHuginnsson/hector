@@ -640,12 +640,15 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	static HString const ATTRIBUTE_ACTION( "action" );
 	static HString const ATTRIBUTE_LANG( "lang" );
 	static HString const ATTRIBUTE_COLUMN( "column" );
+	static HString const ATTRIBUTE_FLAGS( "flags" );
 	static HString const ATTRIBUTE_TRANSFORM( "transform" );
 	static HString const ATTRIBUTE_TABLE( "table" );
 	static HString const ATTRIBUTE_FITER_COLUMN( "filter_column" );
 	static HString const TYPE_TEXT( "text" );
 	static HString const TYPE_PASSWORD( "password" );
 	static HString const TYPE_CALENDAR( "calendar" );
+	static HString const FLAG_NON_EMPTY( "not_empty" );
+	static HString const FLAG_OPTIONAL( "optional" );
 	static HString const LANG_HUGINN( "huginn" );
 	static HString const LANG_SQL( "sql" );
 	HString name;
@@ -674,6 +677,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							M_ENSURE_EX( !!nameAttr, "h-input must have a `name' attribute: "_ys.append( (*del).get_line() ) );
 							xml::value_t valueAttr( xml::try_attr_val( *del, ATTRIBUTE_VALUE ) );
 							M_ENSURE_EX( !!valueAttr, "h-input must have a `value' attribute: "_ys.append( (*del).get_line() ) );
+							xml::value_t flagsAttr( xml::try_attr_val( *del, ATTRIBUTE_FLAGS ) );
 							int perm( get_permissions( *del ) );
 							ACCESS::mode_t mode( static_cast<ACCESS::mode_t>( perm ) );
 							if ( perm != -1 ) {
@@ -689,7 +693,21 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							} else {
 								throw HCGIException( "h-input has bad `type': "_ys.append( *typeAttr ), (*del).get_line() );
 							}
-							form->add_input( *nameAttr, !! columnAttr ? *columnAttr : *nameAttr, type, perm != -1 ? mode : ACCESS::NONE );
+							HForm::OInput::flags_t flags( HForm::OInput::FLAGS::DEFAULT );
+							if ( !! flagsAttr ) {
+								typedef yaal::hcore::HArray<HString> words_t;
+								words_t words( string::split<words_t>( *flagsAttr, " " ) );
+								for ( HString const& w : words ) {
+									if ( w == FLAG_NON_EMPTY ) {
+										flags |= HForm::OInput::FLAGS::NOT_EMPTY;
+									} else if ( w == FLAG_OPTIONAL ) {
+										flags |= HForm::OInput::FLAGS::OPTIONAL;
+									} else {
+										throw HCGIException( "Invalid flag: "_ys.append( w ), (*del).get_line() );
+									}
+								}
+							}
+							form->add_input( *nameAttr, !! columnAttr ? *columnAttr : *nameAttr, type, perm != -1 ? mode : ACCESS::NONE, flags );
 							OUT << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
 							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );

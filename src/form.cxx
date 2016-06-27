@@ -24,7 +24,7 @@ Copyright:
  FITNESS FOR A PARTICULAR PURPOSE. Use it at your own risk.
 */
 
-#include <yaal/hcore/macro.hxx>
+#include <yaal/hcore/hlog.hxx>
 #include <yaal/tools/hash.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "form.hxx"
@@ -37,6 +37,10 @@ using namespace yaal::tools;
 using namespace yaal::dbwrapper;
 
 namespace hector {
+
+HForm::OInput::flags_t const HForm::OInput::FLAGS::DEFAULT = HForm::OInput::flags_t::new_flag();
+HForm::OInput::flags_t const HForm::OInput::FLAGS::NOT_EMPTY = HForm::OInput::flags_t::new_flag();
+HForm::OInput::flags_t const HForm::OInput::FLAGS::OPTIONAL = HForm::OInput::flags_t::new_flag();
 
 HForm::HForm(
 	HApplication& application_,
@@ -71,9 +75,9 @@ void HForm::set_verificator(
 	M_EPILOG
 }
 
-void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString const& column_, OInput::TYPE type_, ACCESS::mode_t mode_ ) {
+void HForm::add_input( yaal::hcore::HString const& name_, yaal::hcore::HString const& column_, OInput::TYPE type_, ACCESS::mode_t mode_, OInput::flags_t flags_ ) {
 	M_PROLOG
-	_inputs.insert( make_pair( name_, OInput( column_, name_, type_, mode_ ) ) );
+	_inputs.insert( make_pair( name_, OInput( column_, name_, type_, mode_, flags_ ) ) );
 	return;
 	M_EPILOG
 }
@@ -144,21 +148,37 @@ bool HForm::verify( ORequest& req_, HSession& session_ ) {
 void HForm::commit( ORequest& req_, HSession& session_ ) {
 	M_PROLOG
 	OUT << __PRETTY_FUNCTION__ << endl;
-	_crud.set_columns( _writeColumns );
-	_crud.set_filter_value( session_.get_user() );
-	int colNo( 0 );
+	yaal::dbwrapper::HCRUDDescriptor::field_names_t writeColumns;
+	bool ok( true );
 	for ( HString const& col : _writeColumns ) {
 		OInput const& input( *_inputsDBView.at( col ) );
 		OUT << "req ask: " << input._htmlName << endl;
 		ORequest::value_t value( req_.lookup( input._htmlName, ORequest::ORIGIN::POST ) );
-		if ( !! value ) {
-			_crud[colNo] = ( input._type == OInput::TYPE::PASSWORD ) ? tools::hash::sha1( *value ) : *value;
-		} else {
-			_crud[colNo] = HRecordSet::value_t();
+		bool empty( ! value || value->is_empty() );
+		if ( ! empty || ! ( input._flags & OInput::FLAGS::NOT_EMPTY ) ) {
+			writeColumns.push_back( col );
+		} else if ( ! ( input._flags & OInput::FLAGS::OPTIONAL ) )  {
+			req_.message( _id, LOG_LEVEL::ERROR, "Field `"_ys.append( input._htmlName ).append( "' must be non-empty." ) );
+			ok = false;
+			break;
 		}
-		++ colNo;
 	}
-	HRecordSet::ptr_t rs( _crud.execute( HCRUDDescriptor::MODE::UPDATE ) );
+	if ( ok ) {
+		_crud.set_columns( writeColumns );
+		_crud.set_filter_value( session_.get_user() );
+		int colNo( 0 );
+		for ( HString const& col : writeColumns ) {
+			OInput const& input( *_inputsDBView.at( col ) );
+			ORequest::value_t value( req_.lookup( input._htmlName, ORequest::ORIGIN::POST ) );
+			if ( !! value ) {
+				_crud[colNo] = ( input._type == OInput::TYPE::PASSWORD ) ? tools::hash::sha1( *value ) : *value;
+			} else {
+				_crud[colNo] = HRecordSet::value_t();
+			}
+			++ colNo;
+		}
+		HRecordSet::ptr_t rs( _crud.execute( HCRUDDescriptor::MODE::UPDATE ) );
+	}
 	return;
 	M_EPILOG
 }

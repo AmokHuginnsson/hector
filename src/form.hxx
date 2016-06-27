@@ -45,17 +45,25 @@ public:
 			PASSWORD,
 			CALENDAR
 		};
+		typedef yaal::hcore::HBitFlag<struct FLAGS> flags_t;
+		struct FLAGS {
+			static flags_t const DEFAULT;
+			static flags_t const NOT_EMPTY;
+			static flags_t const OPTIONAL;
+		};
 		yaal::hcore::HString _column;
 		yaal::hcore::HString _htmlName;
 		yaal::hcore::HString* _data;
 		TYPE _type;
 		ACCESS::mode_t _mode;
-		OInput( yaal::hcore::HString const& column_, yaal::hcore::HString const& htmlName_, TYPE type_, ACCESS::mode_t mode_ )
+		flags_t _flags;
+		OInput( yaal::hcore::HString const& column_, yaal::hcore::HString const& htmlName_, TYPE type_, ACCESS::mode_t mode_, flags_t flags_ )
 			: _column( column_ )
 			, _htmlName( htmlName_ )
 			, _data( nullptr )
 			, _type( type_ )
-			, _mode( mode_ ) {
+			, _mode( mode_ )
+			, _flags( flags_ ) {
 			return;
 		}
 		OInput( OInput const& ) = default;
@@ -77,7 +85,7 @@ private:
 public:
 	HForm( HApplication&, yaal::hcore::HString const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void fill( HSession const& );
-	void add_input( yaal::hcore::HString const&, yaal::hcore::HString const&, OInput::TYPE, ACCESS::mode_t );
+	void add_input( yaal::hcore::HString const&, yaal::hcore::HString const&, OInput::TYPE, ACCESS::mode_t, OInput::flags_t = OInput::FLAGS::DEFAULT );
 	void set_input_data( yaal::hcore::HString const&, yaal::hcore::HString& );
 	void set_verificator(
 		HVerificatorInterface::TYPE,
