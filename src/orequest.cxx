@@ -53,31 +53,13 @@ ORequest::origin_t const ORequest::ORIGIN::ANY =
 	| ORequest::ORIGIN::GET | ORequest::ORIGIN::POST | ORequest::ORIGIN::JAR;
 
 ORequest::ORequest( HStreamInterface::ptr_t socket_ )
-	: _socket( socket_ ),
-	_environment( new dictionary_t() ),
-	_get( new dictionary_t() ),
-	_post( new dictionary_t() ),
-	_cookies( new dictionary_t() ),
-	_jar( new dictionary_t() ) {
-}
-
-ORequest::ORequest( ORequest const& req )
-	: _socket( req._socket ),
-	_environment( req._environment ),
-	_get( req._get ), _post( req._post ),
-	_cookies( req._cookies ), _jar( req._jar ) {
-}
-
-ORequest& ORequest::operator = ( ORequest const& req ) {
-	if ( &req != this ) {
-		_socket = req._socket;
-		_environment = req._environment;
-		_get = req._get;
-		_post = req._post;
-		_cookies = req._cookies;
-		_jar = req._jar;
-	}
-	return ( *this );
+	: _socket( socket_ )
+	, _environment( new dictionary_t() )
+	, _get( new dictionary_t() )
+	, _post( new dictionary_t() )
+	, _cookies( new dictionary_t() )
+	, _jar( new dictionary_t() )
+	, _messages() {
 }
 
 void ORequest::update( HString const& key, HString const& value, origin_t const& origin ) {
@@ -296,6 +278,17 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 	}
 	return ( _jar );
 	M_EPILOG
+}
+
+void ORequest::message( yaal::hcore::HString const& id_, yaal::hcore::LOG_LEVEL::priority_t type_, yaal::hcore::HString const& data_ ) {
+	M_PROLOG
+	_messages[id_].emplace_back( type_, data_ );
+	return;
+	M_EPILOG
+}
+
+ORequest::message_map_t const& ORequest::messages( void ) const {
+	return ( _messages );
 }
 
 HStreamInterface::ptr_t ORequest::socket( void ) {

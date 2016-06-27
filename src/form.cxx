@@ -38,8 +38,13 @@ using namespace yaal::dbwrapper;
 
 namespace hector {
 
-HForm::HForm( HApplication& application_, yaal::hcore::HString const& table_, yaal::hcore::HString const& filter_ )
-	: _table( table_ )
+HForm::HForm(
+	HApplication& application_,
+	yaal::hcore::HString const& id_,
+	yaal::hcore::HString const& table_,
+	yaal::hcore::HString const& filter_
+) : _id( id_ )
+	, _table( table_ )
 	, _filter( filter_ )
 	, _readColumns()
 	, _writeColumns()

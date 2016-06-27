@@ -55,9 +55,9 @@ protected:
 	HForm* _form;
 public:
 	HVerificatorInterface( cgi::params_t const&, HForm* );
-	bool verify( ORequest const&, HSession& );
+	bool verify( ORequest&, HSession& );
 private:
-	virtual bool do_verify( ORequest const&, HSession& ) = 0;
+	virtual bool do_verify( ORequest&, HSession& ) = 0;
 	HVerificatorInterface( HVerificatorInterface const& ) = delete;
 	HVerificatorInterface& operator = ( HVerificatorInterface const& ) = delete;
 };
@@ -68,7 +68,7 @@ public:
 	typedef HVerificatorInterface base_type;
 private:
 	yaal::tools::HHuginn::ptr_t _huginn;
-	virtual bool do_verify( ORequest const&, HSession& ) override;
+	virtual bool do_verify( ORequest&, HSession& ) override;
 public:
 	HHuginnVerificator( yaal::hcore::HString const&, cgi::params_t const&, HForm* );
 };
@@ -82,7 +82,7 @@ private:
 public:
 	HSQLVerificator( yaal::hcore::HString const&, cgi::params_t const&, HForm* );
 private:
-	virtual bool do_verify( ORequest const&, HSession& ) override;
+	virtual bool do_verify( ORequest&, HSession& ) override;
 };
 
 }

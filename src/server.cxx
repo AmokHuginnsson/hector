@@ -126,7 +126,7 @@ void HServer::handler_connection( HIODispatcher::stream_t& stream_ ) {
 	M_ASSERT( !! client );
 	if ( _requests.get_size() < _maxConnections ) {
 		if ( channel == IPC_CHANNEL::REQUEST ) {
-			_requests[ client.raw() ] = ORequest( client );
+			_requests.insert( make_pair( client.raw(), ORequest( client ) ) );
 		}
 		_dispatcher.register_file_descriptor_handler(
 			client,

@@ -268,6 +268,7 @@ void HApplication::do_generate_page( ORequest const& req, HSession const& sessio
 		cgi::mark_children( root, req, defaults, dom() );
 		cgi::move_children( root, req, dom() );
 		cgi::expand_autobutton( root, req );
+		cgi::show_messages( root, req );
 		cgi::clean( root );
 		cgi::run_query( root, db(), dom() );
 		cgi::fill_forms( this, root, session_ );

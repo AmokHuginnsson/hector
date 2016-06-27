@@ -60,6 +60,7 @@ static HString const ATTRIBUTE_GROUP( "group" );
 static HString const ATTRIBUTE_MODE( "mode" );
 static HString const CLASS_WASTEABLE( "wasteable" );
 static HString const CLASS_AUTOBUTTON( "autobutton" );
+static HString const CLASS_MESSAGE( "message" );
 
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString const& attribute, HString const& element ) {
 	M_PROLOG
@@ -132,14 +133,32 @@ HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 	M_EPILOG
 }
 
-int get_permissions( HXml::HConstNodeProxy const& node );
-int get_permissions( HXml::HConstNodeProxy const& node ) {
+int get_permissions( HXml::HConstNodeProxy const& );
+int get_permissions( HXml::HConstNodeProxy const& node_ ) {
 	M_PROLOG
-	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
-	xml::value_t val( xml::try_attr_val( node, ATTRIBUTE_MODE ) );
+	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::NODE );
+	xml::value_t val( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	return ( val ? lexical_cast<int>( *val ) : -1 );
 	M_EPILOG
 }
+
+yaal::hcore::HString get_id( HXml::HConstNodeProxy const& );
+yaal::hcore::HString get_id( HXml::HConstNodeProxy const& node_ ) {
+	M_PROLOG
+	xml::value_t optId( xml::try_attr_val( node_, ATTRIBUTE_ID ) );
+	HString id;
+	if ( ! optId ) {
+		HXml::HConstNodeProxy parent( node_.get_parent() );
+		if ( !! parent ) {
+			id = get_id( parent );
+		}
+	} else {
+		id = *optId;
+	}
+	return ( id );
+	M_EPILOG
+}
+
 
 namespace {
 
@@ -506,6 +525,39 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	M_EPILOG
 }
 
+void show_messages( yaal::tools::HXml::HNodeProxy node_, ORequest const& req_ ) {
+	M_PROLOG
+	static HString const NODE_UL( "ul" );
+	static HString const NODE_LI( "li" );
+	for ( HXml::HIterator it( node_.begin() ), end( node_.end() ); it != end; ) {
+		HXml::HIterator del( it );
+		HXml::HNodeProxy n( *del );
+		++ it;
+		if ( n.get_type() == HXml::HNode::TYPE::NODE ) {
+			if ( is_kind_of( n, CLASS_MESSAGE ) ) {
+				bool hasData( false );
+				ORequest::message_map_t::const_iterator mit( req_.messages().find( get_id( n ) ) );
+				if ( mit != req_.messages().end() ) {
+					ORequest::messages_t const& ms( mit->second );
+					HXml::HNodeProxy ul( (*del).get_elements_by_name( NODE_UL )[0] );
+					for ( ORequest::OMessage const& m : ms ) {
+						HXml::HNodeProxy li( *ul.add_node( NODE_LI, m._data ) );
+						li.properties().insert( make_pair( ATTRIBUTE_CLASS, LOG_LEVEL::name( m._type ) ) );
+						hasData = true;
+					}
+				}
+				if ( ! hasData ) {
+					node_.remove_node( del );
+				}
+			} else {
+				show_messages( n, req_ );
+			}
+		}
+	}
+	return;
+	M_EPILOG
+}
+
 /* We keep node only if 'read' bit is set for user.
  */
 void apply_acl( yaal::tools::HXml::HNodeProxy node_,
@@ -551,8 +603,9 @@ void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 		}
 	}
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
-		if ( (*child).get_type() == HXml::HNode::TYPE::NODE )
+		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
 			consistency_check( *child );
+		}
 	}
 	return;
 	M_EPILOG
@@ -606,7 +659,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 				M_ENSURE_EX( !!tableVal, "h-from must have a `table' attribute: "_ys.append( (*child).get_line() ) );
 				xml::value_t filterColumnVal( xml::try_attr_val( *child, ATTRIBUTE_FITER_COLUMN ) );
 				M_ENSURE_EX( !!filterColumnVal, "h-from must have a `filter' attribute: "_ys.append( (*child).get_line() ) );
-				HForm::ptr_t form( make_resource<HForm>( *app_, *tableVal, *filterColumnVal ) );
+				HForm::ptr_t form( make_resource<HForm>( *app_, *optId, *tableVal, *filterColumnVal ) );
 				bool hasActiveElement( false );
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
 					HXml::HIterator del( it );

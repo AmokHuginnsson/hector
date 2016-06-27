@@ -83,6 +83,7 @@ void apply_acl( yaal::tools::HXml::HNodeProxy, ORequest const&,
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t const&, yaal::tools::HXml& );
 void expand_autobutton( yaal::tools::HXml::HNodeProxy, ORequest const& );
+void show_messages( yaal::tools::HXml::HNodeProxy, ORequest const& );
 void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,

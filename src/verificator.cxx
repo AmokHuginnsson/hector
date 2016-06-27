@@ -48,7 +48,7 @@ HVerificatorInterface::HVerificatorInterface( cgi::params_t const& params_, HFor
 	return;
 }
 
-bool HVerificatorInterface::verify( ORequest const& req_, HSession& session_ ) {
+bool HVerificatorInterface::verify( ORequest& req_, HSession& session_ ) {
 	HClock c;
 	bool result( do_verify( req_, session_ ) );
 	OUT << __PRETTY_FUNCTION__ << ": verificator executed in " << c.get_time_elapsed( time::UNIT::MICROSECOND ) << " microseconds" << endl;
@@ -75,7 +75,7 @@ HHuginnVerificator::HHuginnVerificator(
 	M_EPILOG
 }
 
-bool HHuginnVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
+bool HHuginnVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 	_huginn->clear_arguments();
 	for ( cgi::HParameter const& p : _params ) {
 		HString const& name( p.name() );
@@ -113,7 +113,7 @@ HSQLVerificator::HSQLVerificator(
 	M_EPILOG
 }
 
-bool HSQLVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
+bool HSQLVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 	int paramNo( 1 );
 	for ( cgi::HParameter const& p : _params ) {
 		HString const& name( p.name() );
@@ -137,15 +137,17 @@ bool HSQLVerificator::do_verify( ORequest const& req_, HSession& session_ ) {
 	bool ok( false );
 	if ( rowIt != result->end() ) {
 		if ( !!rowIt[0]  ) {
-			if ( *rowIt[0] == "ok" ) {
+			HString res( *rowIt[0] );
+			if ( res.find( "ok:" ) == 0 ) {
 				ok = true;
+				res.shift_left( 3 );
 			}
-			OUT << __PRETTY_FUNCTION__ << ": verificator returned: " << *rowIt[0] << endl;
+			req_.message( _form->id(), ok ? LOG_LEVEL::INFO : LOG_LEVEL::ERROR, res );
 		} else {
-			OUT << __PRETTY_FUNCTION__ << ": NULL value returned in result set" << endl;
+			req_.message( _form->id(), LOG_LEVEL::ALERT, "Result set error (NULL returned)" );
 		}
 	} else {
-		OUT << __PRETTY_FUNCTION__ << ": empty result set" << endl;
+		req_.message( _form->id(), LOG_LEVEL::ALERT, "Result set error (empty result set)" );
 	}
 	return ( ok );
 }

@@ -26,7 +26,7 @@ Copyright:
 
 #include <cctype>
 
-#include <yaal/hcore/macro.hxx>
+#include <yaal/hcore/hexception.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "http.hxx"
 
@@ -46,6 +46,7 @@ char const CONTENT_TYPE[] = "CONTENT_TYPE";
 char const CONTENT_TYPE_URLENCODED[] = "application/x-www-form-urlencoded";
 
 yaal::hcore::HString decode( yaal::hcore::HString data_ ) {
+	M_PROLOG
 	data_.replace( "+", " " );
 	for ( int i( 0 ); i < static_cast<int>( data_.get_length() ); ++ i ) {
 		if ( data_[i] == '%' ) {
@@ -83,6 +84,7 @@ yaal::hcore::HString decode( yaal::hcore::HString data_ ) {
 		}
 	}
 	return ( data_ );
+	M_EPILOG
 }
 
 }

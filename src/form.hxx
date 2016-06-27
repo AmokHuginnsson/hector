@@ -64,6 +64,7 @@ public:
 private:
 	typedef yaal::hcore::HLookupMap<yaal::hcore::HString, OInput> inputs_t;
 	typedef yaal::hcore::HLookupMap<yaal::hcore::HString, OInput const*> inputs_db_view_t;
+	yaal::hcore::HString _id;
 	yaal::hcore::HString _table;
 	yaal::hcore::HString _filter;
 	yaal::dbwrapper::HCRUDDescriptor::field_names_t _readColumns;
@@ -74,7 +75,7 @@ private:
 	yaal::dbwrapper::HCRUDDescriptor _crud;
 	HApplication& _application;
 public:
-	HForm( HApplication&, yaal::hcore::HString const&, yaal::hcore::HString const& );
+	HForm( HApplication&, yaal::hcore::HString const&, yaal::hcore::HString const&, yaal::hcore::HString const& );
 	void fill( HSession const& );
 	void add_input( yaal::hcore::HString const&, yaal::hcore::HString const&, OInput::TYPE, ACCESS::mode_t );
 	void set_input_data( yaal::hcore::HString const&, yaal::hcore::HString& );
@@ -89,6 +90,9 @@ public:
 		return ( _application );
 	}
 	void finalize( void );
+	yaal::hcore::HString const& id( void ) const {
+		return ( _id );
+	}
 private:
 	HForm( HForm const& ) = delete;
 	HForm& operator = ( HForm const& ) = delete;
