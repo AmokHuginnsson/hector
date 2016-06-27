@@ -60,10 +60,12 @@ HHuginnVerificator::HHuginnVerificator(
 	cgi::params_t const& params_,
 	HForm* form_
 ) : HVerificatorInterface( params_, form_ )
-	, _huginn() {
+	, _huginn()
+	, _output() {
 	M_PROLOG
 	HHuginn::ptr_t h( make_pointer<HHuginn>() );
 	HStringStream s( code_ );
+	h->set_output_stream( _output );
 	h->load( s );
 	h->preprocess();
 	if ( h->parse() && h->compile() ) {
@@ -92,6 +94,7 @@ bool HHuginnVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 			}
 		}
 	}
+	_output.clear();
 	if ( ! _huginn->execute() ) {
 		throw HRuntimeException( _huginn->error_message() );
 	}
@@ -99,7 +102,11 @@ bool HHuginnVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 	if ( result->type_id() != HHuginn::TYPE::BOOLEAN ) {
 		throw HRuntimeException( "bad result type from verificator" );
 	}
-	return ( static_cast<HHuginn::HBoolean const*>( result.raw() )->value() );
+	bool ok( static_cast<HHuginn::HBoolean const*>( result.raw() )->value() );
+	if ( ! _output.str().is_empty() ) {
+		req_.message( _form->id(), ok ? LOG_LEVEL::INFO : LOG_LEVEL::ERROR, _output.consume() );
+	}
+	return ( ok );
 }
 
 HSQLVerificator::HSQLVerificator(

@@ -32,6 +32,7 @@ Copyright:
 #define HECTOR_VERIFICATOR_HXX_INCLUDED 1
 
 #include <yaal/tools/hhuginn.hxx>
+#include <yaal/tools/hstringstream.hxx>
 #include <yaal/dbwrapper/hquery.hxx>
 
 #include "cgi.hxx"
@@ -68,6 +69,7 @@ public:
 	typedef HVerificatorInterface base_type;
 private:
 	yaal::tools::HHuginn::ptr_t _huginn;
+	yaal::tools::HStringStream _output;
 	virtual bool do_verify( ORequest&, HSession& ) override;
 public:
 	HHuginnVerificator( yaal::hcore::HString const&, cgi::params_t const&, HForm* );
