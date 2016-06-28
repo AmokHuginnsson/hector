@@ -542,7 +542,7 @@ void show_messages( yaal::tools::HXml::HNodeProxy node_, ORequest const& req_ ) 
 					HXml::HNodeProxy ul( (*del).get_elements_by_name( NODE_UL )[0] );
 					for ( ORequest::OMessage const& m : ms ) {
 						HXml::HNodeProxy li( *ul.add_node( NODE_LI, m._data ) );
-						li.properties().insert( make_pair( ATTRIBUTE_CLASS, LOG_LEVEL::name( m._type ) ) );
+						li.properties().insert( make_pair( ATTRIBUTE_CLASS, to_string( LOG_LEVEL::name( m._type ) ).lower() ) );
 						hasData = true;
 					}
 				}
