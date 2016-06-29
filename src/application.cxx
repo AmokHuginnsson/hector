@@ -60,7 +60,8 @@ HApplication::HApplication( void )
 	, _sessions()
 	, _db()
 	, _forms()
-	, _mode( MODE::GET ) {
+	, _mode( MODE::GET )
+	, _hash( HASH::SHA1 ) {
 	return;
 }
 
@@ -113,6 +114,14 @@ void HApplication::load(
 		_columnLogin = entities.at( "userNameColumn" );
 		_columnPassword = entities.at( "userPasswordColumn" );
 	}
+	HString h( entities.at( "hash" ) );
+	if ( h.lower() == "sha1" ) {
+		_hash = HASH::SHA1;
+	} else if ( h == "md5" ) {
+		_hash = HASH::MD5;
+	} else {
+		throw HApplicationException( "Bad hash type: "_ys.append( h ) );
+	}
 	_db = applicationServer_->get_db_connection( _dsn );
 	cgi::prepare_logic( this, _dom.get_root() );
 	_dom.apply_style( toolkit.string(), {{ "mode", _mode == MODE::GET ? "'GET'" : "'POST'" }} );
@@ -130,6 +139,10 @@ OSecurityContext const& HApplication::get_default_security_context( void ) const
 
 HApplication::MODE HApplication::get_mode( void ) const {
 	return ( _mode );
+}
+
+HApplication::HASH HApplication::get_hash( void ) const {
+	return ( _hash );
 }
 
 yaal::hcore::HString const& HApplication::id( void ) const {
@@ -191,7 +204,7 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 				}
 				HQuery::ptr_t query( _db->prepare_query( queryString ) );
 				query->bind( 1, *login );
-				query->bind( 2, tools::hash::sha1( *password ) );
+				query->bind( 2, _hash == HASH::SHA1 ? tools::hash::sha1( *password ) : tools::hash::md5( *password ) );
 				query->bind( 3, *login );
 				HRecordSet::ptr_t rs( query->execute() );
 				M_ENSURE( !! rs );

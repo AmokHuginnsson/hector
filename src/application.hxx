@@ -46,6 +46,10 @@ public:
 		GET,
 		POST
 	};
+	enum class HASH {
+		SHA1,
+		MD5
+	};
 	typedef HApplication this_type;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HSession> sessions_t;
 	typedef yaal::hcore::HMap<yaal::hcore::HString, HForm::ptr_t> forms_t;
@@ -64,6 +68,7 @@ private:
 	yaal::dbwrapper::HDataBase::ptr_t _db;
 	forms_t _forms;
 	MODE _mode;
+	HASH _hash;
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication();
@@ -85,6 +90,7 @@ public:
 	void fill_form( yaal::hcore::HString const&, HSession const& );
 	OSecurityContext const& get_default_security_context( void ) const;
 	MODE get_mode( void ) const;
+	HASH get_hash( void ) const;
 	yaal::hcore::HString const& id( void ) const;
 	yaal::hcore::HString const& name( void ) const;
 	yaal::hcore::HString const& code( void ) const;

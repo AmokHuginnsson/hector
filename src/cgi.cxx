@@ -732,6 +732,10 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 										if ( !! transformArg ) {
 											if ( *transformArg == "sha1" ) {
 												transform = &tools::hash::sha1;
+											} else if ( *transformArg == "md5" ) {
+												transform = &tools::hash::md5;
+											} else {
+												throw HCGIException( "Unknown transform function: "_ys.append( *transformArg ), (*del).get_line() );
 											}
 										}
 										params.emplace_back( (*a.begin()).get_value(), transform );

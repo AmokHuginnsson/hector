@@ -171,7 +171,7 @@ void HForm::commit( ORequest& req_, HSession& session_ ) {
 			OInput const& input( *_inputsDBView.at( col ) );
 			ORequest::value_t value( req_.lookup( input._htmlName, ORequest::ORIGIN::POST ) );
 			if ( !! value ) {
-				_crud[colNo] = ( input._type == OInput::TYPE::PASSWORD ) ? tools::hash::sha1( *value ) : *value;
+				_crud[colNo] = ( input._type == OInput::TYPE::PASSWORD ) ? ( _application.get_hash() == HApplication::HASH::SHA1 ? tools::hash::sha1( *value ) : tools::hash::md5( *value ) ) : *value;
 			} else {
 				_crud[colNo] = HRecordSet::value_t();
 			}
