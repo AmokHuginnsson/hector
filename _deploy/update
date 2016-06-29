@@ -1,5 +1,7 @@
 #! /bin/sh
 
+DEV_HOME="/home/amok"
+HECTOR="/home/hector"
 SRC="${HOME}/src/cellar/web"
 DST="/home/hector/nest/app"
 
@@ -14,11 +16,13 @@ invoke mkdir -p ${DST}
 invoke cp -a ${SRC}/codestation ${DST}/codestation
 invoke cp -a ${SRC}/hector.xml ${DST}/
 invoke /bin/rm -f ${DST}/codestation/activex
-invoke cp -a /home/amok/src/hector/build/release/codestation/1exec ${DST}/codestation/activex
+invoke cp -a ${DEV_HOME}/src/hector/build/release/codestation/1exec ${DST}/codestation/activex
 invoke /bin/rm -f ${DST}/codestation/bits/projects/huginn/huginn-samples
 invoke cp -a ${SRC}/data/codestation/huginn-samples ${DST}/codestation/bits/projects/huginn/
 invoke /bin/rm -f ${DST}/codestation/bits/projects/huginn/huginn-samples/solve.hgn
-invoke cp -a /home/amok/src/cellar/boggle-solvers/solve.hgn ${DST}/codestation/bits/projects/huginn/huginn-samples/
+invoke cp -a ${DEV_HOME}/src/cellar/boggle-solvers/solve.hgn ${DST}/codestation/bits/projects/huginn/huginn-samples/
+invoke cp ${DEV_HOME}/src/server/hector/setup.dtd ${DST}/codestation/
+invoke cp ${DEV_HOME}/src/server/hector/hectorrc ${HECTOR}/nest/etc/
 invoke chown -R root:root ${DST}
 invoke chmod -R a+rX ${DST}
 invoke chattr +i ${DST}

@@ -57,9 +57,7 @@ struct OSetup {
 	yaal::hcore::HString _socketRoot;
 	yaal::hcore::HString _reload;
 	yaal::hcore::HString _restart;
-	yaal::hcore::HString _databaseName;
-	yaal::hcore::HString _databaseLogin;
-	yaal::hcore::HString _databasePassword;
+	yaal::hcore::HString _dsn;
 	yaal::hcore::HString _tableUser;
 	yaal::hcore::HString _columnLogin;
 	yaal::hcore::HString _columnPassword;
@@ -67,17 +65,26 @@ struct OSetup {
 	/* self-sufficient */
 	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.hxx" );
 	OSetup( void )
-		: _quiet( false ), _verbose( false ),
-		_shutdown( false ),
-		_status( false ), _programName( NULL ),
-		_maxConnections( DEFAULT_MAX_CONNECTIONS ),
-		_maxWorkingThreads( DEFAULT_MAX_WORKING_THREADS ),
-		_socketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT ),
-		_sslPort( DEFAULT_SSL_PORT ),
-		_logPath(), _dataDir(), _socketRoot( DEFAULT_SOCKET_ROOT ),
-		_reload(), _restart(),
-		_databaseName(), _databaseLogin(), _databasePassword(),
-		_tableUser(), _columnLogin(), _columnPassword(), _authQuery() {}
+		: _quiet( false )
+		, _verbose( false )
+		, _shutdown( false )
+		, _status( false )
+		, _programName( NULL )
+		, _maxConnections( DEFAULT_MAX_CONNECTIONS )
+		, _maxWorkingThreads( DEFAULT_MAX_WORKING_THREADS )
+		, _socketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT )
+		, _sslPort( DEFAULT_SSL_PORT )
+		, _logPath()
+		, _dataDir()
+		, _socketRoot( DEFAULT_SOCKET_ROOT )
+		, _reload()
+		, _restart()
+		, _dsn()
+		, _tableUser()
+		, _columnLogin()
+		, _columnPassword()
+		, _authQuery() {
+	}
 	void test_setup( void );
 private:
 	OSetup ( OSetup const & );

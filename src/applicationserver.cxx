@@ -30,6 +30,7 @@ Copyright:
 #include <yaal/hcore/hlog.hxx>
 #include <yaal/tools/hstringstream.hxx>
 #include <yaal/tools/base64.hxx>
+#include <yaal/dbwrapper/dbwrapper.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
 #include "applicationserver.hxx"
 #include "http.hxx"
@@ -46,7 +47,7 @@ HApplicationServer::HApplicationServer( void )
 	: HServer( setup._maxConnections ),
 	_applications(), _pending(),
 	_configuration(), _defaultApplication(), _sigChildEvent(),
-	_db( HDataBase::get_connector() ) {
+	_db( dbwrapper::util::connect( setup._dsn ) ) {
 }
 
 HApplicationServer::~HApplicationServer( void ) {
@@ -56,7 +57,6 @@ HApplicationServer::~HApplicationServer( void ) {
 void HApplicationServer::start( void ) {
 	M_PROLOG
 	HSignalService& ss = HSignalService::get_instance();
-	_db->connect( setup._databaseName, setup._databaseName, setup._databasePassword );
 	ss.register_handler( SIGCHLD, call( &HApplicationServer::on_sigchild, this, _1 ) );
 	_dispatcher.register_file_descriptor_handler( _sigChildEvent.out(), call( &HApplicationServer::process_sigchild, this, _1 ) );
 
