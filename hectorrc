@@ -4,10 +4,6 @@
 log_path "x_hectord.log"
 application "app"
 data_dir "./${NEST}/app/"
-dsn "sqlite3:///system"
-table_user "tbl_user"
-column_login "login"
-column_password "password"
 # auth_query "SELECT id FROM tbl_user WHERE login = '%s' AND password = '%s';"
 max_connections 128
 max_working_threads 5
