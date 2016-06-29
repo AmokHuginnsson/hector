@@ -10,7 +10,7 @@ invoke() {
 	eval "${@}"
 }
 
-invoke chattr -i ${DST}
+invoke chattr -f -R -i ${DST}
 invoke /bin/rm -r ${DST}
 invoke mkdir -p ${DST}
 invoke cp -a ${SRC}/codestation ${DST}/codestation
@@ -24,7 +24,7 @@ invoke cp -a ${DEV_HOME}/src/cellar/boggle-solvers/solve.hgn ${DST}/codestation/
 invoke cp ${DEV_HOME}/src/server/hector/setup.dtd ${DST}/codestation/
 invoke chown -R root:root ${DST}
 invoke chmod -R a+rX ${DST}
-invoke chattr +i ${DST}
+invoke chattr -f -R +i ${DST}
 
 cd ~/src/hector
 

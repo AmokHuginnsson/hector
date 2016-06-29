@@ -97,9 +97,6 @@ void HApplication::load(
 	interface << "/" << _code << "/" << INTERFACE_FILE;
 	toolkit << "/" << _code << "/" << TOOLKIT_FILE;
 	HFSItem app( interface.string() );
-	_defaultSecurityContext._user = app.get_user();
-	_defaultSecurityContext._group = app.get_group();
-	_defaultSecurityContext._mode = static_cast<ACCESS::mode_t>( app.get_permissions() );
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
 	_dom.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES | HXml::PARSER::AUTO_XINCLUDE );
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
@@ -123,6 +120,12 @@ void HApplication::load(
 		throw HApplicationException( "Bad hash type: "_ys.append( h ) );
 	}
 	_db = applicationServer_->get_db_connection( _dsn );
+	HXml::entities_t::const_iterator u( entities.find( "user" ) );
+	_defaultSecurityContext._user = u != entities.end() ? u->second : app.get_user();
+	HXml::entities_t::const_iterator g( entities.find( "group" ) );
+	_defaultSecurityContext._group = g != entities.end() ? g->second : app.get_group();
+	HXml::entities_t::const_iterator m( entities.find( "permissions" ) );
+	_defaultSecurityContext._mode = static_cast<ACCESS::mode_t>( m != entities.end() ? lexical_cast<int>( m->second ) : app.get_permissions() );
 	cgi::prepare_logic( this, _dom.get_root() );
 	_dom.apply_style( toolkit.string(), {{ "mode", _mode == MODE::GET ? "'GET'" : "'POST'" }} );
 	_dom.parse( HXml::PARSER::STRIP_COMMENT );

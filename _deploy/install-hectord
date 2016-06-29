@@ -71,7 +71,7 @@ adv mkdir -p nest/etc/conf nest/var/db/yaal/keys
 adv cp build/${TARGET}/${DAEMON}/1exec nest/
 adv cp -a ${HOME}/usr/lib nest
 adv cp -a ${HOME}/src/yaal/build/${TARGET}/yaalrc nest/etc/conf/
-adv cp -a ${HOME}/src/server/hector/hectorrc nest/etc/conf/
+adv cp -a ${HOME}/src/${SERVICE}/hectorrc nest/etc/conf/
 adv cp -a ${HOME}/src/${SERVICE}/system.sqlite nest/
 adv cp -a ${HOME}/var/db/yaal/keys/* nest/var/db/yaal/keys/
 adv cp -a ${HOME}/src/yaal/_aux/set-limits.sh nest
@@ -97,6 +97,7 @@ for ITEM in nest/app/* ; do
 		fi
 	fi
 done
+adv cp -a ${HOME}/src/server/hector/setup.dtd nest/app/codestation
 adv mkdir -p ${JAIL}/tmp/hector ${JAIL}/bin
 
 adv mv nest ${JAIL}/
