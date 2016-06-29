@@ -36,9 +36,19 @@ fi
 
 JAIL="/home/${SERVICE}/"
 
-conditional_chattr() {
+conditional_immutable_off() {
 	if [ -d ${1} ] ; then
-		chattr -i ${1}/*
+		set +e
+		chattr -f -R -i "${1}"
+		set -e
+	fi
+}
+
+conditional_immutable_on() {
+	if [ -d ${1} ] ; then
+		set +e
+		chattr -f -R +i "${1}"
+		set -e
 	fi
 }
 
@@ -46,6 +56,10 @@ conditional_umount() {
 	MOUNTED=`awk '/\/home\/hector\/proc/' /proc/mounts`
 	if [ "x${MOUNTED}" != "x" ] ; then
 		umount -f /home/${SERVICE}/proc
+	fi
+	MOUNTED=`awk '/\/home\/hector\/var\/run\/postgresql/' /proc/mounts`
+	if [ "x${MOUNTED}" != "x" ] ; then
+		umount -f /home/${SERVICE}/var/run/postgresql
 	fi
 }
 
@@ -57,11 +71,11 @@ adv mkdir -p nest/etc/conf nest/var/db/yaal/keys
 adv cp build/${TARGET}/${DAEMON}/1exec nest/
 adv cp -a ${HOME}/usr/lib nest
 adv cp -a ${HOME}/src/yaal/build/${TARGET}/yaalrc nest/etc/conf/
-adv cp -a ${HOME}/src/${SERVICE}/hectorrc nest/etc/conf/
+adv cp -a ${HOME}/src/server/hector/hectorrc nest/etc/conf/
 adv cp -a ${HOME}/src/${SERVICE}/system.sqlite nest/
 adv cp -a ${HOME}/var/db/yaal/keys/* nest/var/db/yaal/keys/
 adv cp -a ${HOME}/src/yaal/_aux/set-limits.sh nest
-adv conditional_chattr ${JAIL}/nest "${JAIL}/nest/*"
+adv conditional_immutable_off ${JAIL}/nest
 adv conditional_umount
 adv /bin/rm -rf ${JAIL}/*
 
@@ -93,6 +107,9 @@ adv chmod 755 ${JAIL}/tmp/hector
 adv chown -R root:root ${JAIL}/nest/
 adv chown ${SERVICE}:service ${JAIL}/nest/ ${JAIL}/nest/system.sqlite ${JAIL}/tmp/hector
 adv chmod -R a+rX ${JAIL}/bin ${JAIL}/nest/*
+adv mkdir -p ${JAIL}/var/run/postgresql
+adv chmod -R a+rX ${JAIL}/var
+adv mount --bind /var/run/postgresql ${JAIL}/var/run/postgresql
 adv makejail ./_deploy/jail-${DAEMON}.py
 if [ ! -f ${JAIL}/etc/passwd ] ; then
 	echo "Deployment failed!"
@@ -100,7 +117,7 @@ if [ ! -f ${JAIL}/etc/passwd ] ; then
 fi
 adv /bin/rm -f ${JAIL}/nest/x_*
 adv "grep service /etc/group > ${JAIL}/etc/group"
-adv chattr +i ${JAIL}/nest/*
-adv chattr -i ${JAIL}/nest/system.sqlite
+adv conditional_immutable_on ${JAIL}/nest
+adv chattr -i ${JAIL}/nest ${JAIL}/nest/system.sqlite
 
 
