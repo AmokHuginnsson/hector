@@ -38,12 +38,12 @@ using namespace yaal::dbwrapper;
 namespace hector {
 
 HActiveX HActiveX::get_instance(
+	HApplicationServer* applicationServer_,
 	HString const& id_,
 	HString const& code_,
 	HString const& name_,
 	HString const& path_,
-	HApplication::MODE mode_,
-	HDataBase::ptr_t db_
+	HApplication::MODE mode_
 ) {
 	M_PROLOG
 	static char const* const SYMBOL_FACTORY = "factory";
@@ -68,10 +68,8 @@ HActiveX HActiveX::get_instance(
 	HActiveX proc( activex.raw() );
 	proc._application = app;
 	proc._activeX = activeX;
-	app->set_mode( mode_ );
-	app->set_db( db_);
 	app->init();
-	app->load( id_, code_, name_, path_ );
+	app->load( applicationServer_, id_, code_, name_, path_, mode_ );
 	return ( proc );
 	M_EPILOG
 }

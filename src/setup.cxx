@@ -60,13 +60,6 @@ void OSetup::test_setup( void ) {
 	if ( _dataDir.is_empty() )
 		yaal::tools::util::failure( failNo,
 				_( "you must specify directory with application data\n" ) );
-	++ failNo;
-	if ( _dsn.is_empty() )
-		yaal::tools::util::failure( failNo, _( "DSN string must be specified\n" ) );
-	++ failNo;
-	if ( _authQuery.is_empty() && ( _tableUser.is_empty() || _columnLogin.is_empty() || _columnPassword.is_empty() ) )
-		yaal::tools::util::failure( failNo, _( "authentication query or table user with column login with column password must be specified\n" ) );
-
 #endif
 	++ failNo;
 	if ( _maxConnections < 0 )

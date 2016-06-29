@@ -51,6 +51,11 @@ HApplication::HApplication( void )
 	, _id()
 	, _code()
 	, _name()
+	, _dsn()
+	, _tableUser()
+	, _columnLogin()
+	, _columnPassword()
+	, _authQuery()
 	, _defaultSecurityContext()
 	, _sessions()
 	, _db()
@@ -71,10 +76,12 @@ void HApplication::init( void ) {
 }
 
 void HApplication::load(
+	HApplicationServer* applicationServer_,
 	HString const& id_,
 	HString const& code_,
 	HString const& name_,
-	HString const& path_
+	HString const& path_,
+	MODE mode_
 ) {
 	M_PROLOG
 	static char const* const INTERFACE_FILE = "interface.xml";
@@ -82,6 +89,7 @@ void HApplication::load(
 	_id = id_;
 	_code = code_;
 	_name = name_;
+	_mode = mode_;
 	HStringStream interface( path_ );
 	HStringStream toolkit( path_ );
 	hcore::log( LOG_LEVEL::INFO ) << "Loading application `" << _id << "'." << endl;
@@ -95,6 +103,17 @@ void HApplication::load(
 	_dom.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES | HXml::PARSER::AUTO_XINCLUDE );
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
 	_dom.parse( HXml::PARSER::STRIP_COMMENT );
+	HXml::entities_t const& entities( _dom.entities() );
+	_dsn = entities.at( "DSN" );
+	HXml::entities_t::const_iterator aq( entities.find( "authQuery" ) );
+	if ( aq != entities.end() ) {
+		_authQuery = aq->second;
+	} else {
+		_tableUser = entities.at( "usersTable" );
+		_columnLogin = entities.at( "userNameColumn" );
+		_columnPassword = entities.at( "userPasswordColumn" );
+	}
+	_db = applicationServer_->get_db_connection( _dsn );
 	cgi::prepare_logic( this, _dom.get_root() );
 	_dom.apply_style( toolkit.string(), {{ "mode", _mode == MODE::GET ? "'GET'" : "'POST'" }} );
 	_dom.parse( HXml::PARSER::STRIP_COMMENT );
@@ -131,20 +150,6 @@ yaal::hcore::HString const& HApplication::name( void ) const {
 	M_EPILOG
 }
 
-void HApplication::set_mode( MODE mode_ ) {
-	M_PROLOG
-	_mode = mode_;
-	return;
-	M_EPILOG
-}
-
-void HApplication::set_db( yaal::dbwrapper::HDataBase::ptr_t db_ ) {
-	M_PROLOG
-	_db = db_;
-	return;
-	M_EPILOG
-}
-
 void HApplication::do_init( void ) {
 	OUT << __PRETTY_FUNCTION__ << endl;
 }
@@ -178,7 +183,7 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 					queryString = (
 						HFormat(
 							"SELECT ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER(?) AND %3$s = LOWER(?) ) + ( SELECT COUNT(*) FROM %1$s WHERE %2$s = LOWER(?) );"
-						) % setup._tableUser % setup._columnLogin % setup._columnPassword
+						) % _tableUser % _columnLogin % _columnPassword
 					).string();
 					OUT << "query: " << queryString << endl;
 				} catch ( HFormatException const& e ) {

@@ -32,6 +32,7 @@ Copyright:
 namespace hector {
 
 struct HSession;
+class HApplicationServer;
 
 class HActiveX {
 	yaal::hcore::HString _binaryPath;
@@ -44,12 +45,12 @@ public:
 		, _application() {
 	}
 	static HActiveX get_instance(
+		HApplicationServer*,
 		yaal::hcore::HString const&,
 		yaal::hcore::HString const&,
 		yaal::hcore::HString const&,
 		yaal::hcore::HString const&,
-		HApplication::MODE,
-		yaal::dbwrapper::HDataBase::ptr_t
+		HApplication::MODE
 	);
 	void reload_binary( void );
 	void handle_logic( ORequest&, HSession& );

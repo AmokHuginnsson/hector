@@ -44,14 +44,31 @@ using namespace yaal::dbwrapper;
 namespace hector {
 
 HApplicationServer::HApplicationServer( void )
-	: HServer( setup._maxConnections ),
-	_applications(), _pending(),
-	_configuration(), _defaultApplication(), _sigChildEvent(),
-	_db( dbwrapper::util::connect( setup._dsn ) ) {
+	: HServer( setup._maxConnections )
+	, _applications()
+	, _pending()
+	, _configuration()
+	, _defaultApplication()
+	, _sigChildEvent()
+	, _dbConnections() {
 }
 
 HApplicationServer::~HApplicationServer( void ) {
 	clean_request( 0 );
+}
+
+yaal::dbwrapper::HDataBase::ptr_t HApplicationServer::get_db_connection( yaal::hcore::HString const& dsn_ ) {
+	M_PROLOG
+	db_connections_t::iterator it( _dbConnections.find( dsn_ ) );
+	HDataBase::ptr_t dbConnection;
+	if ( it != _dbConnections.end() ) {
+		dbConnection = it->second;
+	} else {
+		dbConnection = dbwrapper::util::connect( dsn_ );
+		_dbConnections.insert( make_pair( dsn_, dbConnection ) );
+	}
+	return ( dbConnection );
+	M_EPILOG
 }
 
 void HApplicationServer::start( void ) {
@@ -69,12 +86,13 @@ void HApplicationServer::start( void ) {
 	HXml::HConstNodeProxy hector = _configuration.get_root();
 	for ( HXml::HConstIterator it = hector.begin(); it != hector.end(); ++ it ) {
 		HString const& name = (*it).get_name();
-		if ( name == NODE_CONFIGURATION )
+		if ( name == NODE_CONFIGURATION ) {
 			read_configuration( *it );
-		else if ( name == NODE_APPLICATIONS )
+		} else if ( name == NODE_APPLICATIONS ) {
 			read_applications( *it );
+		}
 	}
-	hcore::log( LOG_LEVEL::INFO ) << "Statring application server." << endl;
+	hcore::log( LOG_LEVEL::INFO ) << "Starting application server." << endl;
 	init_server();
 	_socket[ IPC_CHANNEL::CONTROL ]->set_timeout( setup._socketWriteTimeout );
 	_socket[ IPC_CHANNEL::REQUEST ]->set_timeout( setup._socketWriteTimeout );
@@ -134,12 +152,12 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 					make_pair(
 						*id,
 						HActiveX::get_instance(
+							this,
 							*id,
 							!! codeVal ? *codeVal : *id,
 							!! nameVal ? *nameVal : *id,
 							setup._dataDir,
-							mode,
-							_db
+							mode
 						)
 					)
 				);
@@ -315,12 +333,12 @@ void HApplicationServer::do_restart( HStreamInterface::ptr_t sock, HString const
 	if ( it != _applications.end() ) {
 		try {
 			HActiveX& newX = _applications[ appName ] = HActiveX::get_instance(
+				this,
 				it->second.app().id(),
 				it->second.app().code(),
 				it->second.app().name(),
 				setup._dataDir,
-				it->second.app().get_mode(),
-				_db
+				it->second.app().get_mode()
 			);
 			newX.reload_binary();
 			*sock << "application `" << appName << "' restarted successfully" << endl;

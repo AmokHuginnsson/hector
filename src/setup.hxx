@@ -57,11 +57,6 @@ struct OSetup {
 	yaal::hcore::HString _socketRoot;
 	yaal::hcore::HString _reload;
 	yaal::hcore::HString _restart;
-	yaal::hcore::HString _dsn;
-	yaal::hcore::HString _tableUser;
-	yaal::hcore::HString _columnLogin;
-	yaal::hcore::HString _columnPassword;
-	yaal::hcore::HString _authQuery;
 	/* self-sufficient */
 	static int const PATH_OFFSET = sizeof ( __FILE__ ) - sizeof ( "setup.hxx" );
 	OSetup( void )
@@ -78,12 +73,7 @@ struct OSetup {
 		, _dataDir()
 		, _socketRoot( DEFAULT_SOCKET_ROOT )
 		, _reload()
-		, _restart()
-		, _dsn()
-		, _tableUser()
-		, _columnLogin()
-		, _columnPassword()
-		, _authQuery() {
+		, _restart() {
 	}
 	void test_setup( void );
 private:

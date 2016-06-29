@@ -38,6 +38,7 @@ Copyright:
 namespace hector {
 
 struct HSession;
+class HApplicationServer;
 
 class HApplication {
 public:
@@ -53,6 +54,11 @@ private:
 	yaal::hcore::HString _id;
 	yaal::hcore::HString _code;
 	yaal::hcore::HString _name;
+	yaal::hcore::HString _dsn;
+	yaal::hcore::HString _tableUser;
+	yaal::hcore::HString _columnLogin;
+	yaal::hcore::HString _columnPassword;
+	yaal::hcore::HString _authQuery;
 	OSecurityContext _defaultSecurityContext;
 	sessions_t _sessions;
 	yaal::dbwrapper::HDataBase::ptr_t _db;
@@ -61,14 +67,14 @@ private:
 public:
 	typedef yaal::hcore::HPointer<HApplication> ptr_t;
 	HApplication();
-	void set_mode( MODE );
-	void set_db( yaal::dbwrapper::HDataBase::ptr_t );
 	virtual ~HApplication( void );
 	void load(
+		HApplicationServer*,
 		yaal::hcore::HString const&,
 		yaal::hcore::HString const&,
 		yaal::hcore::HString const&,
-		yaal::hcore::HString const&
+		yaal::hcore::HString const&,
+		MODE
 	);
 	void handle_logic( ORequest&, HSession& );
 	void generate_page( ORequest const&, HSession const& );
