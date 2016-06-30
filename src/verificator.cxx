@@ -89,7 +89,7 @@ bool HHuginnVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 		} else {
 			ORequest::value_t value( req_.lookup( name, ORequest::ORIGIN::POST ) );
 			if ( !! value ) {
-				_huginn->add_argument( *value );
+				_huginn->add_argument( p.transform( *value ) );
 				OUT << "setting param: " << name << ", to value: " << *value << endl;
 			}
 		}
