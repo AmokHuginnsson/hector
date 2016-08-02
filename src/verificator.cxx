@@ -94,7 +94,7 @@ bool HHuginnVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 			}
 		}
 	}
-	_output.clear();
+	_output.reset();
 	if ( ! _huginn->execute() ) {
 		throw HRuntimeException( _huginn->error_message() );
 	}
