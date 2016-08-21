@@ -229,7 +229,7 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app ) {
 			jar += it->second;
 		++ cookieNo;
 	}
-	M_ENSURE_EX( jar.get_length() == size, lexical_cast<HString>( HFormat( "%ld != %d" ) % jar.get_length() % size ) );
+	M_ENSURE( jar.get_length() == size, lexical_cast<HString>( HFormat( "%ld != %d" ) % jar.get_length() % size ) );
 	jar = base64::decode( jar );
 	_jar->clear();
 	cookieNo = 0;

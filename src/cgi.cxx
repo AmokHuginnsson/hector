@@ -657,11 +657,11 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 			name = (*child).get_name();
 			if ( name == NODE_HFORM ) {
 				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
-				M_ENSURE_EX( !!optId, "h-from must have an `id' attribute: "_ys.append( (*child).get_line() ) );
+				M_ENSURE( !!optId, "h-from must have an `id' attribute: "_ys.append( (*child).get_line() ) );
 				xml::value_t tableVal( xml::try_attr_val( *child, ATTRIBUTE_TABLE ) );
-				M_ENSURE_EX( !!tableVal, "h-from must have a `table' attribute: "_ys.append( (*child).get_line() ) );
+				M_ENSURE( !!tableVal, "h-from must have a `table' attribute: "_ys.append( (*child).get_line() ) );
 				xml::value_t filterColumnVal( xml::try_attr_val( *child, ATTRIBUTE_FITER_COLUMN ) );
-				M_ENSURE_EX( !!filterColumnVal, "h-from must have a `filter' attribute: "_ys.append( (*child).get_line() ) );
+				M_ENSURE( !!filterColumnVal, "h-from must have a `filter' attribute: "_ys.append( (*child).get_line() ) );
 				HForm::ptr_t form( make_resource<HForm>( *app_, *optId, *tableVal, *filterColumnVal ) );
 				bool hasActiveElement( false );
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
@@ -672,11 +672,11 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 						if ( name == NODE_HINPUT ) {
 							xml::value_t columnAttr( xml::try_attr_val( *del, ATTRIBUTE_COLUMN ) );
 							xml::value_t typeAttr( xml::try_attr_val( *del, ATTRIBUTE_TYPE ) );
-							M_ENSURE_EX( !!typeAttr, "h-input must have a `type' attribute: "_ys.append( (*del).get_line() ) );
+							M_ENSURE( !!typeAttr, "h-input must have a `type' attribute: "_ys.append( (*del).get_line() ) );
 							xml::value_t nameAttr( xml::try_attr_val( *del, ATTRIBUTE_NAME ) );
-							M_ENSURE_EX( !!nameAttr, "h-input must have a `name' attribute: "_ys.append( (*del).get_line() ) );
+							M_ENSURE( !!nameAttr, "h-input must have a `name' attribute: "_ys.append( (*del).get_line() ) );
 							xml::value_t valueAttr( xml::try_attr_val( *del, ATTRIBUTE_VALUE ) );
-							M_ENSURE_EX( !!valueAttr, "h-input must have a `value' attribute: "_ys.append( (*del).get_line() ) );
+							M_ENSURE( !!valueAttr, "h-input must have a `value' attribute: "_ys.append( (*del).get_line() ) );
 							xml::value_t flagsAttr( xml::try_attr_val( *del, ATTRIBUTE_FLAGS ) );
 							int perm( get_permissions( *del ) );
 							ACCESS::mode_t mode( static_cast<ACCESS::mode_t>( perm ) );
@@ -710,23 +710,23 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							form->add_input( *nameAttr, !! columnAttr ? *columnAttr : *nameAttr, type, perm != -1 ? mode : ACCESS::NONE, flags );
 							OUT << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
-							M_ENSURE_EX( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
+							M_ENSURE( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
 							HString code;
 							params_t params;
 							HVerificatorInterface::TYPE type( HVerificatorInterface::TYPE::NONE );
 							for ( HXml::HConstNodeProxy n : *del ) {
-								M_ENSURE_EX( n.get_type() == HXml::HNode::TYPE::NODE, "verificator can have only node children." );
+								M_ENSURE( n.get_type() == HXml::HNode::TYPE::NODE, "verificator can have only node children." );
 								if ( n.get_name() == NODE_CODE ) {
-									M_ENSURE_EX( ( n.child_count() == 1 ) && ( (*n.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator code can only have one content" );
+									M_ENSURE( ( n.child_count() == 1 ) && ( (*n.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator code can only have one content" );
 									code = (*n.begin()).get_value();
 									xml::value_t typeVal( xml::try_attr_val( n, ATTRIBUTE_LANG ) );
-									M_ENSURE_EX( !! typeVal, "verificator language not set: "_ys.append( n.get_line() ) );
-									M_ENSURE_EX( ( *typeVal == LANG_HUGINN ) || ( *typeVal == LANG_SQL ), "unsupported language for verificator"_ys.append( n.get_line() ) );
+									M_ENSURE( !! typeVal, "verificator language not set: "_ys.append( n.get_line() ) );
+									M_ENSURE( ( *typeVal == LANG_HUGINN ) || ( *typeVal == LANG_SQL ), "unsupported language for verificator"_ys.append( n.get_line() ) );
 									type = ( *typeVal == LANG_HUGINN ) ? HVerificatorInterface::TYPE::HUGINN : HVerificatorInterface::TYPE::SQL;
 								} else if ( n.get_name() == NODE_ARGV ) {
 									for ( HXml::HConstNodeProxy a : n ) {
-										M_ENSURE_EX( ( a.get_type() == HXml::HNode::TYPE::NODE ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
-										M_ENSURE_EX( ( a.child_count() == 1 ) && ( (*a.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator arg can only have one content" );
+										M_ENSURE( ( a.get_type() == HXml::HNode::TYPE::NODE ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
+										M_ENSURE( ( a.child_count() == 1 ) && ( (*a.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator arg can only have one content" );
 										xml::value_t transformArg( xml::try_attr_val( a, ATTRIBUTE_TRANSFORM ) );
 										HParameter::transform_t transform( nullptr );
 										if ( !! transformArg ) {
