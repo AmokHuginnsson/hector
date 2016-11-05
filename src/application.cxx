@@ -303,7 +303,7 @@ void HApplication::generate_page( ORequest const& req, HSession const& session_ 
 	OUT << __PRETTY_FUNCTION__ << endl;
 	do_generate_page( req, session_ );
 	if ( !! dom().get_root() ) {
-		_dom.save( req.socket() );
+		_dom.save( req.socket(), HXml::GENERATOR::STRIP_ENTITIES );
 	}
 	return;
 	M_EPILOG

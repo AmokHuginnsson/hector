@@ -124,8 +124,10 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 	static char const APP_PROP_NAME_NAME[] = "name";
 	static char const APP_PROP_NAME_MODE[] = "mode";
 	static HApplication::MODE DEFAULT_MODE = HApplication::MODE::GET;
-	for ( HXml::HConstIterator it = applications.begin(); it != applications.end(); ++ it ) {
-		HXml::HConstNodeProxy application = *it;
+	for ( HXml::HConstNodeProxy application : applications ) {
+		if ( application.get_type() != HXml::HNode::TYPE::NODE ) {
+			continue;
+		}
 		M_ENSURE( application.get_name() == APP_NODE_NAME );
 		HXml::HNode::properties_t const& props = application.properties();
 		HXml::HNode::properties_t::const_iterator load = props.find( APP_PROP_NAME_LOAD );
