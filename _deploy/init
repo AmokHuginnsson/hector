@@ -63,7 +63,7 @@ prep_hectoradmin() {
 		${HECTOR_SRC}/build ${HECTOR_SRC}/build/release \
 		${HECTOR_SRC}/build/release/hectoradmin ${HECTORADMIN} \
 		${PREFIX} ${PREFIX}/lib
-	chmod o+r ${PREFIX}/lib/libhcore* ${PREFIX}/lib/libtools*
+	chmod o+r ${PREFIX}/lib/libyaal_hcore* ${PREFIX}/lib/libyaal_tools* ${PREFIX}/lib/libyaal_dbwrapper* ${PREFIX}/lib/libyaal_*driver*
 }
 
 #
