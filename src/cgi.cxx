@@ -710,7 +710,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							form->add_input( *nameAttr, !! columnAttr ? *columnAttr : *nameAttr, type, perm != -1 ? mode : ACCESS::NONE, flags );
 							OUT << "input" << endl;
 						} else if ( name == NODE_VERIFY ) {
-							M_ENSURE( (*del).has_childs(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
+							M_ENSURE( (*del).has_children(), "verificator needs to have a body: "_ys.append( (*del).get_line() ) );
 							HString code;
 							params_t params;
 							HVerificatorInterface::TYPE type( HVerificatorInterface::TYPE::NONE );
