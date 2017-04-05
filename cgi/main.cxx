@@ -86,7 +86,6 @@ HString escape( HString const& source ) {
 	static HString result;
 	result = source;
 	result.trim_left().replace( "\\", "\\\\" ).replace( "\n", "\\n" );
-	M_ASSERT( result.get_length() == static_cast<int long>( ::strlen( result.raw() ) ) );
 	return ( result );
 	M_EPILOG
 }

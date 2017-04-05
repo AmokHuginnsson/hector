@@ -87,7 +87,7 @@ void OSetup::test_setup( void ) {
 	HFSItem data( _dataDir );
 	++ failNo;
 	if ( ! ( !! data && data.is_directory() ) )
-		yaal::tools::util::failure( failNo, _( "%s: applications database path is invalid\n" ), ( ! _dataDir.is_empty() ? _dataDir.raw() : "(nil)" ) );
+		yaal::tools::util::failure( failNo, _( "%s: applications database path is invalid\n" ), ( ! _dataDir.is_empty() ? _dataDir.c_str() : "(nil)" ) );
 #elif defined ( TARGET_HECTOR_ADMIN )
 	++ failNo;
 	if ( ! ( _status || _shutdown || ! _reload.is_empty() || ! _restart.is_empty() ) )
