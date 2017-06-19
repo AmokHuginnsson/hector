@@ -52,8 +52,8 @@ HActiveX HActiveX::get_instance(
 	HPlugin::ptr_t activeX( make_pointer<HPlugin>() );
 	activex << "/" << code_ << "/" << ATTRIBUTE_ACTIVEX;
 	HApplication::ptr_t app;
-	OUT << "Trying path: `" << activex.raw() << "' for activex: `" << id_ << "'" << endl;
-	activeX->load( activex.raw() );
+	OUT << "Trying path: `" << activex.str() << "' for activex: `" << id_ << "'" << endl;
+	activeX->load( activex.str() );
 	M_ASSERT( activeX->is_loaded() );
 	OUT << "activex nest for `" << id_ << "' loaded" << endl;
 	typedef HApplication::ptr_t ( *factory_t )( void );
@@ -65,7 +65,7 @@ HActiveX HActiveX::get_instance(
 	if ( ! app ) {
 		throw HActiveXException( "invalid activex" );
 	}
-	HActiveX proc( activex.raw() );
+	HActiveX proc( activex.str() );
 	proc._application = app;
 	proc._activeX = activeX;
 	app->init();

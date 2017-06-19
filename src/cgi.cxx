@@ -64,16 +64,17 @@ static HString const CLASS_MESSAGE( "message" );
 
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString const& attribute, HString const& element ) {
 	M_PROLOG
-	static char const* const ELEMENT_SEPARATOR = " \t";
+	static char const ELEMENT_SEPARATOR_raw[] = " \t";
+	HCharacterClass ELEMENT_SEPARATOR( ELEMENT_SEPARATOR_raw, sizeof ( ELEMENT_SEPARATOR_raw ) - 1 );
 	HXml::HNode::properties_t::const_iterator attrIt = props.find( attribute );
 	bool is = false;
 	if ( attrIt != props.end() ) {
 		int idx = 0;
 		bool leftLimit = ( ( idx = static_cast<int>( attrIt->second.find( element ) ) ) >= 0 )
-			&& ( ! idx || ::strchr( ELEMENT_SEPARATOR, attrIt->second[ idx - 1 ] ) );
+			&& ( ! idx || ELEMENT_SEPARATOR.has( attrIt->second[ idx - 1 ] ) );
 		if ( leftLimit ) {
 			int len = static_cast<int>( element.get_length() );
-			is = ( ( idx + len ) >= attrIt->second.get_length() ) || ::strchr( ELEMENT_SEPARATOR, attrIt->second[ idx + len ] );
+			is = ( ( idx + len ) >= attrIt->second.get_length() ) || ELEMENT_SEPARATOR.has( attrIt->second[ idx + len ] );
 		}
 	}
 	return ( is );
@@ -460,9 +461,9 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	static HString const NODE_A( "a" );
 	static HString const ATTRIBUTE_HREF( "href" );
 	static HString const ATTRIBUTE_TYPE_VALUE( "hidden" );
-	static char const QUERY_SEPARATOR( '?' );
-	static char const PARAM_SEPARATOR( '&' );
-	static char const VALUE_SEPARATOR( '=' );
+	static code_point_t const QUERY_SEPARATOR( '?' );
+	static code_point_t const PARAM_SEPARATOR( '&' );
+	static code_point_t const VALUE_SEPARATOR( '=' );
 	for ( HXml::HIterator it( node.begin() ); it != node.end(); ++ it ) {
 		HXml::HNodeProxy n( *it );
 		if ( n.get_type() == HXml::HNode::TYPE::NODE ) {

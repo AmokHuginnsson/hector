@@ -86,8 +86,10 @@ void OSetup::test_setup( void ) {
 #if defined ( TARGET_HECTOR_DAEMON )
 	HFSItem data( _dataDir );
 	++ failNo;
-	if ( ! ( !! data && data.is_directory() ) )
-		yaal::tools::util::failure( failNo, _( "%s: applications database path is invalid\n" ), ( ! _dataDir.is_empty() ? _dataDir.c_str() : "(nil)" ) );
+	if ( ! ( !! data && data.is_directory() ) ) {
+		HUTF8String utf8( _dataDir );
+		yaal::tools::util::failure( failNo, _( "%s: applications database path is invalid\n" ), ( ! _dataDir.is_empty() ? utf8.c_str() : "(nil)" ) );
+	}
 #elif defined ( TARGET_HECTOR_ADMIN )
 	++ failNo;
 	if ( ! ( _status || _shutdown || ! _reload.is_empty() || ! _restart.is_empty() ) )

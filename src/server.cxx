@@ -109,12 +109,14 @@ void HServer::init_sockets( void ) {
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << reqSockPath << "' as IPC request inteface." << endl;
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << ctrlSockPath << "' as IPC control inteface." << endl;
 	int err = 0;
-	M_ENSURE( ( ! ( err = ::unlink( reqSockPath.c_str() ) ) ) || ( errno == ENOENT ) );
-	M_ENSURE( ( ! ( err = ::unlink( ctrlSockPath.c_str() ) ) ) || ( errno == ENOENT ) );
+	HUTF8String reqSockPathUtf8( reqSockPath );
+	HUTF8String ctrlSockPathUtf8( ctrlSockPath );
+	M_ENSURE( ( ! ( err = ::unlink( reqSockPathUtf8.c_str() ) ) ) || ( errno == ENOENT ) );
+	M_ENSURE( ( ! ( err = ::unlink( ctrlSockPathUtf8.c_str() ) ) ) || ( errno == ENOENT ) );
 	_socket[ IPC_CHANNEL::CONTROL ]->listen( ctrlSockPath );
 	_socket[ IPC_CHANNEL::REQUEST ]->listen( reqSockPath );
-	M_ENSURE( ! ::chmod( reqSockPath.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
-	M_ENSURE( ! ::chmod( ctrlSockPath.c_str(), S_IRUSR | S_IWUSR ) );
+	M_ENSURE( ! ::chmod( reqSockPathUtf8.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH ) );
+	M_ENSURE( ! ::chmod( ctrlSockPathUtf8.c_str(), S_IRUSR | S_IWUSR ) );
 	return;
 	M_EPILOG
 }

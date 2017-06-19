@@ -54,7 +54,7 @@ yaal::hcore::HString decode( yaal::hcore::HString data_ ) {
 			if ( p == data_.get_length() ) {
 				break;
 			}
-			int nibble( tolower( data_[p] ) );
+			int nibble( tolower( static_cast<int>( data_[p].get() ) ) );
 			if ( ! isxdigit( nibble ) ) {
 				continue;
 			}
@@ -69,7 +69,7 @@ yaal::hcore::HString decode( yaal::hcore::HString data_ ) {
 			if ( p == data_.get_length() ) {
 				break;
 			}
-			nibble = tolower( data_[p] );
+			nibble = tolower( static_cast<int>( data_[p].get() ) );
 			if ( ! isxdigit( nibble ) ) {
 				continue;
 			}

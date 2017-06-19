@@ -128,8 +128,8 @@ bool ORequest::is_ssl( void ) const {
 		ORequest::value_t httpHost( lookup( HTTP::HTTP_HOST, ORequest::ORIGIN::ENV ) );
 		ORequest::value_t serverPort( lookup( HTTP::SERVER_PORT, ORequest::ORIGIN::ENV ) );
 		if ( httpHost && serverPort ) {
-			int long pos( httpHost->find( ':' ) );
-			ssl = ( pos != HString::npos ) && ( pos < ( httpHost->get_length() - 1 ) ) && ( ::strcmp( serverPort->c_str(), httpHost->c_str() + pos + 1 ) );
+			int long pos( httpHost->find( ':'_ycp ) );
+			ssl = ( pos != HString::npos ) && ( pos < ( httpHost->get_length() - 1 ) ) && ( *serverPort != httpHost->substr( pos + 1 ) );
 		}
 	} else
 		ssl = ( *https == "on" );
@@ -216,12 +216,12 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app ) {
 	static int const SIZE_SIZE = 4; /* 12ab */
 	HString buf;
 	HString& properName = buf;
-	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, true );
+	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, 0_ycp );
 	int cookieNo( 0 );
 	int size( 0 );
 	jar.clear();
 	for ( dictionary_t::const_iterator it( _jar->begin() ), endIt( _jar->end() ); it != endIt; ++ it ) {
-		properName.format( "%s%02d", app.c_str(), cookieNo );
+		properName = format( "%s%02d", app, cookieNo );
 		if ( it->first != properName )
 			continue;
 		if ( ! cookieNo ) {
@@ -253,7 +253,7 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 	static int const MAX_COOKIES_PER_PATH = 20;
 	static int const META_SIZE = 512;
 	static int const PAYLOAD_SIZE = MAX_COOKIE_SIZE - META_SIZE;
-	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, true );
+	HString jar( MAX_COOKIES_PER_PATH * MAX_COOKIE_SIZE, 0_ycp );
 	jar = "";
 	int cookieNo = 0;
 	for ( dictionary_t::const_iterator it = _cookies->begin(), endIt( _cookies->end() ); it != endIt; ++ it, ++ cookieNo ) {
@@ -270,9 +270,9 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 	cookieNo = 0;
 	_jar->clear();
 	for ( int offset = 0; offset < size; offset += PAYLOAD_SIZE, ++ cookieNo ) {
-		properName.format( "%s%02d", app.c_str(), cookieNo );
+		properName = format( "%s%02d", app, cookieNo );
 		if ( ! offset ) {
-			payload.format( "%04d", size );
+			payload = format( "%04d", size );
 			payload += jar.mid( offset, PAYLOAD_SIZE );
 		} else
 			payload = jar.mid( offset, PAYLOAD_SIZE );
