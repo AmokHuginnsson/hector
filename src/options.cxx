@@ -68,7 +68,8 @@ void version( void ) {
 int handle_program_options( int argc_, char** argv_ ) {
 	M_PROLOG
 	HProgramOptionsHandler po;
-	OOptionInfo info( po, setup._programName, "XML based Web Application Server.", NULL );
+	HOptionInfo info( po );
+	info.name( setup._programName ).intro( "XML based Web Application Server." );
 	bool help( false );
 	bool conf( false );
 	bool vers( false );
