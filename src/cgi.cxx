@@ -396,14 +396,16 @@ void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::to
 				HXml::HNode::properties_t::iterator idxIt = props.find( ATTRIBUTE_INDEX );
 				if ( idxIt != props.end() ) {
 					HString val( *it[ lexical_cast<int>( idxIt->second ) ] );
-					if ( child == node.end() )
+					if ( child == node.end() ) {
 						child = node.add_node( HXml::HNode::TYPE::CONTENT, val );
-					else
+					} else {
 						child = node.insert_node( child, HXml::HNode::TYPE::CONTENT, val );
+					}
 				}
 				pick->move_node( *del );
-			} else
+			} else {
 				subst_item( *del, it, pick );
+			}
 		}
 	}
 	return;
@@ -553,6 +555,36 @@ void show_messages( yaal::tools::HXml::HNodeProxy node_, ORequest const& req_ ) 
 			} else {
 				show_messages( n, req_ );
 			}
+		}
+	}
+	return;
+	M_EPILOG
+}
+
+namespace {
+
+yaal::hcore::HString replacer_func( yaal::hcore::HString const& variable_, ORequest const& request_, HSession const& ) {
+	M_PROLOG
+	ORequest::value_t v( request_.lookup( variable_.mid( 2, variable_.get_length() - 3 ) ) );
+	return ( v ? *v : variable_ );
+	M_EPILOG
+}
+
+}
+
+void substitute_variables( yaal::tools::HXml::HNodeProxy node_, ORequest const& request_, HSession const& session_, HReplacer* replacer_ ) {
+	M_PROLOG
+	HResource<HReplacer> replacer;
+	if ( ! replacer_ ) {
+		replacer = make_resource<HReplacer>( "[$][{][^{}]+[}]", call( &replacer_func, _1, cref( request_ ), cref( session_ ) ) );
+		replacer_ = replacer.raw();
+	}
+	for ( HXml::HNodeProxy child : node_ ) {
+		HXml::HNode::TYPE t( child.get_type() );
+		if ( t == HXml::HNode::TYPE::NODE ) {
+			substitute_variables( child, request_, session_, replacer_ );
+		} else if ( t == HXml::HNode::TYPE::CONTENT ) {
+			child.set_value( replacer_->regex().replace( child.get_value(), replacer_->replcer() ) );
 		}
 	}
 	return;

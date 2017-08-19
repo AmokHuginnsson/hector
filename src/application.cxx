@@ -291,6 +291,7 @@ void HApplication::do_generate_page( ORequest const& req, HSession const& sessio
 		cgi::expand_autobutton( root, req );
 		cgi::show_messages( root, req );
 		cgi::clean( root );
+		cgi::substitute_variables( root, req, session_ );
 		cgi::run_query( root, db(), dom() );
 		cgi::fill_forms( this, root, session_ );
 	}

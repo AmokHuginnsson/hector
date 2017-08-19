@@ -28,6 +28,7 @@ Copyright:
 #define HECTOR_CGI_HXX_INCLUDED 1
 
 #include <yaal/tools/hxml.hxx>
+#include <yaal/hcore/hregex.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>
 
 #include "orequest.hxx"
@@ -65,6 +66,23 @@ public:
 	}
 };
 
+class HReplacer {
+private:
+	yaal::hcore::HRegex _regex;
+	yaal::hcore::HRegex::replacer_t _replcer;
+public:
+	HReplacer( yaal::hcore::HString const& pattern_, yaal::hcore::HRegex::replacer_t replacer_ )
+		: _regex( pattern_ )
+		, _replcer( replacer_ ) {
+	}
+	yaal::hcore::HRegex& regex( void ) {
+		return ( _regex );
+	}
+	yaal::hcore::HRegex::replacer_t& replcer( void ) {
+		return ( _replcer );
+	}
+};
+
 typedef yaal::hcore::HSet<yaal::hcore::HString> keep_t;
 typedef yaal::hcore::HMap<yaal::hcore::HString, yaal::hcore::HString> default_t;
 typedef yaal::hcore::HArray<yaal::hcore::HString> strings_t;
@@ -89,6 +107,7 @@ void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,
 		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
 void fill_forms( HApplication*, yaal::tools::HXml::HNodeProxy, HSession const& );
+void substitute_variables( yaal::tools::HXml::HNodeProxy, ORequest const&, HSession const&, HReplacer* = nullptr );
 void set_input_data( yaal::tools::HXml::HNodeProxy, form_t& );
 void prepare_logic( HApplication*, yaal::tools::HXml::HNodeProxy );
 void make_cookies( yaal::tools::HXml::HNodeProxy, ORequest& );
