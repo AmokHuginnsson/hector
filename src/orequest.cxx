@@ -92,8 +92,9 @@ void ORequest::update( HString const& key, HString const& value, origin_t const&
 bool ORequest::lookup( HString const& key_, HString& value_, origin_t const& origin_ ) const {
 	M_PROLOG
 	ORequest::value_t value( lookup( key_, origin_ ) );
-	if ( value )
+	if ( value ) {
 		value_ = *value;
+	}
 	return ( ! value );
 	M_EPILOG
 }
@@ -131,8 +132,9 @@ bool ORequest::is_ssl( void ) const {
 			int long pos( httpHost->find( ':'_ycp ) );
 			ssl = ( pos != HString::npos ) && ( pos < ( httpHost->get_length() - 1 ) ) && ( *serverPort != httpHost->substr( pos + 1 ) );
 		}
-	} else
+	} else {
 		ssl = ( *https == "on" );
+	}
 	return ( ssl );
 	M_EPILOG
 }
@@ -222,13 +224,15 @@ void ORequest::decompress_jar( yaal::hcore::HString const& app ) {
 	jar.clear();
 	for ( dictionary_t::const_iterator it( _jar->begin() ), endIt( _jar->end() ); it != endIt; ++ it ) {
 		properName = format( "%s%02d", app, cookieNo );
-		if ( it->first != properName )
+		if ( it->first != properName ) {
 			continue;
+		}
 		if ( ! cookieNo ) {
 			size = lexical_cast<int>( it->second.left( SIZE_SIZE ).trim_left( "0" ) );
 			jar += it->second.mid( SIZE_SIZE );
-		} else
+		} else {
 			jar += it->second;
+		}
 		++ cookieNo;
 	}
 	M_ENSURE( jar.get_length() == size, lexical_cast<HString>( HFormat( "%ld != %d" ) % jar.get_length() % size ) );
@@ -257,8 +261,9 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 	jar = "";
 	int cookieNo = 0;
 	for ( dictionary_t::const_iterator it = _cookies->begin(), endIt( _cookies->end() ); it != endIt; ++ it, ++ cookieNo ) {
-		if ( cookieNo )
+		if ( cookieNo ) {
 			jar += "\001";
+		}
 		jar += it->first;
 		jar += '=';
 		jar += it->second;
@@ -274,8 +279,9 @@ ORequest::dictionary_ptr_t ORequest::compress_jar( yaal::hcore::HString const& a
 		if ( ! offset ) {
 			payload = format( "%04d", size );
 			payload += jar.mid( offset, PAYLOAD_SIZE );
-		} else
+		} else {
 			payload = jar.mid( offset, PAYLOAD_SIZE );
+		}
 		(*_jar)[ properName ] = payload;
 	}
 	return ( _jar );
@@ -311,9 +317,10 @@ ORequest::const_iterator ORequest::end( void ) const {
 	return ( const_iterator( this, ORIGIN::POST, _post->end() ) );
 }
 
-
 ORequest::HConstIterator::HConstIterator( HConstIterator const& it )
-	: _owner( it._owner ), _origin( it._origin ), _it( it._it ) {
+	: _owner( it._owner )
+	, _origin( it._origin )
+	, _it( it._it ) {
 }
 
 bool ORequest::HConstIterator::operator != ( HConstIterator const& it ) const {
@@ -336,7 +343,9 @@ ORequest::dictionary_t::value_type const& ORequest::HConstIterator::operator* ( 
 
 ORequest::HConstIterator::HConstIterator( ORequest const* owner_,
 		ORequest::origin_t const& origin, ORequest::dictionary_t::const_iterator it )
-	: _owner( owner_ ), _origin( origin ), _it( it ) {
+	: _owner( owner_ )
+	, _origin( origin )
+	, _it( it ) {
 }
 
 }

@@ -108,8 +108,9 @@ void HApplicationServer::read_configuration( HXml::HConstNodeProxy const& config
 		if ( name == NODE_DEFAULT_APPLICATION ) {
 			HXml::HNode::properties_t const& props = (*it).properties();
 			HXml::HNode::properties_t::const_iterator nameAttr = props.find( PROP_NAME );
-			if ( nameAttr != props.end() )
+			if ( nameAttr != props.end() ) {
 				_defaultApplication = nameAttr->second;
+			}
 		}
 	}
 	M_EPILOG
@@ -374,8 +375,9 @@ void HApplicationServer::do_status( HStreamInterface::ptr_t& sock ) {
 	*sock << "new: " << _requests.size() << endl;
 	*sock << "pending: " << _pending.size() << endl;
 	*sock << "application statistics:" << endl;
-	for ( applications_t::const_iterator it( _applications.begin() ), end( _applications.end() ); it != end; ++ it )
+	for ( applications_t::const_iterator it( _applications.begin() ), end( _applications.end() ); it != end; ++ it ) {
 		*sock << "  " << it->first << ": " << it->second.app().sessions().get_size() << endl;
+	}
 	disconnect_client( IPC_CHANNEL::CONTROL, sock, _( "request serviced" ) );
 	return;
 	M_EPILOG

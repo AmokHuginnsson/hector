@@ -563,10 +563,22 @@ void show_messages( yaal::tools::HXml::HNodeProxy node_, ORequest const& req_ ) 
 
 namespace {
 
-yaal::hcore::HString replacer_func( yaal::hcore::HString const& variable_, ORequest const& request_, HSession const& ) {
+yaal::hcore::HString replacer_func( yaal::hcore::HString const& variable_, HXml const& xml_, ORequest const& request_, HSession const& ) {
 	M_PROLOG
-	ORequest::value_t v( request_.lookup( variable_.mid( 2, variable_.get_length() - 3 ) ) );
-	return ( v ? *v : variable_ );
+	HString var( variable_.mid( 2, variable_.get_length() - 3 ) );
+	ORequest::value_t v( request_.lookup( var ) );
+	HString val;
+	if ( !! v ) {
+		val.assign( *v );
+	} else {
+		HXml::entities_t::const_iterator vvIt( xml_.entities().find( var ) );
+		if ( vvIt != xml_.entities().end() ) {
+			val.assign( vvIt->second );
+		} else {
+			val.assign( variable_ );
+		}
+	}
+	return ( val );
 	M_EPILOG
 }
 
@@ -576,7 +588,7 @@ void substitute_variables( yaal::tools::HXml::HNodeProxy node_, ORequest const& 
 	M_PROLOG
 	HResource<HReplacer> replacer;
 	if ( ! replacer_ ) {
-		replacer = make_resource<HReplacer>( "[$][{][^{}]+[}]", call( &replacer_func, _1, cref( request_ ), cref( session_ ) ) );
+		replacer = make_resource<HReplacer>( "[$][{][^{}]+[}]", call( &replacer_func, _1, cref( *node_.xml() ), cref( request_ ), cref( session_ ) ) );
 		replacer_ = replacer.raw();
 	}
 	for ( HXml::HNodeProxy child : node_ ) {
@@ -584,7 +596,13 @@ void substitute_variables( yaal::tools::HXml::HNodeProxy node_, ORequest const& 
 		if ( t == HXml::HNode::TYPE::NODE ) {
 			substitute_variables( child, request_, session_, replacer_ );
 		} else if ( t == HXml::HNode::TYPE::CONTENT ) {
-			child.set_value( replacer_->regex().replace( child.get_value(), replacer_->replcer() ) );
+			HString s( child.get_value() );
+			HString old;
+			while ( s != old ) {
+				old = s;
+				s = replacer_->regex().replace( s, replacer_->replcer() );
+			}
+			child.set_value( s );
 		}
 	}
 	return;

@@ -36,9 +36,14 @@ using namespace yaal::tools;
 namespace hector {
 
 HSession::HSession( HString const& remoteAddr_ , HString const& httpUserAgent_ )
-	: _id( tools::hash::sha1( remoteAddr_ + httpUserAgent_ + HTime( HTime::TZ::UTC ).string() + randomizer_helper::make_randomizer()() ) ),
-	_user(), _groups(), _remoteAddr( remoteAddr_ ), _httpUserAgent( httpUserAgent_ ), _lastSeen( HTime::TZ::UTC ), _persistance()
-	{}
+	: _id( tools::hash::sha1( remoteAddr_ + httpUserAgent_ + HTime( HTime::TZ::UTC ).string() + randomizer_helper::make_randomizer()() ) )
+	, _user()
+	, _groups()
+	, _remoteAddr( remoteAddr_ )
+	, _httpUserAgent( httpUserAgent_ )
+	, _lastSeen( HTime::TZ::UTC )
+	, _persistance() {
+}
 
 yaal::hcore::HString const& HSession::get_id( void ) const
 	{ return ( _id ); }
