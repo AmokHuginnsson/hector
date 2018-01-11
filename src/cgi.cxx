@@ -595,6 +595,17 @@ void substitute_variables( yaal::tools::HXml::HNodeProxy node_, ORequest const& 
 		HXml::HNode::TYPE t( child.get_type() );
 		if ( t == HXml::HNode::TYPE::NODE ) {
 			substitute_variables( child, request_, session_, replacer_ );
+			HString s;
+			HString old;
+			for ( HXml::HNode::properties_t::value_type& p : child.properties() ) {
+				s = p.second;
+				old.clear();
+				while ( s != old ) {
+					old = s;
+					s = replacer_->regex().replace( s, replacer_->replcer() );
+				}
+				p.second = s;
+			}
 		} else if ( t == HXml::HNode::TYPE::CONTENT ) {
 			HString s( child.get_value() );
 			HString old;
