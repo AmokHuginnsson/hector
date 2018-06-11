@@ -20,12 +20,12 @@ namespace cgi {
 
 class HParameter {
 public:
-	typedef yaal::hcore::HString (*transform_t)( yaal::hcore::HString const& );
+	typedef yaal::hcore::HBoundCall<yaal::hcore::HString ( yaal::hcore::HString const& )> transform_t;
 private:
 	yaal::hcore::HString _name;
 	transform_t _transform;
 public:
-	HParameter( yaal::hcore::HString const& name_, transform_t transform_ = nullptr )
+	HParameter( yaal::hcore::HString const& name_, transform_t transform_ = transform_t() )
 		: _name( name_ )
 		, _transform( transform_ ) {
 		return;
@@ -38,7 +38,7 @@ public:
 		return ( _name );
 	}
 	yaal::hcore::HString transform( yaal::hcore::HString const& value_ ) const {
-		return ( _transform ? _transform( value_ ) : value_ );
+		return ( !! _transform ? _transform( value_ ) : value_ );
 	}
 };
 

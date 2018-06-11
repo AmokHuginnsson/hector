@@ -766,12 +766,13 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 										M_ENSURE( ( a.get_type() == HXml::HNode::TYPE::NODE ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
 										M_ENSURE( ( a.child_count() == 1 ) && ( (*a.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator arg can only have one content" );
 										xml::value_t transformArg( xml::try_attr_val( a, ATTRIBUTE_TRANSFORM ) );
-										HParameter::transform_t transform( nullptr );
+										HParameter::transform_t transform;
+										typedef yaal::hcore::HString ( * transform_t )( tools::hash::FUNCTION, yaal::hcore::HString const& );
 										if ( !! transformArg ) {
 											if ( *transformArg == "sha1" ) {
-												transform = &tools::hash::sha1;
+												transform = HParameter::transform_t( call( static_cast<transform_t>( &tools::hash::string ), tools::hash::FUNCTION::SHA1, _1 ) );
 											} else if ( *transformArg == "md5" ) {
-												transform = &tools::hash::md5;
+												transform = HParameter::transform_t( call( static_cast<transform_t>( &tools::hash::string ), tools::hash::FUNCTION::MD5, _1 ) );
 											} else {
 												throw HCGIException( "Unknown transform function: "_ys.append( *transformArg ), (*del).get_line() );
 											}

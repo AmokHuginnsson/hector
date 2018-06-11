@@ -183,7 +183,7 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 				}
 				HQuery::ptr_t query( _db->prepare_query( queryString ) );
 				query->bind( 1, *login );
-				query->bind( 2, _hash == HASH::SHA1 ? tools::hash::sha1( *password ) : tools::hash::md5( *password ) );
+				query->bind( 2, _hash == HASH::SHA1 ? tools::hash::to_string( tools::hash::sha1( *password ) ) : tools::hash::to_string( tools::hash::md5( *password ) ) );
 				query->bind( 3, *login );
 				HRecordSet::ptr_t rs( query->execute() );
 				M_ENSURE( !! rs );
