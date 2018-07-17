@@ -41,7 +41,7 @@ static HString const CLASS_MESSAGE( "message" );
 bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString const& attribute, HString const& element ) {
 	M_PROLOG
 	static char const ELEMENT_SEPARATOR_raw[] = " \t";
-	HCharacterClass ELEMENT_SEPARATOR( ELEMENT_SEPARATOR_raw, sizeof ( ELEMENT_SEPARATOR_raw ) - 1 );
+	HCharacterClass<char> ELEMENT_SEPARATOR( ELEMENT_SEPARATOR_raw, sizeof ( ELEMENT_SEPARATOR_raw ) - 1 );
 	HXml::HNode::properties_t::const_iterator attrIt = props.find( attribute );
 	bool is = false;
 	if ( attrIt != props.end() ) {

@@ -59,7 +59,7 @@ void ORequest::update( HString const& key, HString const& value, origin_t const&
 	/*
 	 * HBitFlag::index() contains proper assertion check.
 	 */
-	M_ASSERT( ( origin.index() >= 1 ) && ( origin.index() < countof ( dict ) ) );
+	M_ASSERT( ( origin.index() >= 1 ) && ( origin.index() < yaal::size( dict ) ) );
 	( *( dict[origin.index()] ) )[ key ] = value;
 	return;
 	M_EPILOG
