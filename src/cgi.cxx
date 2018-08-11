@@ -72,7 +72,7 @@ bool has_attribute( yaal::tools::HXml::HNode::properties_t const& props, HString
 
 bool is_in_attribute( yaal::tools::HXml::HConstNodeProxy const& node, HString const& attribute, HString const& element ) {
 	M_PROLOG
-	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::ELEMENT );
 	HXml::HNode::properties_t const& props = node.properties();
 	return ( is_in_attribute( props, attribute, element ) );
 	M_EPILOG
@@ -86,7 +86,7 @@ bool is_kind_of( yaal::tools::HXml::HConstNodeProxy const& node, HString const& 
 
 bool has_attribute( yaal::tools::HXml::HConstNodeProxy const& node, HString const& attribute ) {
 	M_PROLOG
-	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::ELEMENT );
 	HXml::HNode::properties_t const& props = node.properties();
 	return ( has_attribute( props, attribute ) );
 	M_EPILOG
@@ -95,7 +95,7 @@ bool has_attribute( yaal::tools::HXml::HConstNodeProxy const& node, HString cons
 HString const& get_owner_user( HXml::HConstNodeProxy const& node );
 HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
-	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::ELEMENT );
 	static HString const empty;
 	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_USER ), empty ) );
 	M_EPILOG
@@ -104,7 +104,7 @@ HString const& get_owner_user( HXml::HConstNodeProxy const& node ) {
 HString const& get_owner_group( HXml::HConstNodeProxy const& node );
 HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 	M_PROLOG
-	M_ASSERT( node.get_type() == HXml::HNode::TYPE::NODE );
+	M_ASSERT( node.get_type() == HXml::HNode::TYPE::ELEMENT );
 	static HString const empty;
 	return ( get_optional_value_or( xml::try_attr_val( node, ATTRIBUTE_GROUP ), empty ) );
 	M_EPILOG
@@ -113,7 +113,7 @@ HString const& get_owner_group( HXml::HConstNodeProxy const& node ) {
 int get_permissions( HXml::HConstNodeProxy const& );
 int get_permissions( HXml::HConstNodeProxy const& node_ ) {
 	M_PROLOG
-	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::NODE );
+	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::ELEMENT );
 	xml::value_t val( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
 	return ( val ? lexical_cast<int>( *val ) : -1 );
 	M_EPILOG
@@ -141,7 +141,7 @@ namespace {
 
 void update_security_context( OSecurityContext& securityContext_, HXml::HConstNodeProxy const& node_ ) {
 	M_PROLOG
-	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::NODE );
+	M_ASSERT( node_.get_type() == HXml::HNode::TYPE::ELEMENT );
 	xml::value_t user( xml::try_attr_val( node_, ATTRIBUTE_USER ) );
 	xml::value_t group( xml::try_attr_val( node_, ATTRIBUTE_GROUP ) );
 	xml::value_t mode( xml::try_attr_val( node_, ATTRIBUTE_MODE ) );
@@ -169,7 +169,7 @@ void build_keep_db( HXml::HNodeProxy keep, ORequest const& req, keep_t& db, keep
 	 * Look thru all <rule />'s.
 	 */
 	for ( HXml::HIterator it( keep.begin() ), end( keep.end() ); it != end; ++ it ) {
-		M_ENSURE( (*it).get_type() == HXml::HNode::TYPE::NODE );
+		M_ENSURE( (*it).get_type() == HXml::HNode::TYPE::ELEMENT );
 		M_ENSURE( (*it).get_name() == NODE_KEEP_RULE );
 		HXml::HNode::properties_t& props = (*it).properties();
 		HXml::HNode::properties_t::iterator kind = props.find( ATTRIBUTE_KIND );
@@ -237,7 +237,7 @@ void waste_children( yaal::tools::HXml::HNodeProxy node,
 	for ( HXml::HIterator it = node.begin(); it != node.end(); ) {
 		HXml::HIterator del( it );
 		++ it;
-		if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*del).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( (*del).get_name() == NODE_KEEP ) {
 				build_keep_db( *del, req, keep, keepGlobal, defaults );
 				selfwaste->move_node( *del );
@@ -275,7 +275,7 @@ void mark_children( yaal::tools::HXml::HNodeProxy node,
 	static HString const CLASS_MARKABLE( "markable" );
 	static HString const CLASS_CURRENT( " current" );
 	for ( HXml::HIterator it( node.begin() ), end( node.end() ); it != end; ++ it ) {
-		if ( (*it).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*it).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			HXml::HNode::properties_t& props = (*it).properties();
 			if ( is_kind_of( props, CLASS_MARKABLE ) ) {
 				HXml::HNode::properties_t::iterator id = props.find( ATTRIBUTE_ID );
@@ -334,7 +334,7 @@ void move_children( yaal::tools::HXml::HNodeProxy node, ORequest const& req,
 	for ( HXml::HIterator it = node.begin(); it != node.end(); ) {
 		HXml::HIterator del = it;
 		++ it;
-		if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*del).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( (*del).get_name() == NODE_MOVE ) {
 				HXml::HNode::properties_t& props = (*del).properties();
 				HXml::HNode::properties_t::iterator toIt = props.find( ATTRIBUTE_TO );
@@ -366,7 +366,7 @@ void subst_item( HXml::HNodeProxy node, HRecordSet::iterator const& it, yaal::to
 	for ( HXml::HIterator child = node.begin(); child != node.end(); ) {
 		HXml::HIterator del = child;
 		++ child;
-		if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*del).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( (*del).get_name() == NODE_ITEM ) {
 				HXml::HNode::properties_t& props = (*del).properties();
 				HXml::HNode::properties_t::iterator idxIt = props.find( ATTRIBUTE_INDEX );
@@ -403,7 +403,7 @@ void run_query( yaal::tools::HXml::HNodeProxy node, HDataBase::ptr_t db, yaal::t
 	for ( HXml::HIterator child = node.begin(); child != node.end(); ) {
 		HXml::HIterator del = child;
 		++ child;
-		if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*del).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( (*del).get_name() == NODE_QUERY ) {
 				HXml::HIterator query = pick->move_node( *del );
 				HXml::HNode::properties_t& props = (*query).properties();
@@ -444,7 +444,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 	static code_point_t const VALUE_SEPARATOR( '=' );
 	for ( HXml::HIterator it( node.begin() ); it != node.end(); ++ it ) {
 		HXml::HNodeProxy n( *it );
-		if ( n.get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( n.get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( is_kind_of( *it, CLASS_AUTOBUTTON ) ) {
 				keep_t keep;
 				if ( n.get_name() == NODE_A ) {
@@ -474,10 +474,10 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 					HXml::HIterator fieldsetIt = n.begin();
 					M_ENSURE( fieldsetIt != n.end() );
 					HXml::HNodeProxy fieldset = *fieldsetIt;
-					M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::NODE )
+					M_ENSURE( ( fieldset.get_type() == HXml::HNode::TYPE::ELEMENT )
 							&& ( fieldset.get_name() == NODE_FIELDSET ) );
 					for ( HXml::HIterator fieldIt( fieldset.begin() ), end( fieldset.end() ); fieldIt != end; ++ fieldIt ) {
-						if ( (*fieldIt).get_type() == HXml::HNode::TYPE::NODE ) {
+						if ( (*fieldIt).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 							HXml::HNode::properties_t& props = (*fieldIt).properties();
 							HXml::HNode::properties_t::iterator nameIt = props.find( ATTRIBUTE_NAME );
 							if ( nameIt != props.end() ) {
@@ -487,7 +487,7 @@ void expand_autobutton( yaal::tools::HXml::HNodeProxy node, ORequest const& req 
 					}
 					for ( ORequest::const_iterator reqIt( req.begin() ), end( req.end() ); reqIt != end; ++ reqIt ) {
 						if ( keep.insert( (*reqIt).first ).second ) {
-							HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::NODE, NODE_INPUT );
+							HXml::HNodeProxy input = *fieldset.add_node( HXml::HNode::TYPE::ELEMENT, NODE_INPUT );
 							HXml::HNode::properties_t& props = input.properties();
 							props[ ATTRIBUTE_TYPE ] = ATTRIBUTE_TYPE_VALUE;
 							props[ ATTRIBUTE_NAME ] = (*reqIt).first;
@@ -512,7 +512,7 @@ void show_messages( yaal::tools::HXml::HNodeProxy node_, ORequest const& req_ ) 
 		HXml::HIterator del( it );
 		HXml::HNodeProxy n( *del );
 		++ it;
-		if ( n.get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( n.get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( is_kind_of( n, CLASS_MESSAGE ) ) {
 				bool hasData( false );
 				ORequest::message_map_t::const_iterator mit( req_.messages().find( get_id( n ) ) );
@@ -569,7 +569,7 @@ void substitute_variables( yaal::tools::HXml::HNodeProxy node_, ORequest const& 
 	}
 	for ( HXml::HNodeProxy child : node_ ) {
 		HXml::HNode::TYPE t( child.get_type() );
-		if ( t == HXml::HNode::TYPE::NODE ) {
+		if ( t == HXml::HNode::TYPE::ELEMENT ) {
 			substitute_variables( child, request_, session_, replacer_ );
 			HString s;
 			HString old;
@@ -616,7 +616,7 @@ void apply_acl( yaal::tools::HXml::HNodeProxy node_,
 		selfwaste_->move_node( node_ );
 	else {
 		for ( HXml::HIterator it( node_.begin() ); it != node_.end(); ) {
-			if ( (*it).get_type() == HXml::HNode::TYPE::NODE ) {
+			if ( (*it).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 				HXml::HIterator probe( it );
 				++ it;
 				apply_acl( *probe, req_, securityContext, session_, selfwaste_ );
@@ -641,7 +641,7 @@ void consistency_check( yaal::tools::HXml::HNodeProxy node_ ) {
 		}
 	}
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
-		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*child).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			consistency_check( *child );
 		}
 	}
@@ -653,7 +653,7 @@ void fill_forms( HApplication* app_, yaal::tools::HXml::HNodeProxy node_, HSessi
 	M_PROLOG
 	static HString const NODE_FORM( "form" );
 	for ( HXml::HNodeProxy child : node_ ) {
-		if ( child.get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( child.get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( child.get_name() == NODE_FORM ) {
 				ORequest::value_t optId( xml::try_attr_val( child, ATTRIBUTE_ID ) );
 				if ( !!optId ) {
@@ -691,7 +691,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 	static HString const LANG_SQL( "sql" );
 	HString name;
 	for ( HXml::HIterator child( node_.begin() ), endChild( node_.end() ); child != endChild; ++ child ) {
-		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*child).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			name = (*child).get_name();
 			if ( name == NODE_HFORM ) {
 				ORequest::value_t optId( xml::try_attr_val( *child, ATTRIBUTE_ID ) );
@@ -705,7 +705,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 				for ( HXml::HIterator it( (*child).begin() ); it != (*child).end(); ) {
 					HXml::HIterator del( it );
 					++ it;
-					if ( (*del).get_type() == HXml::HNode::TYPE::NODE ) {
+					if ( (*del).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 						name = (*del).get_name();
 						if ( name == NODE_HINPUT ) {
 							xml::value_t columnAttr( xml::try_attr_val( *del, ATTRIBUTE_COLUMN ) );
@@ -753,7 +753,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 							params_t params;
 							HVerificatorInterface::TYPE type( HVerificatorInterface::TYPE::NONE );
 							for ( HXml::HConstNodeProxy n : *del ) {
-								M_ENSURE( n.get_type() == HXml::HNode::TYPE::NODE, "verificator can have only node children." );
+								M_ENSURE( n.get_type() == HXml::HNode::TYPE::ELEMENT, "verificator can have only node children." );
 								if ( n.get_name() == NODE_CODE ) {
 									M_ENSURE( ( n.child_count() == 1 ) && ( (*n.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator code can only have one content" );
 									code = (*n.begin()).get_value();
@@ -763,7 +763,7 @@ void prepare_logic(  HApplication* app_, yaal::tools::HXml::HNodeProxy node_ ) {
 									type = ( *typeVal == LANG_HUGINN ) ? HVerificatorInterface::TYPE::HUGINN : HVerificatorInterface::TYPE::SQL;
 								} else if ( n.get_name() == NODE_ARGV ) {
 									for ( HXml::HConstNodeProxy a : n ) {
-										M_ENSURE( ( a.get_type() == HXml::HNode::TYPE::NODE ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
+										M_ENSURE( ( a.get_type() == HXml::HNode::TYPE::ELEMENT ) && ( a.get_name() == NODE_ARG ), "verificator can have only arg nodes." );
 										M_ENSURE( ( a.child_count() == 1 ) && ( (*a.begin()).get_type() == HXml::HNode::TYPE::CONTENT ), "verificator arg can only have one content" );
 										xml::value_t transformArg( xml::try_attr_val( a, ATTRIBUTE_TRANSFORM ) );
 										HParameter::transform_t transform;
@@ -826,7 +826,7 @@ void make_cookies( yaal::tools::HXml::HNodeProxy logic, ORequest& req ) {
 	static HString const NODE_COOKIE( "cookie" );
 	HString value;
 	for ( HXml::HIterator child( logic.begin() ), endChild( logic.end() ); child != endChild; ++ child ) {
-		if ( (*child).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*child).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			if ( (*child).get_name() == NODE_COOKIE ) {
 				HXml::HNode::properties_t& props( (*child).properties() );
 				HXml::HNode::properties_t::iterator nameIt( props.find( ATTRIBUTE_NAME ) );
@@ -874,7 +874,7 @@ void clean( yaal::tools::HXml::HNodeProxy node_ ) {
 			props.erase( classProp );
 	}
 	for ( HXml::HIterator it( node_.begin() ); it != node_.end(); ++ it ) {
-		if ( (*it).get_type() == HXml::HNode::TYPE::NODE ) {
+		if ( (*it).get_type() == HXml::HNode::TYPE::ELEMENT ) {
 			clean( *it );
 		}
 	}

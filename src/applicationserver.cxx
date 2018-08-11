@@ -102,7 +102,7 @@ void HApplicationServer::read_applications( HXml::HConstNodeProxy const& applica
 	static char const APP_PROP_NAME_MODE[] = "mode";
 	static HApplication::MODE DEFAULT_MODE = HApplication::MODE::GET;
 	for ( HXml::HConstNodeProxy application : applications ) {
-		if ( application.get_type() != HXml::HNode::TYPE::NODE ) {
+		if ( application.get_type() != HXml::HNode::TYPE::ELEMENT ) {
 			continue;
 		}
 		M_ENSURE( application.get_name() == APP_NODE_NAME );
