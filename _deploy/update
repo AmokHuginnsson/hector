@@ -21,6 +21,7 @@ invoke /bin/rm -f ${DST}/codestation/bits/projects/huginn/huginn-samples
 invoke cp -a ${SRC}/data/codestation/huginn-samples ${DST}/codestation/bits/projects/huginn/
 invoke /bin/rm -f ${DST}/codestation/bits/projects/huginn/huginn-samples/solve.hgn
 invoke cp -a ${DEV_HOME}/src/cellar/boggle-solvers/solve.hgn ${DST}/codestation/bits/projects/huginn/huginn-samples/
+invoke cp -a ${DEV_HOME}/src/bin/mplayer ${DST}/codestation/bits/projects/huginn/huginn-samples/
 invoke cp ${DEV_HOME}/src/server/hector/setup.dtd ${DST}/codestation/
 invoke chown -R root:root ${DST}
 invoke chmod -R a+rX ${DST}
