@@ -39,15 +39,20 @@ case "${OSTYPE}" in
 esac
 
 PHYS_MEM=`expr "${PHYS_MEM}" \* 1024`
+MAX_MEM=20971520
+if [ ${PHYS_MEM} -gt ${MAX_MEM} ] ; then
+	PHYS_MEM=${MAX_MEM}
+fi
 
 ulimit -c unlimited
 
 # bash proc limit is set with -u, dash proc limit is set with -p
 IS_BASH=`ulimit -a | grep 'max user processes'`
+MAX_PROC=1024
 if [ "x${IS_BASH}" != "x" ] ; then
-	ulimit -u 400
+	ulimit -u ${MAX_PROC}
 else
-	ulimit -p 400
+	ulimit -p ${MAX_PROC}
 fi
 ulimit -s 8192
 if [ ${PHYS_MEM} -ne 0 ] ; then
