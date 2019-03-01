@@ -70,8 +70,9 @@ void push_query( HSocket& sock, HString const& query, char const* const mode, ch
 	M_PROLOG
 	HStringStream buffer;
 	HTokenizer t( query, delim, HTokenizer::SKIP_EMPTY );
-	for ( HTokenizer::HIterator it = t.begin(), end = t.end(); it != end; ++ it )
+	for ( HTokenizer::HIterator it = t.begin(), end = t.end(); it != end; ++ it ) {
 		sock << ( buffer << mode << ":" << escape( *it ) << endl << buffer );
+	}
 	return;
 	M_EPILOG
 }
@@ -83,15 +84,20 @@ void query( int argc, char** argv ) {
 	HString sockPath( setup._socketRoot );
 	sockPath += "/request.sock";
 	try {
+		char const* REQUEST_METHOD = getenv( "REQUEST_METHOD" );
 		HSocket sock( HSocket::TYPE::FILE );
 		sock.connect( sockPath );
+		if ( ! REQUEST_METHOD || ( stricasecmp( REQUEST_METHOD, "POST" ) == 0 ) ) {
+			HFile in( stdin, HFile::OWNERSHIP::EXTERNAL );
+			HString POST( "" );
+			while ( in.read_line( POST, HFile::READ::UNBUFFERED_READS ).good() ) {
+				push_query( sock, POST, "post", "&" );
+			}
+		}
 		HStringStream buffer;
-		HString POST( "" );
-		HFile in( stdin, HFile::OWNERSHIP::EXTERNAL );
-		while ( in.read_line( POST, HFile::READ::UNBUFFERED_READS ).good() )
-			push_query( sock, POST, "post", "&" );
-		for ( int i = 1; i < argc; ++ i )
+		for ( int i = 1; i < argc; ++ i ) {
 			sock << ( buffer << "get:" << escape( argv[ i ] ) << endl << buffer );
+		}
 		char QS[] = "QUERY_STRING=";
 		char CS[] = "HTTP_COOKIE=";
 		for ( int i = 0; environ[ i ]; ++ i ) {
@@ -107,8 +113,9 @@ void query( int argc, char** argv ) {
 		}
 		sock << ( buffer << "done" << endl << buffer );
 		HString msg;
-		while ( sock.read_until( msg ) > 0 )
+		while ( sock.read_until( msg ) > 0 ) {
 			cout << msg << endl;
+		}
 	} catch ( HSocketException& e ) {
 		cout << "\n\nCannot connect to `hector' daemon.<br />" << endl;
 		cout << e.what() << endl;
