@@ -3,6 +3,7 @@
 #include <yaal/hcore/hclock.hxx>
 #include <yaal/tools/hstringstream.hxx>
 #include <yaal/dbwrapper/hdatabase.hxx>
+#include <yaal/tools/huginn/boolean.hxx>
 
 #include "verificator.hxx"
 M_VCSID( "$Id: " __ID__ " $" )
@@ -78,7 +79,7 @@ bool HHuginnVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 	if ( result->type_id() != HHuginn::TYPE::BOOLEAN ) {
 		throw HRuntimeException( "bad result type from verificator" );
 	}
-	bool ok( static_cast<HHuginn::HBoolean const*>( result.raw() )->value() );
+	bool ok( static_cast<huginn::HBoolean const*>( result.raw() )->value() );
 	if ( ! _output.str().is_empty() ) {
 		req_.message( _form->id(), ok ? LOG_LEVEL::INFO : LOG_LEVEL::ERROR, _output.consume() );
 	}
