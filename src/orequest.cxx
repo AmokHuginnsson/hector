@@ -49,7 +49,7 @@ void ORequest::update( HString const& key, HString const& value, origin_t const&
 	M_ASSERT( ORIGIN::ANY.value()    == 31 );
 
 	dictionary_t* dict[] = {
-		NULL, /* so origin_t::index() maps directly to this array */
+		nullptr, /* so origin_t::index() maps directly to this array */
 		&*_environment,
 		&*_cookies,
 		&*_get,

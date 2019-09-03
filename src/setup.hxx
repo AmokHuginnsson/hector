@@ -40,7 +40,7 @@ struct OSetup {
 		, _verbose( false )
 		, _shutdown( false )
 		, _status( false )
-		, _programName( NULL )
+		, _programName( nullptr )
 		, _maxConnections( DEFAULT_MAX_CONNECTIONS )
 		, _maxWorkingThreads( DEFAULT_MAX_WORKING_THREADS )
 		, _socketWriteTimeout( DEFAULT_SOCKET_WRITE_TIMEOUT )

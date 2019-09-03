@@ -71,17 +71,17 @@ bool is_in_attribute( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HS
 bool is_kind_of( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HString const& );
 bool has_attribute( yaal::tools::HXml::HConstNodeProxy const&, yaal::hcore::HString const& );
 void waste_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
-		default_t&, yaal::tools::HXml::HNodeProxy* = NULL );
+		default_t&, yaal::tools::HXml::HNodeProxy* = nullptr );
 void apply_acl( yaal::tools::HXml::HNodeProxy, ORequest const&,
-		OSecurityContext const&, HSession const&, yaal::tools::HXml::HNodeProxy* = NULL );
+		OSecurityContext const&, HSession const&, yaal::tools::HXml::HNodeProxy* = nullptr );
 void mark_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
 		default_t const&, yaal::tools::HXml& );
 void expand_autobutton( yaal::tools::HXml::HNodeProxy, ORequest const& );
 void show_messages( yaal::tools::HXml::HNodeProxy, ORequest const& );
 void move_children( yaal::tools::HXml::HNodeProxy, ORequest const&,
-		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
+		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = nullptr );
 void run_query( yaal::tools::HXml::HNodeProxy, yaal::dbwrapper::HDataBase::ptr_t,
-		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = NULL );
+		yaal::tools::HXml&, yaal::tools::HXml::HNodeProxy* = nullptr );
 void fill_forms( HApplication*, yaal::tools::HXml::HNodeProxy, HSession const& );
 void substitute_variables( yaal::tools::HXml::HNodeProxy, ORequest const&, HSession const&, HReplacer* = nullptr );
 void set_input_data( yaal::tools::HXml::HNodeProxy, form_t& );

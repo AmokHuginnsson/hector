@@ -53,7 +53,7 @@ public:
 protected:
 	/*{*/
 	void init_sockets( void );
-	void disconnect_client( IPC_CHANNEL::ipc_channel_t, yaal::hcore::HStreamInterface::ptr_t&, char const* const = NULL );
+	void disconnect_client( IPC_CHANNEL::ipc_channel_t, yaal::hcore::HStreamInterface::ptr_t&, char const* const = nullptr );
 	void handler_connection( yaal::tools::HIODispatcher::stream_t& );
 	void handler_message( yaal::tools::HIODispatcher::stream_t&, int );
 	void handler_request( yaal::tools::HIODispatcher::stream_t& );

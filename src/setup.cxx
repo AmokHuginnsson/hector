@@ -26,10 +26,10 @@ void OSetup::test_setup( void ) {
 	if ( _verbose )
 		clog.reset( make_pointer<HFile>( stdout, HFile::OWNERSHIP::EXTERNAL ) );
 	else
-		std::clog.rdbuf( NULL );
+		std::clog.rdbuf( nullptr );
 	if ( _quiet ) {
 		cout.reset();
-		std::cout.rdbuf( NULL );
+		std::cout.rdbuf( nullptr );
 	}
 #if defined ( TARGET_HECTOR_DAEMON )
 	++ failNo;
