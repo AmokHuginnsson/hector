@@ -249,13 +249,13 @@ void HServer::handler_shutdown( HStreamInterface::ptr_t&, yaal::hcore::HString c
 
 void HServer::handler_restart( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& app ) {
 	M_PROLOG
-	_worker.schedule_task( call( &HServer::do_restart, this, sock, app ) );
+	_worker.schedule_task( HWorkFlow::SCHEDULE_POLICY::LAZY, call( &HServer::do_restart, this, sock, app ) );
 	M_EPILOG
 }
 
 void HServer::handler_reload( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& app ) {
 	M_PROLOG
-	_worker.schedule_task( call( &HServer::do_reload, this, sock, app ) );
+	_worker.schedule_task( HWorkFlow::SCHEDULE_POLICY::LAZY, call( &HServer::do_reload, this, sock, app ) );
 	M_EPILOG
 }
 
