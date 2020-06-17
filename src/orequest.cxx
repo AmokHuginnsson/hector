@@ -184,7 +184,7 @@ bool ORequest::is_mobile( void ) const {
 		HRegex::COMPILE::IGNORE_CASE
 	);
 	ORequest::value_t ua( lookup( HTTP::HTTP_USER_AGENT, ORequest::ORIGIN::ENV ) );
-	return ( b.matches( *ua ) || v.matches( ua->substr( 0, 4 ) ) );
+	return ( !! ua && ( b.matches( *ua ) || v.matches( ua->substr( 0, 4 ) ) ) );
 }
 
 void ORequest::decompress_jar( yaal::hcore::HString const& app ) {

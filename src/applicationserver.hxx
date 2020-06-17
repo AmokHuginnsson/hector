@@ -32,7 +32,7 @@ public:
 	void start( void );
 	void stop( void );
 	int on_sigchild( int );
-	void process_sigchild( yaal::tools::HIODispatcher::stream_t& );
+	void process_sigchild( yaal::tools::HIODispatcher::stream_t&, yaal::hcore::system::IO_EVENT_TYPE );
 	yaal::dbwrapper::HDataBase::ptr_t get_db_connection( yaal::hcore::HString const& );
 protected:
 	virtual void do_service_request( ORequest& ) override;

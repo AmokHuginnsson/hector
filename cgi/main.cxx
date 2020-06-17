@@ -10,6 +10,7 @@ M_VCSID ( "$Id$" )
 #include <yaal/hcore/hsocket.hxx>
 #include <yaal/hcore/hlog.hxx>
 #include <yaal/hcore/htokenizer.hxx>
+#include <yaal/tools/hthreadpool.hxx>
 #include <yaal/tools/signals.hxx>
 #include <yaal/tools/hstringstream.hxx>
 #include <yaal/tools/util.hxx>
@@ -32,6 +33,7 @@ OSetup setup;
 void query( int, char** );
 
 int main( int argc_, char* argv_[] ) {
+	HScopeExitCall secTP( call( &HThreadPool::stop, &HThreadPool::get_instance() ) );
 	HScopeExitCall sec( call( &HSignalService::stop, &HSignalService::get_instance() ) );
 	M_PROLOG
 	int ret( 0 );
@@ -111,7 +113,7 @@ void query( int argc, char** argv ) {
 			buffer << "env:" << escape( environ[ i ] ) << endl;
 			sock << buffer.consume();
 		}
-		sock << ( buffer << "done" << endl << buffer );
+		sock << "done" << endl;
 		HString msg;
 		while ( sock.read_until( msg ) > 0 ) {
 			cout << msg << endl;

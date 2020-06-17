@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include <yaal/hcore/hlog.hxx>
+#include <yaal/tools/hthreadpool.hxx>
 #include <yaal/tools/signals.hxx>
 #include <yaal/tools/util.hxx>
 M_VCSID( "$Id: " __ID__ " $" )
@@ -25,6 +26,7 @@ OSetup setup;
 }
 
 int main( int argc_, char* argv_[] ) {
+	HScopeExitCall secTP( call( &HThreadPool::stop, &HThreadPool::get_instance() ) );
 	HScopeExitCall sec( call( &HSignalService::stop, &HSignalService::get_instance() ) );
 	M_PROLOG
 	int ret( 0 );

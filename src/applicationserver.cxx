@@ -14,6 +14,7 @@ M_VCSID( "$Id: " __ID__ " $" )
 
 using namespace yaal;
 using namespace yaal::hcore;
+using namespace yaal::hcore::system;
 using namespace yaal::tools;
 using namespace yaal::dbwrapper;
 
@@ -51,7 +52,7 @@ void HApplicationServer::start( void ) {
 	M_PROLOG
 	HSignalService& ss = HSignalService::get_instance();
 	ss.register_handler( SIGCHLD, call( &HApplicationServer::on_sigchild, this, _1 ) );
-	_dispatcher.register_file_descriptor_handler( _sigChildEvent.out(), call( &HApplicationServer::process_sigchild, this, _1 ) );
+	_dispatcher.register_file_descriptor_handler( _sigChildEvent.out(), call( &HApplicationServer::process_sigchild, this, _1, _2 ), IO_EVENT_TYPE::READ );
 
 	static char const* const CONFIGURATION_FILE = "/hector.xml";
 	static char const* const NODE_CONFIGURATION = "configuration";
@@ -225,6 +226,7 @@ void HApplicationServer::do_service_request( ORequest& request_ ) {
 						if ( !! session ) {
 							it->second.generate_page( request_, *session );
 						}
+						sock->flush();
 					} catch ( HException const& e ) {
 						*sock << e.what() << endl;
 					} catch ( ... ) {
@@ -258,7 +260,7 @@ int HApplicationServer::on_sigchild( int sigNo_ ) {
 	M_EPILOG
 }
 
-void HApplicationServer::process_sigchild( HIODispatcher::stream_t& ) {
+void HApplicationServer::process_sigchild( HIODispatcher::stream_t&, IO_EVENT_TYPE ) {
 	M_PROLOG
 	int dummy = 0;
 	_sigChildEvent.read( &dummy, sizeof( dummy ) );

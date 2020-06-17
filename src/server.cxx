@@ -12,6 +12,7 @@ M_VCSID( "$Id: " __ID__ " $" )
 
 using namespace yaal;
 using namespace yaal::hcore;
+using namespace yaal::hcore::system;
 using namespace yaal::ansi;
 using namespace yaal::tools;
 
@@ -30,10 +31,12 @@ int const HServer::IPC_CHANNEL::CONTROL = 0;
 int const HServer::IPC_CHANNEL::REQUEST = 1;
 
 HServer::HServer( int connections_ )
-	: _maxConnections( connections_ ),
-	_socket(), _requests(), _handlers(),
-	_worker( setup._maxWorkingThreads ),
-	_dispatcher( connections_, 3600 * 1000 ) {
+	: _maxConnections( connections_ )
+	, _socket()
+	, _requests()
+	, _handlers()
+	, _worker( setup._maxWorkingThreads )
+	, _dispatcher( connections_, 3600 * 1000 ) {
 	M_PROLOG
 	_socket[ IPC_CHANNEL::CONTROL ] = make_pointer<HSocket>(
 		HSocket::socket_type_t( HSocket::TYPE::FILE ) | HSocket::TYPE::NONBLOCKING, connections_
@@ -63,11 +66,13 @@ int HServer::init_server( void ) {
 	_handlers[ IPC_CHANNEL::REQUEST ][ REQUEST_PROTO::DONE ] = &HServer::handler_done;
 	_dispatcher.register_file_descriptor_handler(
 		_socket[ IPC_CHANNEL::CONTROL ],
-		call( &HServer::handler_connection, this, _1 )
+		call( &HServer::handler_connection, this, _1, _2 ),
+		IO_EVENT_TYPE::READ
 	);
 	_dispatcher.register_file_descriptor_handler(
 		_socket[ IPC_CHANNEL::REQUEST ],
-		call( &HServer::handler_connection, this, _1 )
+		call( &HServer::handler_connection, this, _1, _2 ),
+		IO_EVENT_TYPE::READ
 	);
 	OUT << brightblue << "<<<hector>>>" << lightgray << " server started." << endl;
 	return ( 0 );
@@ -97,7 +102,7 @@ void HServer::init_sockets( void ) {
 	M_EPILOG
 }
 
-void HServer::handler_connection( HIODispatcher::stream_t& stream_ ) {
+void HServer::handler_connection( HIODispatcher::stream_t& stream_, IO_EVENT_TYPE ) {
 	M_PROLOG
 	IPC_CHANNEL::ipc_channel_t channel = _socket[ IPC_CHANNEL::CONTROL ] == stream_ ? IPC_CHANNEL::CONTROL : IPC_CHANNEL::REQUEST;
 	HSocket::ptr_t client = _socket[ channel ]->accept();
@@ -111,8 +116,9 @@ void HServer::handler_connection( HIODispatcher::stream_t& stream_ ) {
 			call(
 				channel == IPC_CHANNEL::REQUEST ? &HServer::handler_request : &HServer::handler_control,
 				this,
-				_1
-			)
+				_1, _2
+			),
+			IO_EVENT_TYPE::READ
 		);
 	}
 	OUT << green << "new connection" << lightgray << endl;
@@ -120,12 +126,12 @@ void HServer::handler_connection( HIODispatcher::stream_t& stream_ ) {
 	M_EPILOG
 }
 
-void HServer::handler_request( HIODispatcher::stream_t& stream_ ) {
+void HServer::handler_request( HIODispatcher::stream_t& stream_, IO_EVENT_TYPE ) {
 	handler_message( stream_, IPC_CHANNEL::REQUEST );
 	return;
 }
 
-void HServer::handler_control( HIODispatcher::stream_t& stream_ ) {
+void HServer::handler_control( HIODispatcher::stream_t& stream_, IO_EVENT_TYPE ) {
 	handler_message( stream_, IPC_CHANNEL::CONTROL );
 	return;
 }
@@ -233,10 +239,12 @@ void HServer::handler_post( HStreamInterface::ptr_t& sock, yaal::hcore::HString 
 void HServer::handler_done( HStreamInterface::ptr_t& sock, yaal::hcore::HString const& ) {
 	M_PROLOG
 	requests_t::iterator reqIt;
-	if ( ( reqIt = _requests.find( sock.raw() ) ) == _requests.end() )
+	if ( ( reqIt = _requests.find( sock.raw() ) ) == _requests.end() ) {
 		disconnect_client( IPC_CHANNEL::REQUEST, sock );
-	else
+	} else {
 		service_request( reqIt->second );
+	}
+	return;
 	M_EPILOG
 }
 
