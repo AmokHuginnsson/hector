@@ -51,7 +51,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 	bool vers( false );
 	po(
 		HProgramOptionsHandler::HOption()
-		.long_form( "log_path" )
+		.long_form( "log-path" )
 		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
 		.description( "path pointing to file for application logs" )
 		.recipient(	setup._logPath )
@@ -61,7 +61,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 	)(
 		HProgramOptionsHandler::HOption()
 		.short_form( 'D' )
-		.long_form( "data_dir" )
+		.long_form( "data-dir" )
 		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
 		.description( "find application data here" )
 		.recipient( setup._dataDir )
@@ -69,7 +69,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 	)(
 		HProgramOptionsHandler::HOption()
 		.short_form( 'M' )
-		.long_form( "max_connections" )
+		.long_form( "max-connections" )
 		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
 		.description( "maximum number of concurent connections" )
 		.recipient( setup._maxConnections )
@@ -77,7 +77,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 	)(
 		HProgramOptionsHandler::HOption()
 		.short_form( 'j' )
-		.long_form( "max_working_threads" )
+		.long_form( "max-working-threads" )
 		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
 		.description( "maximum number of internal task processing threads" )
 		.recipient( setup._maxWorkingThreads )
@@ -85,7 +85,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 	)(
 		HProgramOptionsHandler::HOption()
 		.short_form( 'S' )
-		.long_form( "ssl_port" )
+		.long_form( "ssl-port" )
 		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
 		.description( "port number for SSL based connections" )
 		.recipient( setup._sslPort )
@@ -125,7 +125,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 	)(
 		HProgramOptionsHandler::HOption()
 		.short_form( 'T' )
-		.long_form( "timeout_write" )
+		.long_form( "timeout-write" )
 		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
 		.description( "timeout for socket write operation" )
 		.recipient( setup._socketWriteTimeout )
@@ -133,7 +133,7 @@ int handle_program_options( int argc_, char** argv_ ) {
 	)(
 		HProgramOptionsHandler::HOption()
 		.short_form( 'R' )
-		.long_form( "socket_root" )
+		.long_form( "socket-root" )
 		.switch_type( HProgramOptionsHandler::HOption::ARGUMENT::REQUIRED )
 		.description( "root path for communication socket" )
 		.recipient( setup._socketRoot )

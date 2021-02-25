@@ -1,14 +1,14 @@
 # .hectorrc is an `hector' 0.0.0 configuration file,
 # this file ought to be in /etc/ and/or your home dirctory.
 
-log_path "x_hectord.log"
+log-path "x_hectord.log"
 application "app"
-data_dir "./${NEST}/app/"
+data-dir "./${NEST}/app/"
 # auth_query "SELECT id FROM tbl_user WHERE login = '%s' AND password = '%s';"
-max_connections 128
-max_working_threads 5
-timeout_write 5000
-socket_root "/tmp/hector"
+max-connections 128
+max-working-threads 5
+timeout-write 5000
+socket-root "/tmp/hector"
 
 # End of configuration file.
 # vim: ft=conf
