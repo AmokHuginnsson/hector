@@ -46,7 +46,7 @@ HActiveX HActiveX::get_instance(
 	proc._activeX = activeX;
 	app->init();
 	app->load( applicationServer_, id_, code_, name_, path_, mode_ );
-	return ( proc );
+	return proc;
 	M_EPILOG
 }
 

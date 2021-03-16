@@ -53,7 +53,7 @@ bool is_in_attribute( yaal::tools::HXml::HNode::properties_t const& props, HStri
 			is = ( ( idx + len ) >= attrIt->second.get_length() ) || ELEMENT_SEPARATOR.has( attrIt->second[ idx + len ] );
 		}
 	}
-	return ( is );
+	return is;
 	M_EPILOG
 }
 
@@ -132,7 +132,7 @@ yaal::hcore::HString get_id( HXml::HConstNodeProxy const& node_ ) {
 	} else {
 		id = *optId;
 	}
-	return ( id );
+	return id;
 	M_EPILOG
 }
 
@@ -554,7 +554,7 @@ yaal::hcore::HString replacer_func( yaal::hcore::HString const& variable_, HXml 
 			val.assign( variable_ );
 		}
 	}
-	return ( val );
+	return val;
 	M_EPILOG
 }
 
@@ -851,7 +851,7 @@ bool has_access( ACCESS::type_t accessType_, HSession const& session_, OSecurity
 	} else {
 		access = ( ( securityContext_._mode & ( accessType_ << ACCESS::OTHER ) ) != ACCESS::NONE );
 	}
-	return ( access );
+	return access;
 	M_EPILOG
 }
 

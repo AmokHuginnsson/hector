@@ -93,7 +93,7 @@ ORequest::value_t ORequest::lookup( yaal::hcore::HString const& key_, origin_t c
 		&& ( bFound = ( ( it = _cookies->find( key_ ) )     != _cookies->end() ) )
 		&& ( !! *( value = it->second ) );
 	OUT << "key: " << key_ << ", value: " << ( value ? *value : HString( "(nil)" ) ) << endl;
-	return ( value );
+	return value;
 	M_EPILOG
 }
 
@@ -111,7 +111,7 @@ bool ORequest::is_ssl( void ) const {
 	} else {
 		ssl = ( *https == "on" );
 	}
-	return ( ssl );
+	return ssl;
 	M_EPILOG
 }
 

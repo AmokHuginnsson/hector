@@ -44,7 +44,7 @@ yaal::dbwrapper::HDataBase::ptr_t HApplicationServer::get_db_connection( yaal::h
 		dbConnection = dbwrapper::util::connect( dsn_ );
 		_dbConnections.insert( make_pair( dsn_, dbConnection ) );
 	}
-	return ( dbConnection );
+	return dbConnection;
 	M_EPILOG
 }
 
@@ -185,7 +185,7 @@ HApplicationServer::session_t HApplicationServer::handle_session( ORequest& requ
 	} else {
 		OUT << "WARNING! missing: " << ( remoteAddress ? "" : HTTP::REMOTE_ADDR ) << " " << ( httpUserAgent ? "" : HTTP::HTTP_USER_AGENT ) << endl;
 	}
-	return ( session );
+	return session;
 	M_EPILOG
 }
 

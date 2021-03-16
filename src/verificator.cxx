@@ -29,7 +29,7 @@ bool HVerificatorInterface::verify( ORequest& req_, HSession& session_ ) {
 	HClock c;
 	bool result( do_verify( req_, session_ ) );
 	OUT << __PRETTY_FUNCTION__ << ": verificator executed in " << c.get_time_elapsed( time::UNIT::MICROSECOND ) << " microseconds" << endl;
-	return ( result );
+	return result;
 }
 
 HHuginnVerificator::HHuginnVerificator(
@@ -83,7 +83,7 @@ bool HHuginnVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 	if ( ! _output.str().is_empty() ) {
 		req_.message( _form->id(), ok ? LOG_LEVEL::INFO : LOG_LEVEL::ERROR, _output.consume() );
 	}
-	return ( ok );
+	return ok;
 }
 
 HSQLVerificator::HSQLVerificator(
@@ -133,7 +133,7 @@ bool HSQLVerificator::do_verify( ORequest& req_, HSession& session_ ) {
 	} else {
 		req_.message( _form->id(), LOG_LEVEL::ALERT, "Result set error (empty result set)" );
 	}
-	return ( ok );
+	return ok;
 }
 
 }

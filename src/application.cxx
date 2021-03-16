@@ -210,7 +210,7 @@ bool HApplication::do_handle_auth( ORequest& req_, HSession& session_ ) {
 			handled = true;
 		}
 	}
-	return ( handled );
+	return handled;
 	M_EPILOG
 }
 
@@ -235,7 +235,7 @@ bool HApplication::do_handle_forms( ORequest& req_, HSession& session_ ) {
 			handled = true;
 		}
 	}
-	return ( handled );
+	return handled;
 	M_EPILOG
 }
 

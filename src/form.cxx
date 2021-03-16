@@ -117,7 +117,7 @@ bool HForm::verify( ORequest& req_, HSession& session_ ) {
 	if ( !! _verificator ) {
 		verified = _verificator->verify( req_, session_ );
 	}
-	return ( verified );
+	return verified;
 	M_EPILOG
 }
 

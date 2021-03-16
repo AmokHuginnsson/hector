@@ -59,7 +59,7 @@ yaal::hcore::HString decode( yaal::hcore::HString data_ ) {
 			data_.replace( i, 3, &repl, 1 );
 		}
 	}
-	return ( data_ );
+	return data_;
 	M_EPILOG
 }
 

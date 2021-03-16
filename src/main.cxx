@@ -46,7 +46,7 @@ int main( int argc_, char* argv_[] ) {
 	} catch ( int err ) {
 		ret = err;
 	}
-	return ( ret );
+	return ret;
 	M_FINAL
 }
 

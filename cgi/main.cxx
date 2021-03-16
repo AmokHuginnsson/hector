@@ -53,7 +53,7 @@ int main( int argc_, char* argv_[] ) {
 	} catch ( ... ) {
 		throw;
 	}
-	return ( ret );
+	return ret;
 	M_FINAL
 }
 
@@ -64,7 +64,7 @@ HString escape( HString const& source ) {
 	static HString result;
 	result = source;
 	result.trim_left().replace( "\\", "\\\\" ).replace( "\n", "\\n" );
-	return ( result );
+	return result;
 	M_EPILOG
 }
 
