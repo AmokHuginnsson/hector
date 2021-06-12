@@ -10,7 +10,7 @@ STEP=0
 STEP_FIRST=0
 STEP_LAST=9999
 EXECUTE_COMMANDS=""
-DIR_ROOT=`pwd`
+DIR_ROOT=$(pwd)
 
 if [ ! -f ${SHELLLIB} ] ; then
 	echo "no shell programming library found"
@@ -53,11 +53,11 @@ conditional_immutable_on() {
 }
 
 conditional_umount() {
-	MOUNTED=`awk '/\/home\/hector\/proc/' /proc/mounts`
+	MOUNTED=$(awk '/\/home\/hector\/proc/' /proc/mounts)
 	if [ "x${MOUNTED}" != "x" ] ; then
 		umount -f /home/${SERVICE}/proc
 	fi
-	MOUNTED=`awk '/\/home\/hector\/var\/run\/postgresql/' /proc/mounts`
+	MOUNTED=$(awk '/\/home\/hector\/var\/run\/postgresql/' /proc/mounts)
 	if [ "x${MOUNTED}" != "x" ] ; then
 		umount -f /home/${SERVICE}/var/run/postgresql
 	fi
@@ -82,14 +82,14 @@ adv /bin/rm -rf ${JAIL}/*
 adv mkdir -p nest/app
 HECTOR_SETUP=`readlink ${HOME}/src/${SERVICE}/app/hector.xml`
 adv cp -a ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP} nest/app/hector.xml
-APPS=`xmlstarlet sel -T -t -m "/hector/applications/application[@load='true' and @code != '']" -o ${HOME}/src/cellar/web/ -v '@code' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP}`
-APPS="${APPS}\\n`xmlstarlet sel -T -t -m "/hector/applications/application[@load='true' and not( @code )]" -o ${HOME}/src/cellar/web/ -v '@id' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP}`"
-APPS=`echo -e "${APPS}" | sort -u`
+APPS=$(xmlstarlet sel -T -t -m "/hector/applications/application[@load='true' and @code != '']" -o ${HOME}/src/cellar/web/ -v '@code' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP})
+APPS="${APPS}\\n$(xmlstarlet sel -T -t -m "/hector/applications/application[@load='true' and not( @code )]" -o ${HOME}/src/cellar/web/ -v '@id' -n ${HOME}/src/${SERVICE}/app/${HECTOR_SETUP})"
+APPS=$(echo "${APPS}" | sort -u)
 echo "Installing applications: ${APPS}"
 adv cp -af ${APPS} nest/app/
 for ITEM in nest/app/* ; do
 	if [ -f ${ITEM}/interface.xml ] ; then
-		APP=`basename ${ITEM}`
+		APP=$(basename ${ITEM})
 		if [ -f ./build/${TARGET}/${APP}/1exec ] ; then
 			adv /bin/rm -f nest/app/${APP}/activex
 			adv cp -f ./build/${TARGET}/${APP}/1exec nest/app/${APP}/activex
