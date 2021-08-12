@@ -92,7 +92,8 @@ void query( int argc, char** argv ) {
 		if ( ! REQUEST_METHOD || ( stricasecmp( REQUEST_METHOD, "POST" ) == 0 ) ) {
 			HFile in( stdin, HFile::OWNERSHIP::EXTERNAL );
 			HString POST( "" );
-			while ( in.read_line( POST, HFile::READ::UNBUFFERED_READS ).good() ) {
+			in.set_buffered_io( false );
+			while ( getline( in, POST ).good() ) {
 				push_query( sock, POST, "post", "&" );
 			}
 		}
