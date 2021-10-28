@@ -117,8 +117,9 @@ void query( int argc, char** argv ) {
 		sock << "done" << endl;
 		HString msg;
 		while ( sock.read_until( msg ) > 0 ) {
-			cout << msg << endl;
+			cout << msg;
 		}
+		cout.flush();
 	} catch ( HSocketException& e ) {
 		cout << "\n\nCannot connect to `hector' daemon.<br />" << endl;
 		cout << e.what() << endl;

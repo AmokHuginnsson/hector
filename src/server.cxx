@@ -142,6 +142,7 @@ void HServer::handler_message( HIODispatcher::stream_t& stream_, int ipcChannel_
 	if ( !! stream_ ) {
 		int long nRead( 0 );
 		if ( ( nRead = stream_->read_until( message ) ) > 0 ) {
+			message.trim();
 			OUT << "<-" << message << endl;
 			static HString command;
 			static HString argument;
