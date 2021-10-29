@@ -76,7 +76,7 @@ void HApplication::load(
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << interface.string() << "' as application template." << endl;
 	_dom.init( make_pointer<HFile>( interface.string(), HFile::OPEN::READING ), HXml::PARSER::RESOLVE_ENTITIES | HXml::PARSER::AUTO_XINCLUDE );
 	hcore::log( LOG_LEVEL::INFO ) << "Using `" << toolkit.string() << "' as a toolkit library." << endl;
-	_dom.parse( HXml::PARSER::STRIP_COMMENT | HXml::PARSER::IGNORE_CONVERSION_ERRORS );
+	_dom.parse( HXml::PARSER::KEEP_EMPTY | HXml::PARSER::STRIP_COMMENT | HXml::PARSER::IGNORE_CONVERSION_ERRORS );
 	HXml::entities_t const& entities( _dom.entities() );
 	_dsn = entities.at( "DSN" );
 	HXml::entities_t::const_iterator aq( entities.find( "authQuery" ) );
@@ -104,7 +104,7 @@ void HApplication::load(
 	_defaultSecurityContext._mode = static_cast<ACCESS::mode_t>( m != entities.end() ? lexical_cast<int>( m->second ) : app.get_permissions() );
 	cgi::prepare_logic( this, _dom.get_root() );
 	_dom.apply_style( toolkit.string(), {{ "mode", _mode == MODE::GET ? "'GET'" : "'POST'" }} );
-	_dom.parse( HXml::PARSER::STRIP_COMMENT | HXml::PARSER::IGNORE_CONVERSION_ERRORS );
+	_dom.parse( HXml::PARSER::KEEP_EMPTY | HXml::PARSER::STRIP_COMMENT | HXml::PARSER::IGNORE_CONVERSION_ERRORS );
 	do_load();
 	set_input_data();
 	cgi::consistency_check( _dom.get_root() );
